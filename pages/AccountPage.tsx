@@ -206,7 +206,7 @@ const AccountPage: React.FC = () => {
                         />
                         <div>
                             <p className="text-xs text-gray-500 dark:text-gray-400">Hello,</p>
-                            <h3 className="font-bold text-gray-900 dark:text-white truncate max-w-[150px]">{profile.displayName || 'User'}</h3>
+                            <h3 className="font-bold text-gray-900 dark:text-white text-lg break-words">{profile.displayName || 'User'}</h3>
                         </div>
                     </div>
 
