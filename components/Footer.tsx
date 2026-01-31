@@ -51,8 +51,8 @@ const Footer: React.FC = () => {
             <h4 className="font-bold text-gray-900 dark:text-white mb-4">Get in Touch</h4>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
               <li>support@ours.com</li>
-              <li>+1 (555) 123-4567</li>
-              <li>San Francisco, CA</li>
+              <li>+91 8005343226</li>
+              <li>Kanpur, Uttar Pradesh</li>
             </ul>
           </div>
         </div>

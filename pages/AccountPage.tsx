@@ -16,7 +16,7 @@ interface UserProfile {
     dob: string;
     qualification: string;
     college: string;
-    address: string;
+
     mobile: string;
     role?: string;
 }
@@ -45,7 +45,7 @@ const AccountPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [age, setAge] = useState<number | null>(null);
-    const [activeTab, setActiveTab] = useState<'personal' | 'address' | 'payment' | 'orders'>('personal');
+    const [activeTab, setActiveTab] = useState<'personal' | 'payment' | 'orders'>('personal');
     const [orders, setOrders] = useState<Order[]>([]);
 
     const [profile, setProfile] = useState<UserProfile>({
@@ -56,7 +56,7 @@ const AccountPage: React.FC = () => {
         dob: '',
         qualification: '',
         college: '',
-        address: '',
+
         mobile: '',
         role: ''
     });
@@ -213,7 +213,7 @@ const AccountPage: React.FC = () => {
                         </div>
                         <div className="p-0">
                             <TabButton id="personal" label="Personal Information" />
-                            <TabButton id="address" label="Manage Addresses" />
+
                             <TabButton id="orders" label="My Orders" />
                             <TabButton id="payment" label="Payment Options" />
 
@@ -377,31 +377,7 @@ const AccountPage: React.FC = () => {
                             </>
                         )}
 
-                        {activeTab === 'address' && (
-                            <>
-                                <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Manage Addresses</h1>
-                                <form onSubmit={handleSave} className="space-y-6">
-                                    {/* ... address form content ... */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Permanent Address</label>
-                                        <div className="relative">
-                                            <MapPin className="absolute left-3 top-3 text-gray-400" size={18} />
-                                            <textarea
-                                                rows={4}
-                                                placeholder="Enter your full street address, city, state, and pincode..."
-                                                value={profile.address}
-                                                onChange={e => setProfile({ ...profile, address: e.target.value })}
-                                                className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                                            />
-                                        </div>
-                                        <p className="text-sm text-gray-500 mt-2">This address will be used for delivery and billing.</p>
-                                    </div>
-                                    <Button type="submit" disabled={saving} className="px-8 py-3" leftIcon={<Save size={18} />}>
-                                        {saving ? 'Saving...' : 'Save Address'}
-                                    </Button>
-                                </form>
-                            </>
-                        )}
+
 
                         {activeTab === 'orders' && (
                             <>
