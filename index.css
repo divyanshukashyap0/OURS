@@ -6,7 +6,7 @@
   :root {
     -webkit-tap-highlight-color: transparent;
   }
-  
+
   html {
     @apply scroll-smooth;
   }
@@ -14,8 +14,27 @@
   body {
     @apply bg-gray-950 text-gray-100 font-sans antialiased;
     touch-action: manipulation;
+    padding-bottom: env(safe-area-inset-bottom);
+    /* iOS Safe Area */
   }
-  
+
+  /* Fluid Typography using clamp() */
+  h1 {
+    font-size: clamp(2.25rem, 5vw + 1rem, 4.5rem);
+  }
+
+  h2 {
+    font-size: clamp(1.875rem, 4vw + 1rem, 3.75rem);
+  }
+
+  h3 {
+    font-size: clamp(1.5rem, 3vw + 1rem, 3rem);
+  }
+
+  p {
+    font-size: clamp(1rem, 2vw + 0.5rem, 1.125rem);
+  }
+
   /* Enforce dark mode styles by default since we are removing valid light mode */
   .dark body {
     @apply bg-gray-950 text-gray-100;
@@ -26,7 +45,7 @@
   .btn-primary {
     @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 active:scale-95 shadow-lg shadow-primary-500/20;
   }
-  
+
   .btn-secondary {
     @apply bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 active:scale-95 border border-gray-700;
   }

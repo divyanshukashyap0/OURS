@@ -55,6 +55,7 @@ const CoursesPage: React.FC = () => {
                                     <img
                                         src={course.image}
                                         alt={course.title}
+                                        loading="lazy"
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                     />
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
@@ -95,10 +96,10 @@ const CoursesPage: React.FC = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-4">
+                                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-4 gap-4">
                                         <span className="text-2xl font-bold text-gray-900 dark:text-white">{course.price}</span>
-                                        <Button variant="primary" className="rounded-full px-6">
-                                            Enroll
+                                        <Button variant="primary" className="rounded-full px-6 w-full md:w-auto text-center justify-center">
+                                            Enroll Now
                                         </Button>
                                     </div>
                                 </div>

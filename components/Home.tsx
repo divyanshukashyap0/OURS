@@ -37,7 +37,7 @@ const Home: React.FC = () => {
 
       {/* 1. Intro Card (Large) */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
         className="col-span-1 md:col-span-2 row-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 flex flex-col justify-between text-white relative overflow-hidden group shadow-lg"
       >
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-white/20 transition-colors duration-500"></div>
@@ -59,17 +59,7 @@ const Home: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* 2. Stats Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-        className="col-span-1 md:col-span-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 flex flex-col justify-center items-center text-center shadow-sm hover:border-blue-500/30 transition-colors"
-      >
-        <div className="mb-2 bg-green-100 dark:bg-green-900/30 p-3 rounded-full text-green-600 dark:text-green-400">
-          <Users size={24} />
-        </div>
-        <h3 className="text-3xl font-black text-gray-900 dark:text-white">10k+</h3>
-        <p className="text-gray-500 text-sm font-medium">Active Developers</p>
-      </motion.div>
+
 
       {/* 3. Latest Blog (Simple) */}
       <motion.div
