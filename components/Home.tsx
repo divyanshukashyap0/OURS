@@ -64,59 +64,46 @@ const Home: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* 2. Terminal Challenge (The "Crazy" Tech Vibe) */}
+      {/* 2. Interview Prep (High Utility) */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.1 }}
-        className="col-span-1 md:col-span-1 bg-black border border-gray-800 rounded-3xl p-5 font-mono text-xs md:text-sm text-green-400 flex flex-col justify-between overflow-hidden relative group/terminal cursor-pointer hover:border-green-500/50 transition-colors"
+        className="col-span-1 md:col-span-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 flex flex-col justify-between overflow-hidden relative group cursor-pointer hover:shadow-lg transition-all"
+        onClick={() => alert("Opening Interview Question #42...")}
       >
-        <div className="absolute top-2 right-2 flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500/20"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-green-500/20"></div>
+        <div className="flex justify-between items-start mb-2">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-blue-600 dark:text-blue-400">
+            <Code2 size={20} />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Daily Prep</span>
         </div>
-        <div className="mt-4 uppercase tracking-widest text-gray-600 font-bold mb-2">Daily Challenge</div>
-        <div className="relative z-10">
-          <p className="mb-2"><span className="text-purple-400">~/mission</span> $ fix_memory_leak.ts</p>
-          <p className="text-gray-400">Detecting overflow...</p>
-          <p className="animate-pulse">_</p>
+        <div>
+          <h4 className="font-bold text-gray-900 dark:text-white leading-tight mb-1">React Hooks</h4>
+          <p className="text-xs text-gray-500 mb-3">Explain the dependency array in useEffect.</p>
         </div>
-        <div className="absolute -bottom-8 -right-8 opacity-10 rotate-12">
-          <Code2 size={100} />
+        <div className="mt-auto">
+          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 group-hover:gap-2 transition-all">
+            Practice Now <ArrowRight size={12} />
+          </span>
         </div>
       </motion.div>
 
-      {/* 3. Community Pulse (Live Activity) */}
+      {/* 3. Dev Cheatsheets (Resource Library) */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.15 }}
-        className="col-span-1 md:col-span-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden group hover:shadow-lg transition-all"
+        className="col-span-1 md:col-span-1 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden group hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+        onClick={() => navigate('/resources')}
       >
         <div className="flex justify-between items-start">
-          <div>
-            <span className="flex items-center gap-2 text-xs font-bold text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full w-fit">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
-              LIVE
-            </span>
-          </div>
-          <Users size={18} className="text-gray-400" />
-        </div>
-        <div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">128</h3>
-          <p className="text-xs text-gray-500">Builders Online</p>
+          <h3 className="font-bold text-gray-900 dark:text-white">Cheatsheets</h3>
+          <ExternalLink size={16} className="text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
         </div>
 
-        {/* Fake Avatars */}
-        <div className="flex -space-x-2 mt-3">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className={`w-8 h-8 rounded-full border-2 border-white dark:border-gray-900 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[10px] text-gray-500`}>
-              U{i}
+        <div className="grid grid-cols-2 gap-2 mt-4">
+          {['Git', 'React', 'CSS', 'Linux'].map((item) => (
+            <div key={item} className="bg-white dark:bg-gray-900 p-2 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 text-center border border-gray-100 dark:border-gray-700 shadow-sm group-hover:shadow-md transition-shadow">
+              {item}
             </div>
           ))}
-          <div className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-900 bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-[10px] text-blue-600 font-bold">
-            +
-          </div>
         </div>
       </motion.div>
 
