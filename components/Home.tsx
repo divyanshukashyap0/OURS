@@ -43,7 +43,7 @@ const Home: React.FC = () => {
         <div className="mb-2 bg-green-100 dark:bg-green-900/30 p-3 rounded-full text-green-600 dark:text-green-400">
           <Users size={24} />
         </div>
-        <h3 className="text-3xl font-black text-gray-900 dark:text-white">10k+</h3>
+        <h3 className="text-3xl font-black text-gray-900 dark:text-white">Many</h3>
         <p className="text-gray-500 text-sm font-medium">Active Developers</p>
       </motion.div>
 

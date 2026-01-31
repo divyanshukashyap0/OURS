@@ -40,16 +40,18 @@ const About: React.FC = () => {
       <Section id="about" className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">About OURS</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+              Built with <span className="text-red-500">❤️</span> and <code>&lt;Code/&gt;</code>
+            </h2>
             <p className="text-gray-600 dark:text-gray-400 text-lg mb-6 leading-relaxed">
-              We are a team of passionate developers dedicated to making high-quality coding education accessible to everyone. Our platform focuses on learning by doing, providing real-world projects and comprehensive courses.
+              At <strong>OURS</strong>, we don't just write tutorials; we architect careers. We believe that behind every great piece of software is a human being who dared to say, <em>"Hello, World."</em>
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-lg mb-8 leading-relaxed">
-              Whether you are just starting out or looking to upgrade your skills, OURS has the resources you need to succeed in the tech industry.
+              Our code is compiled with care, and our projects are pushed with passion. We are a collective of dreamers and debuggers dedicated to turning "syntax error" into "deployment success."
             </p>
             <div className="flex gap-4">
-              <Button variant="primary" className="bg-blue-600 text-white hover:bg-blue-700" onClick={() => setShowMission(true)}>
-                Our Mission
+              <Button variant="primary" className="bg-tech-primary text-white hover:bg-blue-600" onClick={() => setShowMission(true)}>
+                Initialize Mission Protocol
               </Button>
             </div>
           </div>
