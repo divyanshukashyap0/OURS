@@ -1,12 +1,36 @@
-import React from 'react';
-import { PROJECTS, BLOG_POSTS } from '../constants';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Code2, Users, Newspaper, ExternalLink, Github, Twitter, Linkedin } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { db } from '../lib/firebase';
+import { collection, getDocs, limit, query, orderBy } from 'firebase/firestore';
+import { BLOG_POSTS } from '../constants';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const featuredProject = PROJECTS[0];
+  const [projects, setProjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        // Fetch recent projects
+        const q = query(collection(db, 'projects'), limit(5)); // Get 5 projects (1 featured + 4 recent)
+        const querySnapshot = await getDocs(q);
+        const fetchedProjects = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setProjects(fetchedProjects);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  // Use fetched projects or empty placeholders if loading
+  const featuredProject = projects.length > 0 ? projects[0] : null;
+  const recentProjects = projects.length > 1 ? projects.slice(1, 5) : [];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 auto-rows-[minmax(180px,auto)]">
@@ -43,7 +67,7 @@ const Home: React.FC = () => {
         <div className="mb-2 bg-green-100 dark:bg-green-900/30 p-3 rounded-full text-green-600 dark:text-green-400">
           <Users size={24} />
         </div>
-        <h3 className="text-3xl font-black text-gray-900 dark:text-white">Many</h3>
+        <h3 className="text-3xl font-black text-gray-900 dark:text-white">10k+</h3>
         <p className="text-gray-500 text-sm font-medium">Active Developers</p>
       </motion.div>
 
@@ -68,26 +92,31 @@ const Home: React.FC = () => {
       </motion.div>
 
       {/* 4. Featured Project (Large Image) */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.3 }}
-        onClick={() => navigate(`/project/${featuredProject.id}`)}
-        className="col-span-1 md:col-span-2 row-span-2 relative rounded-3xl overflow-hidden cursor-pointer group shadow-lg"
-      >
-        <img
-          src={featuredProject.image}
-          alt={featuredProject.title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 p-8 w-full">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-md">FEATURED</span>
-            <span className="bg-gray-800/80 backdrop-blur text-white text-xs font-bold px-2 py-1 rounded-md">{featuredProject.price}</span>
+      {featuredProject ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.3 }}
+          onClick={() => navigate(`/project/${featuredProject.id}`)}
+          className="col-span-1 md:col-span-2 row-span-2 relative rounded-3xl overflow-hidden cursor-pointer group shadow-lg"
+        >
+          <img
+            src={featuredProject.image}
+            alt={featuredProject.title}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 p-8 w-full">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-md">FEATURED</span>
+              <span className="bg-gray-800/80 backdrop-blur text-white text-xs font-bold px-2 py-1 rounded-md">{featuredProject.price}</span>
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-2">{featuredProject.title}</h3>
+            <p className="text-gray-300 line-clamp-2 max-w-md">{featuredProject.description}</p>
           </div>
-          <h3 className="text-3xl font-bold text-white mb-2">{featuredProject.title}</h3>
-          <p className="text-gray-300 line-clamp-2 max-w-md">{featuredProject.description}</p>
-        </div>
-      </motion.div>
+        </motion.div>
+      ) : (
+        // Placeholder skeleton if no projects yet
+        <div className="col-span-1 md:col-span-2 row-span-2 bg-gray-100 dark:bg-gray-800 rounded-3xl animate-pulse"></div>
+      )}
 
       {/* 5. Tech Stack Marquee (Placeholder for now) */}
       <motion.div
@@ -132,15 +161,18 @@ const Home: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {PROJECTS.slice(1, 5).map(project => (
+          {recentProjects.map(project => (
             <div key={project.id} onClick={() => navigate(`/project/${project.id}`)} className="group cursor-pointer">
               <div className="aspect-video rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 mb-3 relative">
                 <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <h4 className="font-bold text-gray-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">{project.title}</h4>
-              <p className="text-xs text-gray-500">{project.tags[0]} • {project.price}</p>
+              <p className="text-xs text-gray-500">{(project.tags && project.tags[0]) || 'Project'} • {project.price}</p>
             </div>
           ))}
+          {recentProjects.length === 0 && !featuredProject && (
+            <div className="col-span-4 text-center text-gray-400 py-10">Loading projects...</div>
+          )}
         </div>
       </motion.div>
 
