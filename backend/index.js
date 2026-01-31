@@ -60,6 +60,22 @@ app.post('/api/set-admin', async (req, res) => {
     }
 });
 
+// Get Public Stats (Users & Projects)
+app.get('/api/stats', async (req, res) => {
+    try {
+        const usersSnapshot = await db.collection('users').count().get();
+        const projectsSnapshot = await db.collection('projects').count().get();
+
+        res.json({
+            users: usersSnapshot.data().count,
+            projects: projectsSnapshot.data().count
+        });
+    } catch (error) {
+        console.error("Error fetching stats:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Example Admin Route: List all users (requires admin privilege logic usually)
 app.get('/api/users', async (req, res) => {
     try {

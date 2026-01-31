@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import Footer from './Footer';
 import Button from './ui/Button';
 import { ArrowLeft, ExternalLink, Github, Tag, CheckCircle } from 'lucide-react';
+import { API_BASE_URL } from '../lib/config';
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -62,7 +63,7 @@ const ProjectDetail: React.FC = () => {
         let order;
         try {
             const priceValue = parseFloat(project?.price.replace(/[^0-9.]/g, '') || '0');
-            const response = await fetch('http://localhost:5000/api/create-order', {
+            const response = await fetch(`${API_BASE_URL}/api/create-order`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

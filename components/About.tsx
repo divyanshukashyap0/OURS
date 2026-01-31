@@ -4,6 +4,8 @@ import Button from './ui/Button';
 import { db } from '../lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
+import { API_BASE_URL } from '../lib/config';
+
 const About: React.FC = () => {
   const [stats, setStats] = React.useState({
     students: 0,
@@ -15,18 +17,15 @@ const About: React.FC = () => {
   React.useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Fetch Users Count
-        const usersSnapshot = await getDocs(collection(db, 'users'));
-        const usersCount = usersSnapshot.size;
+        const response = await fetch(`${API_BASE_URL}/api/stats`);
+        if (!response.ok) throw new Error('Failed to fetch stats');
 
-        // Fetch Projects Count
-        const projectsSnapshot = await getDocs(collection(db, 'projects'));
-        const projectsCount = projectsSnapshot.size;
+        const data = await response.json();
 
         setStats(prev => ({
           ...prev,
-          students: usersCount > 0 ? usersCount : 50, // Fallback/Initial
-          projects: projectsCount > 0 ? projectsCount : 12, // Fallback to constant length if 0
+          students: data.users || 0,
+          projects: data.projects || 0,
         }));
       } catch (error) {
         console.error("Error fetching stats:", error);
@@ -57,7 +56,7 @@ const About: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl text-center border border-gray-100 dark:border-gray-700">
               <h3 className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">{stats.students}+</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Active Students</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Active Users</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl text-center border border-gray-100 dark:border-gray-700">
               <h3 className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">{stats.projects}+</h3>
