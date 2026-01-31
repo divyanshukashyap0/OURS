@@ -59,7 +59,9 @@ const CheckoutPage: React.FC = () => {
                 body: JSON.stringify({
                     amount: priceValue,
                     currency: 'USD',
-                    receipt: `receipt_${user.uid}_${project.id}_${Date.now()}`
+                    // Shorten receipt ID to max 40 chars. 
+                    // rcpt_ + 8 chars of timestamp + _ + 4 chars random = ~18 chars
+                    receipt: `rcpt_${Date.now().toString().slice(-8)}_${Math.floor(Math.random() * 10000)}`
                 })
             });
 
