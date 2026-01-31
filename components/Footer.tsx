@@ -1,7 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Code2, Github, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { useSite } from '../context/SiteContext';
 
 const Footer: React.FC = () => {
+  const { socials } = useSite();
+
   return (
     <footer className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pt-16 pb-8 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,9 +19,10 @@ const Footer: React.FC = () => {
               The ultimate resource for developers to learn, build, and grow. High quality courses and projects.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors"><Twitter size={20} /></a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors"><Github size={20} /></a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors"><Linkedin size={20} /></a>
+              {/* Socials from SiteContext or defaults */}
+              <a href={socials?.twitter || "#"} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors"><Twitter size={20} /></a>
+              <a href={socials?.github || "#"} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors"><Github size={20} /></a>
+              <a href={socials?.linkedin || "#"} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors"><Linkedin size={20} /></a>
               <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors"><Instagram size={20} /></a>
             </div>
           </div>
@@ -25,20 +30,20 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="font-bold text-gray-900 dark:text-white mb-4">Platform</h4>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400">Browse Courses</a></li>
-              <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400">Projects</a></li>
-              <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400">Tutorials</a></li>
-              <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400">Pricing</a></li>
+              <li><Link to="/courses" className="hover:text-blue-600 dark:hover:text-blue-400">Browse Courses</Link></li>
+              <li><Link to="/projects" className="hover:text-blue-600 dark:hover:text-blue-400">Projects</Link></li>
+              <li><Link to="/tutorials" className="hover:text-blue-600 dark:hover:text-blue-400">Tutorials</Link></li>
+              <li><Link to="/pricing" className="hover:text-blue-600 dark:hover:text-blue-400">Pricing</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-gray-900 dark:text-white mb-4">Company</h4>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400">About Us</a></li>
-              <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400">Contact</a></li>
-              <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400">Careers</a></li>
-              <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400">Terms of Service</a></li>
+              <li><Link to="/about" className="hover:text-blue-600 dark:hover:text-blue-400">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-blue-600 dark:hover:text-blue-400">Contact</Link></li>
+              <li><Link to="/careers" className="hover:text-blue-600 dark:hover:text-blue-400">Careers</Link></li>
+              <li><Link to="/terms" className="hover:text-blue-600 dark:hover:text-blue-400">Terms of Service</Link></li>
             </ul>
           </div>
 

@@ -39,9 +39,21 @@ app.post('/api/create-order', async (req, res) => {
     try {
         const { amount, currency = 'INR', receipt } = req.body;
 
+        let amountInPaise;
+        let currencyCode = currency;
+
+        if (currency === 'USD') {
+            const conversionRate = 86; // 1 USD = 86 INR (approx)
+            const amountInINR = amount * conversionRate;
+            amountInPaise = Math.round(amountInINR * 100);
+            currencyCode = 'INR'; // Razorpay processes in INR
+        } else {
+            amountInPaise = Math.round(amount * 100);
+        }
+
         const options = {
-            amount: Math.round(amount * 100), // Razorpay works in subunits (paise), ensure integer
-            currency,
+            amount: amountInPaise,
+            currency: currencyCode,
             receipt: receipt || `receipt_${Date.now()}`
         };
 

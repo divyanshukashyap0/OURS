@@ -51,22 +51,22 @@ const CheckoutPage: React.FC = () => {
 
         // 2. Create Order via Backend
         let order;
+        const priceValue = parseFloat(project?.price.replace(/[^0-9.]/g, '') || '0');
         try {
-            const priceValue = parseFloat(project?.price.replace(/[^0-9.]/g, '') || '0');
             const response = await fetch(`${API_BASE_URL}/api/create-order`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     amount: priceValue,
-                    currency: 'INR',
+                    currency: 'USD',
                     receipt: `receipt_${user.uid}_${project.id}_${Date.now()}`
                 })
             });
             order = await response.json();
             if (!response.ok) throw new Error(order.error || 'Server error');
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert('Failed to initiate payment. Ensure Backend is running.');
+            alert(`Failed to initiate payment: ${error.message}`);
             setLoading(false);
             return;
         }
@@ -95,8 +95,8 @@ const CheckoutPage: React.FC = () => {
                                 userEmail: user.email,
                                 projectId: String(project.id),
                                 projectTitle: project.title,
-                                amount: order.amount / 100, // convert back to main unit
-                                currency: order.currency,
+                                amount: priceValue, // Save original USD amount
+                                currency: 'USD',
                             }
                         })
                     });

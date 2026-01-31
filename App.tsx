@@ -21,6 +21,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CoursesPage from './pages/CoursesPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
+import TutorialsPage from './pages/TutorialsPage';
+import PricingPage from './pages/PricingPage';
+import ContactPage from './pages/ContactPage';
+import CareersPage from './pages/CareersPage';
+import TermsPage from './pages/TermsPage';
 import { SiteProvider } from './context/SiteContext';
 
 const App: React.FC = () => {
@@ -65,6 +70,11 @@ const App: React.FC = () => {
               <Route path="courses" element={<CoursesPage />} />
               <Route path="checkout/:id" element={<CheckoutPage />} />
               <Route path="order-success" element={<OrderSuccessPage />} />
+              <Route path="tutorials" element={<TutorialsPage />} />
+              <Route path="pricing" element={<PricingPage />} />
+              <Route path="contact" element={<ContactPage />} />
+              <Route path="careers" element={<CareersPage />} />
+              <Route path="terms" element={<TermsPage />} />
             </Route>
           </Routes>
         </Router>
