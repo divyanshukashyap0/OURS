@@ -6,6 +6,7 @@ import BlogPage from './pages/BlogPage';
 import AboutPage from './pages/AboutPage';
 import ProjectDetail from './components/ProjectDetail';
 import BlogDetail from './components/BlogDetail';
+import AdminLayout from './components/admin/AdminLayout';
 import InvoicePage from './pages/InvoicePage';
 
 // ... (in Route list)
