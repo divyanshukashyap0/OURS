@@ -9,6 +9,7 @@ import BlogDetail from './components/BlogDetail';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
 import ProductManager from './components/admin/ProductManager';
+import CourseManager from './components/admin/CourseManager';
 import AdminSettings from './components/admin/AdminSettings';
 import SourceCode from './components/SourceCode';
 import Layout from './components/Layout';
@@ -46,6 +47,7 @@ const App: React.FC = () => {
             }>
               <Route index element={<AdminDashboard />} />
               <Route path="products" element={<ProductManager />} />
+              <Route path="courses" element={<CourseManager />} />
               <Route path="settings" element={<AdminSettings />} /> {/* Added AdminSettings route */}
             </Route>
 
