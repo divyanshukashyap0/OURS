@@ -111,10 +111,7 @@ const Home: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }}
         className="col-span-1 md:col-span-2 bg-indigo-600 text-white rounded-3xl p-6 relative overflow-hidden group cursor-pointer"
-        onClick={() => {
-          // Placeholder: could open a modal or navigate
-          alert("Protocol Initiated: Describe your unique vision in the next step.");
-        }}
+        onClick={() => navigate('/request-project')}
       >
         {/* Background Grid Pattern */}
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>

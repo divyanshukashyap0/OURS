@@ -30,6 +30,7 @@ import PricingPage from './pages/PricingPage';
 import ContactPage from './pages/ContactPage';
 import CareersPage from './pages/CareersPage';
 import TermsPage from './pages/TermsPage';
+import RequestProjectPage from './pages/RequestProjectPage';
 import { SiteProvider } from './context/SiteContext';
 
 const App: React.FC = () => {
@@ -87,6 +88,7 @@ const App: React.FC = () => {
               <Route path="contact" element={<ContactPage />} />
               <Route path="careers" element={<CareersPage />} />
               <Route path="terms" element={<TermsPage />} />
+              <Route path="request-project" element={<RequestProjectPage />} /> {/* New Project Request Route */}
             </Route>
           </Routes>
         </Router>
