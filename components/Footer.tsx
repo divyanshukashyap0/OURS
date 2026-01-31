@@ -58,9 +58,8 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 dark:text-gray-400">
-          <p>© 2024 OURS Inc. All rights reserved.</p>
+          <p>© 2026 OURS Inc. All rights reserved.</p>
           <div className="flex gap-4">
-            <a href="/admin" className="hover:text-blue-600 dark:hover:text-blue-400">Admin Dashboard</a>
             <p>Designed with ❤️ for developers</p>
           </div>
         </div>
