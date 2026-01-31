@@ -1,0 +1,80 @@
+import React from 'react';
+import { motion, HTMLMotionProps } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
+
+interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+    size?: 'sm' | 'md' | 'lg';
+    isLoading?: boolean;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
+    children: React.ReactNode;
+    href?: string;
+}
+
+const Button: React.FC<ButtonProps> = ({
+    variant = 'primary',
+    size = 'md',
+    isLoading = false,
+    leftIcon,
+    rightIcon,
+    children,
+    className = '',
+    href,
+    disabled,
+    ...props
+}) => {
+    const baseStyles = "inline-flex items-center justify-center rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+
+    const variants = {
+        primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 border border-transparent focus:ring-blue-500 dark:focus:ring-offset-gray-900",
+        secondary: "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 border border-transparent focus:ring-indigo-500 dark:focus:ring-offset-gray-900",
+        outline: "bg-transparent border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:border-blue-600 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-500 focus:ring-gray-500 dark:focus:ring-offset-gray-900",
+        ghost: "bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white focus:ring-gray-500 dark:focus:ring-offset-gray-900",
+    };
+
+    const sizes = {
+        sm: "px-3 py-1.5 text-sm gap-1.5",
+        md: "px-5 py-2.5 text-sm gap-2",
+        lg: "px-6 py-3 text-base gap-2.5",
+    };
+
+    const content = (
+        <>
+            {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+            {!isLoading && leftIcon}
+            {children}
+            {!isLoading && rightIcon}
+        </>
+    );
+
+    const combinedClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
+
+    if (href) {
+        return (
+            <motion.a
+                href={href}
+                className={combinedClassName}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                {...(props as any)}
+            >
+                {content}
+            </motion.a>
+        );
+    }
+
+    return (
+        <motion.button
+            className={combinedClassName}
+            disabled={disabled || isLoading}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            {...props}
+        >
+            {content}
+        </motion.button>
+    );
+};
+
+export default Button;
