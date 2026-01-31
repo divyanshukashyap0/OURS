@@ -84,7 +84,7 @@ const Home: React.FC = () => {
               Manual instructions to request a custom build or mentorship.
             </p>
             <div className="flex items-center gap-2 text-xs font-bold bg-white/10 w-fit px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">
-              <span>READ PROTOCOL</span>
+              <span>WRITE PROTOCOL</span>
               <ArrowRight size={14} />
             </div>
           </div>
