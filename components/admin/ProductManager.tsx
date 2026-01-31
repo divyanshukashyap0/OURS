@@ -85,9 +85,9 @@ const ProductManager: React.FC = () => {
                 });
             }
             setIsModalOpen(false);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving:", error);
-            alert("Failed to save project.");
+            alert(`Failed to save project: ${error.message}`);
         }
     };
 
