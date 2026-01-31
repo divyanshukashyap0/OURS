@@ -18,6 +18,8 @@ import SignupPage from './pages/SignupPage';
 import AccountPage from './pages/AccountPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import CoursesPage from './pages/CoursesPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
 
 const App: React.FC = () => {
   return (
@@ -58,6 +60,8 @@ const App: React.FC = () => {
                 {/* Add dummy routes for sidebar links */}
                 <Route path="/source-code" element={<SourceCode />} />
                 <Route path="/courses" element={<CoursesPage />} />
+                <Route path="/checkout/:id" element={<CheckoutPage />} />
+                <Route path="/order-success" element={<OrderSuccessPage />} />
               </Routes>
             </Layout>
           } />

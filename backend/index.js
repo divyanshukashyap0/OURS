@@ -34,12 +34,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // Create Razorpay Order
+// Create Razorpay Order
 app.post('/api/create-order', async (req, res) => {
     try {
         const { amount, currency = 'INR', receipt } = req.body;
 
         const options = {
-            amount: amount * 100, // Razorpay works in subunits (paise)
+            amount: Math.round(amount * 100), // Razorpay works in subunits (paise), ensure integer
             currency,
             receipt: receipt || `receipt_${Date.now()}`
         };
@@ -51,6 +52,39 @@ app.post('/api/create-order', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+// Verify Payment & Save Order (Secure)
+app.post('/api/verify-payment', async (req, res) => {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderData } = req.body;
+
+    const crypto = require('crypto');
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+
+    const generated_signature = crypto
+        .createHmac('sha256', secret)
+        .update(razorpay_order_id + "|" + razorpay_payment_id)
+        .digest('hex');
+
+    if (generated_signature === razorpay_signature) {
+        // Payment is legit, save to Firestore
+        try {
+            await db.collection('orders').add({
+                ...orderData,
+                orderId: razorpay_order_id,
+                paymentId: razorpay_payment_id,
+                status: 'paid',
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            res.json({ status: 'success', message: 'Payment verified and order saved' });
+        } catch (error) {
+            console.error("Error saving order:", error);
+            res.status(500).json({ error: 'Payment verified but failed to save order' });
+        }
+    } else {
+        res.status(400).json({ status: 'failure', message: 'Invalid signature' });
+    }
+});
+
 
 // Set Admin Privilege
 app.post('/api/set-admin', async (req, res) => {

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PROJECTS } from '../constants';
 import { db } from '../lib/firebase';
-import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import Footer from './Footer';
 import Button from './ui/Button';
@@ -51,78 +51,8 @@ const ProjectDetail: React.FC = () => {
         });
     };
 
-    const handlePayment = async () => {
-        const res = await loadRazorpay();
-
-        if (!res) {
-            alert('Razorpay SDK failed to load. Are you online?');
-            return;
-        }
-
-        // 1. Create Order via Backend
-        let order;
-        try {
-            const priceValue = parseFloat(project?.price.replace(/[^0-9.]/g, '') || '0');
-            const response = await fetch(`${API_BASE_URL}/api/create-order`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount: priceValue,
-                    currency: 'INR' // Changed to INR to enable UPI, NetBanking etc.
-                })
-            });
-            order = await response.json();
-            if (!response.ok) throw new Error(order.error || 'Server error');
-        } catch (error) {
-            console.error(error);
-            alert('Failed to initiate payment. Ensure Backend is running.');
-            return;
-        }
-
-        // 2. Open Razorpay Options
-        const options = {
-            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-            amount: order.amount,
-            currency: order.currency,
-            name: "OURS Platform",
-            description: `Payment for ${project?.title}`,
-            image: "https://your-logo-url.com/logo.png", // Replace with app logo
-            order_id: order.id,
-            handler: async function (response: any) {
-                try {
-                    await addDoc(collection(db, 'orders'), {
-                        userId: user?.uid || 'guest',
-                        userEmail: user?.email || 'guest@example.com',
-                        projectId: String(project?.id),
-                        projectTitle: project?.title,
-                        amount: order.amount / 100,
-                        currency: order.currency,
-                        paymentId: response.razorpay_payment_id,
-                        orderId: response.razorpay_order_id,
-                        status: 'paid',
-                        createdAt: serverTimestamp()
-                    });
-                    alert(`Payment Successful! Payment ID: ${response.razorpay_payment_id}`);
-                } catch (error) {
-                    console.error("Error saving order:", error);
-                    alert("Payment successful but failed to save order record.");
-                }
-            },
-            prefill: {
-                name: user?.displayName || "User Name",
-                email: user?.email || "user@example.com",
-                contact: ""
-            },
-            notes: {
-                address: "Razorpay Corporate Office"
-            },
-            theme: {
-                color: "#3399cc"
-            }
-        };
-
-        const paymentObject = new (window as any).Razorpay(options);
-        paymentObject.open();
+    const handlePayment = () => {
+        navigate(`/checkout/${id}`);
     };
 
 
