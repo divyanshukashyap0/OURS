@@ -6,7 +6,15 @@ import BlogPage from './pages/BlogPage';
 import AboutPage from './pages/AboutPage';
 import ProjectDetail from './components/ProjectDetail';
 import BlogDetail from './components/BlogDetail';
-import AdminLayout from './components/admin/AdminLayout';
+import InvoicePage from './pages/InvoicePage';
+
+// ... (in Route list)
+
+<Route path="/invoice/:id" element={
+  <ProtectedRoute>
+    <InvoicePage />
+  </ProtectedRoute>
+} />
 import AdminDashboard from './components/admin/AdminDashboard';
 import ProductManager from './components/admin/ProductManager';
 import CourseManager from './components/admin/CourseManager';

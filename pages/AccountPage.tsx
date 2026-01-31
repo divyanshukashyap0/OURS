@@ -135,8 +135,12 @@ const AccountPage: React.FC = () => {
                     });
 
                     setOrders(ordersWithLinks);
-                } catch (error) {
-                    console.error("Error fetching data:", error);
+                } catch (error: any) {
+                    console.error("Error fetching orders:", error);
+                    if (error.code === 'failed-precondition') {
+                        console.error("Missing/Insufficient permissions or INDEX MISSING. Check console for index creation link.");
+                        alert("System Notice: The Order History query requires a database index. Open the browser console (F12) to see the link to create it.");
+                    }
                 }
             };
             fetchData();
@@ -417,6 +421,7 @@ const AccountPage: React.FC = () => {
                                                         </div>
                                                     </div>
                                                 </div>
+                                                </div>
                                                 <div className="flex items-center gap-2">
                                                     {order.githubLink && (
                                                         <a href={order.githubLink} target="_blank" rel="noopener noreferrer">
@@ -426,6 +431,11 @@ const AccountPage: React.FC = () => {
                                                             </Button>
                                                         </a>
                                                     )}
+                                                    <Link to={`/invoice/${order.id}`} target="_blank">
+                                                        <Button variant="outline" size="sm" className="gap-2">
+                                                            Invoice
+                                                        </Button>
+                                                    </Link>
                                                     <Link to={`/project/${order.projectId}`}>
                                                         <Button variant="outline" size="sm" className="gap-2">
                                                             View Project <ExternalLink size={14} />
@@ -433,29 +443,29 @@ const AccountPage: React.FC = () => {
                                                     </Link>
                                                 </div>
                                             </div>
-                                        ))
+                                ))
                                     )}
-                                </div>
-                            </>
+                            </div>
+                    </>
                         )}
 
-                        {activeTab === 'payment' && (
-                            <>
-                                <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Payment Options</h1>
-                                <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed border-gray-200 dark:border-gray-700">
-                                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <User size={32} />
-                                    </div>
-                                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Saved Payment Methods</h3>
-                                    <p className="text-gray-500 max-w-sm mx-auto mb-6">You can save your cards and UPI details during checkout for faster payments.</p>
-                                    <Button variant="outline">Add New Card</Button>
+                    {activeTab === 'payment' && (
+                        <>
+                            <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Payment Options</h1>
+                            <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed border-gray-200 dark:border-gray-700">
+                                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <User size={32} />
                                 </div>
-                            </>
-                        )}
-                    </motion.div>
-                </div>
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Saved Payment Methods</h3>
+                                <p className="text-gray-500 max-w-sm mx-auto mb-6">You can save your cards and UPI details during checkout for faster payments.</p>
+                                <Button variant="outline">Add New Card</Button>
+                            </div>
+                        </>
+                    )}
+                </motion.div>
             </div>
         </div>
+        </div >
     );
 };
 
