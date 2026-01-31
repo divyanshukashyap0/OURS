@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { Loader2, Printer } from 'lucide-react';
+import { Printer } from 'lucide-react';
+import LogoLoader from '../components/ui/LogoLoader';
 import { Code2 } from 'lucide-react';
 
 const InvoicePage: React.FC = () => {
@@ -28,7 +29,7 @@ const InvoicePage: React.FC = () => {
         fetchOrder();
     }, [id]);
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin" size={32} /></div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center"><LogoLoader size={64} /></div>;
     if (!order) return <div className="text-center py-20">Order not found.</div>;
 
     const printInvoice = () => {

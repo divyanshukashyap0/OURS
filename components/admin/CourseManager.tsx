@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { CourseData, getCourses, addCourse, updateCourse, deleteCourse } from '../../lib/courses';
 import Button from '../ui/Button';
-import { Plus, Edit2, Trash2, X, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, X } from 'lucide-react';
+import LogoLoader from '../ui/LogoLoader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COURSES } from '../../constants';
 
@@ -135,7 +136,7 @@ const CourseManager: React.FC = () => {
             </div>
 
             {loading ? (
-                <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+                <div className="flex justify-center p-8"><LogoLoader /></div>
             ) : (
                 <div className="grid gap-4">
                     {courses.map(course => (

@@ -108,18 +108,6 @@ const Home: React.FC = () => {
         <div className="col-span-1 md:col-span-2 row-span-2 bg-gray-100 dark:bg-gray-800 rounded-3xl animate-pulse"></div>
       )}
 
-      {/* 5. Tech Stack Marquee (Placeholder for now) */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
-        className="col-span-1 md:col-span-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 flex flex-col justify-center overflow-hidden relative"
-      >
-        <h4 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 text-center">Tech Stack</h4>
-        <div className="flex flex-wrap gap-3 justify-center text-gray-400">
-          <Code2 /> <Github /> <ExternalLink />
-          {/* Add more icons as images or lucide icons */}
-        </div>
-        <p className="text-center text-xs text-gray-400 mt-4">Built with modern tools</p>
-      </motion.div>
 
       {/* 6. Socials / About */}
       <motion.div

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Menu, X, Code2, Github } from 'lucide-react';
 import Button from './ui/Button';
+import LogoLoader from './ui/LogoLoader';
 import { useAuth } from '../context/AuthContext';
 import { NAV_ITEMS } from '../constants';
 import { useSite } from '../context/SiteContext';

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import Button from '../components/ui/Button';
-import { PlayCircle, Clock, Star, Users, BookOpen, Loader2 } from 'lucide-react';
+import { PlayCircle, Clock, Star, Users, BookOpen } from 'lucide-react';
+import LogoLoader from '../components/ui/LogoLoader';
 import { motion } from 'framer-motion';
 import { CourseData, getCourses } from '../lib/courses';
 
@@ -39,7 +40,7 @@ const CoursesPage: React.FC = () => {
 
                 {/* Courses Grid */}
                 {loading ? (
-                    <div className="flex justify-center py-20"><Loader2 className="animate-spin text-blue-600" size={48} /></div>
+                    <div className="flex justify-center py-20"><LogoLoader size={48} /></div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {courses.map((course, index) => (

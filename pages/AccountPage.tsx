@@ -4,7 +4,8 @@ import { db } from '../lib/firebase';
 import { doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, MapPin, BookOpen, School, Calendar, Save, Loader2, Camera, LayoutDashboard, Package, ExternalLink } from 'lucide-react';
+import { User, MapPin, BookOpen, School, Calendar, Save, Camera, LayoutDashboard, Package, ExternalLink } from 'lucide-react';
+import LogoLoader from '../components/ui/LogoLoader';
 import Button from '../components/ui/Button';
 import { motion } from 'framer-motion';
 
@@ -175,7 +176,7 @@ const AccountPage: React.FC = () => {
         }
     };
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-blue-600" size={40} /></div>;
+    if (loading) return <div className="min-h-screen flex items-center justify-center"><LogoLoader size={50} /></div>;
 
     const TabButton = ({ id, label }: { id: typeof activeTab, label: string }) => (
         <button

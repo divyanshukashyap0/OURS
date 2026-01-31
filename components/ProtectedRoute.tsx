@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Loader2 } from 'lucide-react';
+import LogoLoader from './ui/LogoLoader';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -13,7 +13,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
-                <Loader2 className="animate-spin text-blue-600" size={40} />
+                <LogoLoader size={50} />
             </div>
         );
     }
