@@ -30,13 +30,20 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', message: 'Backend is running' });
+    res.json({
+        status: 'OK',
+        message: 'Backend is running',
+        razorpayConfigured: !!process.env.RAZORPAY_KEY_ID
+    });
 });
 
 // Create Razorpay Order
 // Create Razorpay Order
 app.post('/api/create-order', async (req, res) => {
     try {
+        if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+            throw new Error("Razorpay API Keys are missing in Server Environment");
+        }
         const { amount, currency = 'INR', receipt } = req.body;
 
         let amountInPaise;
