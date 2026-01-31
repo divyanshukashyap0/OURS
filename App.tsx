@@ -31,6 +31,7 @@ import ContactPage from './pages/ContactPage';
 import CareersPage from './pages/CareersPage';
 import TermsPage from './pages/TermsPage';
 import RequestProjectPage from './pages/RequestProjectPage';
+import InstallPWA from './components/InstallPWA';
 import { SiteProvider } from './context/SiteContext';
 
 const App: React.FC = () => {
@@ -38,6 +39,7 @@ const App: React.FC = () => {
     <SiteProvider> {/* Wrapped with SiteProvider */}
       <AuthProvider>
         <Router>
+          <InstallPWA /> {/* Integrated PWA Prompt */}
           <Routes>
             {/* Public Routes */} {/* Added comment */}
             <Route path="/login" element={<LoginPage />} />
