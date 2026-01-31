@@ -17,6 +17,14 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+console.log("Firebase Config Loaded:", {
+    hasApiKey: !!firebaseConfig.apiKey,
+    hasAuthDomain: !!firebaseConfig.authDomain,
+    hasProjectId: !!firebaseConfig.projectId,
+    projectId: firebaseConfig.projectId
+});
+
+
 // Initialize Services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
