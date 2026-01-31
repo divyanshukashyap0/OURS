@@ -15,12 +15,12 @@ const Projects: React.FC = () => {
       subtitle="Hands-on coding projects to help you practice and build your portfolio."
       className="bg-gray-50 dark:bg-gray-900/50"
     >
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="flex md:grid md:grid-cols-3 gap-6 md:gap-8 overflow-x-auto md:overflow-visible pb-8 snap-x snap-mandatory px-4 md:px-0 -mx-4 md:mx-0 scrollbar-hide">
         {PROJECTS.map((project) => (
           <div
             key={project.id}
             onClick={() => navigate(`/project/${project.id}`)}
-            className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1"
+            className="group min-w-[85vw] md:min-w-0 md:w-auto snap-center bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-1 active:scale-95 flex flex-col"
           >
             <div className="relative h-56">
               <img

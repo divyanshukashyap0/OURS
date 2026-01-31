@@ -42,14 +42,14 @@ const CoursesPage: React.FC = () => {
                 {loading ? (
                     <div className="flex justify-center py-20"><LogoLoader size={48} /></div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 overflow-x-auto md:overflow-visible pb-8 snap-x snap-mandatory px-4 md:px-0 -mx-4 md:mx-0 scrollbar-hide">
                         {courses.map((course, index) => (
                             <motion.div
                                 key={course.id || index}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+                                className="min-w-[85vw] md:min-w-0 md:w-auto snap-center bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-200 group flex flex-col"
                             >
                                 {/* Image Header */}
                                 <div className="relative h-48 overflow-hidden">
@@ -107,10 +107,11 @@ const CoursesPage: React.FC = () => {
                             </motion.div>
                         ))}
                     </div>
-                )}
+                )
+                }
 
-            </main>
-        </div>
+            </main >
+        </div >
     );
 };
 
