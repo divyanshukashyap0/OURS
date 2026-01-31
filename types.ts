@@ -14,6 +14,7 @@ export interface Course {
   price: string;
   rating: number;
   students: number;
+  tags: string[];
 }
 
 export interface Project {

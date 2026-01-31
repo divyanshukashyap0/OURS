@@ -114,7 +114,7 @@ const BLOG_POSTS = [
         id: 1,
         title: 'The Future of Web Development: AI Integration',
         excerpt: 'How Artificial Intelligence is reshaping the way we build and interact with web applications.',
-        date: 'April 12, 2024',
+        date: 'April 12, 2026',
         category: 'Trends',
         image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         content: 'Full article content about AI integration...'
@@ -123,7 +123,7 @@ const BLOG_POSTS = [
         id: 2,
         title: 'Mastering React Hooks',
         excerpt: 'A comprehensive guide to using useEffect, useState, and custom hooks effectively.',
-        date: 'April 08, 2024',
+        date: 'April 08, 2026',
         category: 'React',
         image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         content: 'Full article content about React Hooks...'
@@ -131,8 +131,8 @@ const BLOG_POSTS = [
     {
         id: 3,
         title: 'Tailwind CSS vs Bootstrap',
-        excerpt: 'Comparing the two most popular CSS frameworks in 2024.',
-        date: 'April 01, 2024',
+        excerpt: 'Comparing the two most popular CSS frameworks in 2026.',
+        date: 'April 01, 2026',
         category: 'CSS',
         image: 'https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         content: 'Full article content about Tailwind vs Bootstrap...'
@@ -141,7 +141,7 @@ const BLOG_POSTS = [
         id: 4,
         title: 'Building Scalable Node.js APIs',
         excerpt: 'Best practices for structuring and optimizing your backend services.',
-        date: 'March 25, 2024',
+        date: 'March 25, 2026',
         category: 'Backend',
         image: 'https://images.unsplash.com/photo-1627398242450-2a01fea2686d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         content: 'Full article content about Node.js APIs...'
@@ -150,7 +150,7 @@ const BLOG_POSTS = [
         id: 5,
         title: 'Next.js 14: What\'s New?',
         excerpt: 'Exploring server actions, partial prerendering, and other new features.',
-        date: 'March 18, 2024',
+        date: 'March 18, 2026',
         category: 'Next.js',
         image: 'https://images.unsplash.com/photo-1649180556628-9ba704115795?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         content: 'Full article content about Next.js 14...'
@@ -159,7 +159,7 @@ const BLOG_POSTS = [
         id: 6,
         title: 'TypeScript for Beginners',
         excerpt: 'Why you should start using static typing in your JavaScript projects today.',
-        date: 'March 10, 2024',
+        date: 'March 10, 2026',
         category: 'TypeScript',
         image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         content: 'Full article content about TypeScript...'
