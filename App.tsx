@@ -9,13 +9,7 @@ import BlogDetail from './components/BlogDetail';
 import AdminLayout from './components/admin/AdminLayout';
 import InvoicePage from './pages/InvoicePage';
 
-// ... (in Route list)
 
-<Route path="/invoice/:id" element={
-  <ProtectedRoute>
-    <InvoicePage />
-  </ProtectedRoute>
-} />
 import AdminDashboard from './components/admin/AdminDashboard';
 import ProductManager from './components/admin/ProductManager';
 import CourseManager from './components/admin/CourseManager';
@@ -59,6 +53,13 @@ const App: React.FC = () => {
               <Route path="courses" element={<CourseManager />} />
               <Route path="settings" element={<AdminSettings />} /> {/* Added AdminSettings route */}
             </Route>
+
+            {/* Invoice Route */}
+            <Route path="/invoice/:id" element={
+              <ProtectedRoute>
+                <InvoicePage />
+              </ProtectedRoute>
+            } />
 
             {/* Account Route */}
             <Route path="/account" element={
