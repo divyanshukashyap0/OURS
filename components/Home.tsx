@@ -64,50 +64,7 @@ const Home: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* 2. Interview Prep (High Utility) */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.1 }}
-        className="col-span-1 md:col-span-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 flex flex-col justify-between overflow-hidden relative group cursor-pointer hover:shadow-lg transition-all"
-        onClick={() => alert("Opening Interview Question #42...")}
-      >
-        <div className="flex justify-between items-start mb-2">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-blue-600 dark:text-blue-400">
-            <Code2 size={20} />
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Daily Prep</span>
-        </div>
-        <div>
-          <h4 className="font-bold text-gray-900 dark:text-white leading-tight mb-1">React Hooks</h4>
-          <p className="text-xs text-gray-500 mb-3">Explain the dependency array in useEffect.</p>
-        </div>
-        <div className="mt-auto">
-          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 group-hover:gap-2 transition-all">
-            Practice Now <ArrowRight size={12} />
-          </span>
-        </div>
-      </motion.div>
-
-      {/* 3. Dev Cheatsheets (Resource Library) */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.15 }}
-        className="col-span-1 md:col-span-1 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden group hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-        onClick={() => navigate('/resources')}
-      >
-        <div className="flex justify-between items-start">
-          <h3 className="font-bold text-gray-900 dark:text-white">Cheatsheets</h3>
-          <ExternalLink size={16} className="text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 mt-4">
-          {['Git', 'React', 'CSS', 'Linux'].map((item) => (
-            <div key={item} className="bg-white dark:bg-gray-900 p-2 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 text-center border border-gray-100 dark:border-gray-700 shadow-sm group-hover:shadow-md transition-shadow">
-              {item}
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* 3.5 The "Manual" (Unique Project Request) - NEW REQUEST */}
+      {/* 2. The "Manual" (Unique Project Request) - MOVED UP & EXPANDED */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }}
         className="col-span-1 md:col-span-2 bg-indigo-600 text-white rounded-3xl p-6 relative overflow-hidden group cursor-pointer"

@@ -12,7 +12,7 @@ const RequestProjectPage: React.FC = () => {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
     const [loading, setLoading] = useState(false);
-    const [step, setStep] = useState<'intro' | 'form' | 'success'>('intro');
+    const [isSuccess, setIsSuccess] = useState(false);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -65,7 +65,7 @@ Sent via Ours. Platform.
             const mailtoLink = `mailto:optistyle.india@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.location.href = mailtoLink;
 
-            setStep('success');
+            setIsSuccess(true);
         } catch (error) {
             console.error("Error submitting request:", error);
             alert("Connection interrupted. Please try again.");
@@ -74,63 +74,8 @@ Sent via Ours. Platform.
         }
     };
 
-    // Intro Screen (The "Protocol" Vibe)
-    if (step === 'intro') {
-        return (
-            <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
-                {/* Background Grid */}
-                <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #4f46e5 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
-
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="max-w-2xl w-full bg-gray-900/80 backdrop-blur-xl border border-indigo-500/30 rounded-3xl p-8 md:p-12 shadow-2xl relative z-10 text-center"
-                >
-                    <div className="w-20 h-20 bg-indigo-600 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-lg rotate-3 hover:rotate-6 transition-transform">
-                        <Code size={40} className="text-white" />
-                    </div>
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
-                        The Builder's Protocol
-                    </h1>
-                    <p className="text-lg text-gray-400 mb-8 leading-relaxed max-w-lg mx-auto">
-                        Initiate a custom build request. We transform your raw idea into a fully functional, production-ready application in <strong className="text-white">MAX 7 days</strong>.
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 text-left">
-                        <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-                            <Clock className="text-indigo-400 mb-2" size={24} />
-                            <h3 className="font-bold text-white mb-1">7-Day Sprint</h3>
-                            <p className="text-xs text-gray-400">Rapid development cycle. No delays.</p>
-                        </div>
-                        <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-                            <ShieldCheck className="text-indigo-400 mb-2" size={24} />
-                            <h3 className="font-bold text-white mb-1">Full Ownership</h3>
-                            <p className="text-xs text-gray-400">You own 100% of the source code.</p>
-                        </div>
-                        <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-                            <Mail className="text-indigo-400 mb-2" size={24} />
-                            <h3 className="font-bold text-white mb-1">Auto-Connect</h3>
-                            <p className="text-xs text-gray-400">Direct line to our engineering team.</p>
-                        </div>
-                    </div>
-
-                    <Button onClick={() => setStep('form')} className="w-full md:w-auto px-12 py-4 text-lg bg-indigo-600 hover:bg-indigo-500 rounded-full shadow-lg shadow-indigo-600/20">
-                        Initiate Protocol <ArrowRight size={20} className="ml-2 inline" />
-                    </Button>
-                </motion.div>
-
-                <button
-                    onClick={() => navigate('/')}
-                    className="mt-8 text-gray-500 hover:text-white flex items-center gap-2 transition-colors relative z-10"
-                >
-                    <ArrowLeft size={16} /> Return to Dashboard
-                </button>
-            </div>
-        );
-    }
-
     // Success Screen
-    if (step === 'success') {
+    if (isSuccess) {
         return (
             <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-6 text-center">
                 <motion.div
@@ -140,7 +85,7 @@ Sent via Ours. Platform.
                 >
                     <Send size={48} className="text-green-500" />
                 </motion.div>
-                <h1 className="text-4xl font-bold mb-4">Protocol Initiated.</h1>
+                <h1 className="text-3xl md:text-4xl font-bold mb-4">Protocol Initiated.</h1>
                 <p className="text-gray-400 max-w-md mb-8">
                     Your request has been secured in our database and the email client has been triggered. Please ensure you hit <strong>"Send"</strong> in your email app to finalize the connection.
                 </p>
@@ -151,30 +96,71 @@ Sent via Ours. Platform.
         );
     }
 
-    // Main Form
+    // Single Page Layout (Responsive Form)
     return (
-        <div className="min-h-screen bg-gray-950 text-white font-sans selection:bg-indigo-500/30">
-            <div className="max-w-3xl mx-auto px-6 py-12 md:py-20">
-                <button
-                    onClick={() => setStep('intro')}
-                    className="mb-8 text-indigo-400 hover:text-indigo-300 flex items-center gap-2 transition-colors"
-                >
-                    <ArrowLeft size={16} /> Back
-                </button>
+        <div className="min-h-screen bg-gray-950 text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden">
+            <div className="max-w-4xl mx-auto px-6 py-8 md:py-12">
+
+                {/* Header / Intro Section */}
+                <div className="mb-12 text-center md:text-left">
+                    <button
+                        onClick={() => navigate('/')}
+                        className="mb-6 text-gray-500 hover:text-white flex items-center justify-center md:justify-start gap-2 transition-colors"
+                    >
+                        <ArrowLeft size={16} /> Back to Dashboard
+                    </button>
+
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
+                        <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg rotate-3 shrink-0">
+                            <Code size={32} className="text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-3xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
+                                The Builder's Protocol
+                            </h1>
+                            <p className="text-gray-400 max-w-xl mx-auto md:mx-0">
+                                Initiate a custom build request. We transform your raw idea into a fully functional, production-ready application in <strong className="text-white">MAX 7 days</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Feature Pills (Responsive Grid) */}
+                    <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                        <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 flex items-center gap-3">
+                            <Clock className="text-indigo-400 shrink-0" size={20} />
+                            <div className="text-left">
+                                <h3 className="font-bold text-sm text-white">7-Day Sprint</h3>
+                                <p className="text-[10px] text-gray-400">Rapid development cycle.</p>
+                            </div>
+                        </div>
+                        <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 flex items-center gap-3">
+                            <ShieldCheck className="text-indigo-400 shrink-0" size={20} />
+                            <div className="text-left">
+                                <h3 className="font-bold text-sm text-white">Full Ownership</h3>
+                                <p className="text-[10px] text-gray-400">100% source code ownership.</p>
+                            </div>
+                        </div>
+                        <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 flex items-center gap-3">
+                            <Mail className="text-indigo-400 shrink-0" size={20} />
+                            <div className="text-left">
+                                <h3 className="font-bold text-sm text-white">Auto-Connect</h3>
+                                <p className="text-[10px] text-gray-400">Direct engineering line.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
                 >
-                    <h2 className="text-3xl md:text-4xl font-bold mb-2">Project Parameters</h2>
-                    <p className="text-gray-400 mb-8">Define your specifications clearly for maximum velocity.</p>
-
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
 
                         {/* Section 1: Identity */}
-                        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8">
+                        <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8">
                             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-indigo-400">
-                                <span className="bg-indigo-500/20 w-6 h-6 rounded flex items-center justify-center text-xs">1</span>
+                                <span className="bg-indigo-500/20 w-8 h-8 rounded-lg flex items-center justify-center text-sm">1</span>
                                 Identity
                             </h3>
 
@@ -193,7 +179,7 @@ Sent via Ours. Platform.
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Your Contact Email</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">Contact Email</label>
                                     <input
                                         type="email"
                                         name="contactEmail"
@@ -205,7 +191,7 @@ Sent via Ours. Platform.
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Budget Range (USD)</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">Budget Range</label>
                                     <select
                                         name="budget"
                                         className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 outline-none transition-all appearance-none"
@@ -221,43 +207,43 @@ Sent via Ours. Platform.
                             </div>
                         </div>
 
-                        {/* Section 2: Validations */}
-                        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8">
+                        {/* Section 2: Specs */}
+                        <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8">
                             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-indigo-400">
-                                <span className="bg-indigo-500/20 w-6 h-6 rounded flex items-center justify-center text-xs">2</span>
-                                Specs
+                                <span className="bg-indigo-500/20 w-8 h-8 rounded-lg flex items-center justify-center text-sm">2</span>
+                                Technical Specs
                             </h3>
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">The Vision (Detailed Description)</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">The Vision</label>
                                     <textarea
                                         name="description"
                                         required
                                         rows={4}
                                         className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 outline-none transition-all placeholder:text-gray-600"
-                                        placeholder="Describe what you want to build. Who is it for? What problem does it solve?"
+                                        placeholder="Describe what you want to build. What problem does it solve?"
                                         value={formData.description}
                                         onChange={handleChange}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Core Features (Non-Negotiables)</label>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">Core Features</label>
                                     <textarea
                                         name="features"
                                         required
                                         rows={3}
                                         className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 outline-none transition-all placeholder:text-gray-600"
-                                        placeholder="- User Authentication&#10;- Stripe Payment Integration&#10;- Admin Dashboard"
+                                        placeholder="- Feature 1&#10;- Feature 2&#10;- Feature 3"
                                         value={formData.features}
                                         onChange={handleChange}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Urgency / Priority</label>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">Urgency</label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <label className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all ${formData.priority === 'standard' ? 'border-indigo-500 bg-indigo-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
                                             <input type="radio" name="priority" value="standard" className="hidden" onChange={handleChange} />
                                             <span className="font-bold">Standard</span>
@@ -265,7 +251,10 @@ Sent via Ours. Platform.
                                         </label>
                                         <label className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all ${formData.priority === 'rush' ? 'border-red-500 bg-red-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
                                             <input type="radio" name="priority" value="rush" className="hidden" onChange={handleChange} />
-                                            <span className="font-bold text-red-400">Rush Protocol</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-red-400">Rush Protocol</span>
+                                                <span className="bg-red-500/20 text-red-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded">Fast</span>
+                                            </div>
                                             <span className="text-xs text-gray-400">7-Day MAX Guarantee</span>
                                         </label>
                                     </div>
