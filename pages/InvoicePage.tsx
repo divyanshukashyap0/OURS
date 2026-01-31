@@ -44,7 +44,7 @@ const InvoicePage: React.FC = () => {
                     <div>
                         <div className="flex items-center gap-2 mb-4">
                             <img src="/logo-circle.png" alt="OURS Logo" className="h-10 w-auto" />
-                            <span className="text-2xl font-bold tracking-tight text-gray-900">OURS</span>
+                            <span className="text-2xl font-bold tracking-tight text-gray-900">OURS.</span>
                         </div>
                         <p className="text-gray-500 text-sm">
                             Kanpur, Uttar Pradesh<br />
