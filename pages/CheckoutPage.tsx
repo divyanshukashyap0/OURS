@@ -62,8 +62,19 @@ const CheckoutPage: React.FC = () => {
                     receipt: `receipt_${user.uid}_${project.id}_${Date.now()}`
                 })
             });
-            order = await response.json();
-            if (!response.ok) throw new Error(order.error || 'Server error');
+
+            // Robustly handle response
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                order = await response.json();
+            } else {
+                // Not JSON (likely HTML error page from 500/502/404)
+                const text = await response.text();
+                console.error("Non-JSON Response:", text);
+                throw new Error(`Server returned status ${response.status} (Check console for details).`);
+            }
+
+            if (!response.ok) throw new Error(order.error || `Server Error: ${response.status}`);
         } catch (error: any) {
             console.error(error);
             alert(`Failed to initiate payment: ${error.message}`);
