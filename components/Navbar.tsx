@@ -5,12 +5,15 @@ import Button from './ui/Button';
 import { useAuth } from '../context/AuthContext';
 import { NAV_ITEMS } from '../constants';
 
+import { useSite } from '../context/SiteContext';
+
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { appName } = useSite();
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -58,8 +61,8 @@ const Navbar: React.FC = () => {
             onClick={scrollToTop}
             className="flex items-center gap-2 group"
           >
-            <img src="/logo.png" alt="OURS Logo" className="w-10 h-10 object-cover rounded-full group-hover:scale-105 transition-transform" />
-            <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">OURS.</span>
+            <img src="/logo.png" alt="Logo" className="w-10 h-10 object-cover rounded-full group-hover:scale-110 group-hover:rotate-[360deg] transition-transform duration-700 ease-in-out" />
+            <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">{appName}</span>
           </Link>
 
           {/* Desktop Nav */}

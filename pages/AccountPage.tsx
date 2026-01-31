@@ -21,6 +21,12 @@ interface UserProfile {
     role?: string;
 }
 
+interface Project {
+    id: string;
+    title: string;
+    githubLink?: string;
+}
+
 interface Order {
     id: string;
     projectId: string;
@@ -30,6 +36,7 @@ interface Order {
     status: string;
     createdAt: any;
     paymentId: string;
+    githubLink?: string;
 }
 
 const AccountPage: React.FC = () => {
@@ -97,27 +104,42 @@ const AccountPage: React.FC = () => {
         }
     }, [profile.dob]);
 
-    // Fetch Orders
+    // Fetch Orders & Projects
     useEffect(() => {
         if (activeTab === 'orders' && user) {
-            const fetchOrders = async () => {
+            const fetchData = async () => {
                 try {
-                    const q = query(
+                    // 1. Fetch Orders
+                    const ordersQ = query(
                         collection(db, 'orders'),
                         where('userId', '==', user.uid),
                         orderBy('createdAt', 'desc')
                     );
-                    const snapshot = await getDocs(q);
-                    const fetchedOrders = snapshot.docs.map(doc => ({
+                    const ordersSnapshot = await getDocs(ordersQ);
+                    const fetchedOrders = ordersSnapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data()
                     })) as Order[];
-                    setOrders(fetchedOrders);
+
+                    // 2. Fetch Projects (to get GitHub links)
+                    const projectsSnapshot = await getDocs(collection(db, 'projects'));
+                    const fetchedProjects = projectsSnapshot.docs.map(doc => doc.data() as Project);
+
+                    // 3. Merge GitHub Link into Orders
+                    const ordersWithLinks = fetchedOrders.map(order => {
+                        const matchedProject = fetchedProjects.find(p => p.title === order.projectTitle);
+                        return {
+                            ...order,
+                            githubLink: matchedProject?.githubLink
+                        };
+                    });
+
+                    setOrders(ordersWithLinks);
                 } catch (error) {
-                    console.error("Error fetching orders:", error);
+                    console.error("Error fetching data:", error);
                 }
             };
-            fetchOrders();
+            fetchData();
         }
     }, [activeTab, user]);
 
@@ -420,6 +442,14 @@ const AccountPage: React.FC = () => {
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2">
+                                                    {order.githubLink && (
+                                                        <a href={order.githubLink} target="_blank" rel="noopener noreferrer">
+                                                            <Button size="sm" className="gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 border border-transparent hover:bg-gray-800 dark:hover:bg-gray-100">
+                                                                <div className="w-4 h-4"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg></div>
+                                                                Source Code
+                                                            </Button>
+                                                        </a>
+                                                    )}
                                                     <Link to={`/project/${order.projectId}`}>
                                                         <Button variant="outline" size="sm" className="gap-2">
                                                             View Project <ExternalLink size={14} />
