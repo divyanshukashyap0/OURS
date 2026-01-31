@@ -56,16 +56,17 @@ const CoursesPage: React.FC = () => {
                 ) : (
                     <div className="relative group/carousel">
                         {/* Mobile Navigation Arrows */}
+                        {/* Carousel Navigation Arrows */}
                         <button
                             onClick={() => scroll('left')}
-                            className="md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur p-2 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 -ml-2 opacity-0 group-hover/carousel:opacity-100 transition-opacity disabled:opacity-0"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white -ml-4 md:-ml-5 hover:scale-110 transition-all duration-200"
                             aria-label="Scroll left"
                         >
                             <ChevronLeft size={24} />
                         </button>
                         <button
                             onClick={() => scroll('right')}
-                            className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur p-2 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 -mr-2 opacity-0 group-hover/carousel:opacity-100 transition-opacity"
+                            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white -mr-4 md:-mr-5 hover:scale-110 transition-all duration-200"
                             aria-label="Scroll right"
                         >
                             <ChevronRight size={24} />
