@@ -67,7 +67,6 @@ app.post('/api/create-order', async (req, res) => {
         const order = await razorpay.orders.create(options);
         res.json(order);
     } catch (error) {
-    } catch (error) {
         console.error("Error creating order:", error);
         // Razorpay errors often differ in structure. 
         // We try to grab the most useful info.
