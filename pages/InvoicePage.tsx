@@ -43,7 +43,7 @@ const InvoicePage: React.FC = () => {
                 <div className="flex justify-between items-start border-b border-gray-200 pb-8 mb-8">
                     <div>
                         <div className="flex items-center gap-2 mb-4">
-                            <img src="/OURS.png" alt="OURS Logo" className="h-10 w-auto" />
+                            <img src="/logo-circle.png" alt="OURS Logo" className="h-10 w-auto" />
                             <span className="text-2xl font-bold tracking-tight text-gray-900">OURS</span>
                         </div>
                         <p className="text-gray-500 text-sm">
