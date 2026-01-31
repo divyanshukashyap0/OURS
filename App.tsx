@@ -52,8 +52,8 @@ const App: React.FC = () => {
               </ProtectedRoute>
             } />
 
-            {/* Main App Routes */} {/* Changed structure */}
-            <Route path="*" element={<Layout />}>
+            {/* Main App Routes */}
+            <Route element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="projects" element={<ProjectsPage />} />
               <Route path="blog" element={<BlogPage />} />
