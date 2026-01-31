@@ -72,12 +72,20 @@ const ProductManager: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const dataToSave = { ...formData };
+            const dataToSave = {
+                title: formData.title || '',
+                description: formData.description || '',
+                price: formData.price || '',
+                image: formData.image || '',
+                tags: Array.isArray(formData.tags) ? formData.tags : [],
+                githubLink: formData.githubLink || ''
+            };
+
+            console.log("SANITIZED PAYLOAD:", dataToSave);
+
             if (editingProject) {
                 const projectRef = doc(db, 'projects', editingProject.id);
-                // Exclude id from update
-                const { id, ...updateData } = dataToSave as any;
-                await updateDoc(projectRef, updateData);
+                await updateDoc(projectRef, dataToSave);
             } else {
                 await addDoc(collection(db, 'projects'), {
                     ...dataToSave,
@@ -86,7 +94,9 @@ const ProductManager: React.FC = () => {
             }
             setIsModalOpen(false);
         } catch (error: any) {
-            console.error("Error saving:", error);
+            console.error("FULL ERROR OBJECT:", error);
+            console.error("PAYLOAD:", formData);
+            if (editingProject) console.error("EDIT ID:", editingProject.id);
             alert(`Failed to save project: ${error.message}`);
         }
     };
