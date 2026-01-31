@@ -42,14 +42,15 @@ const InvoicePage: React.FC = () => {
                 {/* Header */}
                 <div className="flex justify-between items-start border-b border-gray-200 pb-8 mb-8">
                     <div>
-                        <div className="flex items-center gap-2 text-blue-600 mb-4">
-                            <Code2 size={32} />
+                        <div className="flex items-center gap-2 mb-4">
+                            <img src="/OURS.png" alt="OURS Logo" className="h-10 w-auto" />
                             <span className="text-2xl font-bold tracking-tight text-gray-900">OURS</span>
                         </div>
                         <p className="text-gray-500 text-sm">
-                            123 Tech Avenue, Code City<br />
-                            Silicon Valley, CA 94000<br />
-                            support@ours-platform.com
+                            Kanpur, Uttar Pradesh<br />
+                            208025 <br />
+                            support@ours-platform.com <br />
+                            +91 8005343226
                         </p>
                     </div>
                     <div className="text-right">
