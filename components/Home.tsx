@@ -35,27 +35,55 @@ const Home: React.FC = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 auto-rows-[minmax(180px,auto)]">
 
-      {/* 1. Intro Card (Large) */}
+      {/* 1. Intro Card (Compact) */}
       <motion.div
         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-        className="col-span-1 md:col-span-2 row-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 flex flex-col justify-between text-white relative overflow-hidden group shadow-lg"
+        className="col-span-1 md:col-span-2 row-span-1 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 flex flex-row items-center justify-between text-white relative overflow-hidden group shadow-lg"
       >
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-white/20 transition-colors duration-500"></div>
-        <div>
-          <div className="bg-white/20 backdrop-blur-sm p-2 w-fit rounded-lg mb-4">
-            <Code2 className="text-white" size={28} />
+        <div className="z-10">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="bg-white/20 backdrop-blur-sm p-1.5 rounded-lg">
+              <Code2 className="text-white" size={20} />
+            </div>
+            <span className="font-bold text-blue-100 text-sm tracking-wider uppercase">Platform</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-            Build better <br />software, faster.
+          <h1 className="text-2xl md:text-3xl font-bold leading-tight mb-2">
+            Build better software.
           </h1>
-          <p className="text-blue-100 text-lg max-w-sm">
-            Access premium full-stack projects, source code, and master modern web development.
+          <p className="text-blue-100 text-sm max-w-xs mb-4 hidden md:block">
+            Access premium full-stack projects and source code.
           </p>
-        </div>
-        <div className="mt-8 flex gap-3">
-          <button onClick={() => navigate('/projects')} className="bg-white text-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-50 transition-colors flex items-center gap-2">
-            Explore Projects <ArrowRight size={18} />
+          <button onClick={() => navigate('/projects')} className="bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors inline-flex items-center gap-2">
+            Explore Projects <ArrowRight size={16} />
           </button>
+        </div>
+        {/* Abstract decorative element for visual balance */}
+        <div className="hidden md:block absolute right-[-20px] bottom-[-20px] opacity-20 rotate-12">
+          <Code2 size={180} />
+        </div>
+      </motion.div>
+
+      {/* 2. Top Course (New - to fill space) */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
+        onClick={() => navigate('/courses')}
+        className="col-span-1 md:col-span-1 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800/50 rounded-3xl p-6 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors group relative overflow-hidden"
+      >
+        <div className="absolute -right-4 -top-4 bg-orange-500/10 w-24 h-24 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+        <div className="relative z-10 h-full flex flex-col justify-between">
+          <div className="mb-4">
+            <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Hot</span>
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight mb-1">Full Stack Mastery</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Join 500+ students</p>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <div className="bg-white dark:bg-gray-800 p-2 rounded-full shadow-sm group-hover:translate-x-1 transition-transform">
+              <ArrowRight size={16} className="text-orange-500" />
+            </div>
+          </div>
         </div>
       </motion.div>
 
@@ -109,21 +137,7 @@ const Home: React.FC = () => {
       )}
 
 
-      {/* 6. Socials / About */}
-      <motion.div
-        initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
-        className="col-span-1 md:col-span-1 bg-gray-900 dark:bg-black text-white rounded-3xl p-6 flex flex-col justify-between border border-gray-800"
-      >
-        <div>
-          <h4 className="font-bold text-lg mb-1">Connect</h4>
-          <p className="text-gray-400 text-sm">Join our community.</p>
-        </div>
-        <div className="flex gap-4 mt-4">
-          <a href="#" className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><Github size={20} /></a>
-          <a href="#" className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><Twitter size={20} /></a>
-          <a href="#" className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><Linkedin size={20} /></a>
-        </div>
-      </motion.div>
+
 
       {/* 7. Quick Links list */}
       <motion.div
