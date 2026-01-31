@@ -31,8 +31,8 @@ const ProductManager: React.FC = () => {
         const q = query(collection(db, 'projects')); // Use appropriate ordering if needed
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const fetchedProjects = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
+                ...doc.data(),
+                id: doc.id
             })) as Project[];
             setProjects(fetchedProjects);
         }, (error) => {
