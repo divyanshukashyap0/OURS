@@ -64,47 +64,97 @@ const Home: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* 2. Top Course (New - to fill space) */}
+      {/* 2. Terminal Challenge (The "Crazy" Tech Vibe) */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-        onClick={() => navigate('/courses')}
-        className="col-span-1 md:col-span-1 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800/50 rounded-3xl p-6 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors group relative overflow-hidden"
+        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.1 }}
+        className="col-span-1 md:col-span-1 bg-black border border-gray-800 rounded-3xl p-5 font-mono text-xs md:text-sm text-green-400 flex flex-col justify-between overflow-hidden relative group/terminal cursor-pointer hover:border-green-500/50 transition-colors"
       >
-        <div className="absolute -right-4 -top-4 bg-orange-500/10 w-24 h-24 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-        <div className="relative z-10 h-full flex flex-col justify-between">
-          <div className="mb-4">
-            <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Hot</span>
-          </div>
+        <div className="absolute top-2 right-2 flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-500/20"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-green-500/20"></div>
+        </div>
+        <div className="mt-4 uppercase tracking-widest text-gray-600 font-bold mb-2">Daily Challenge</div>
+        <div className="relative z-10">
+          <p className="mb-2"><span className="text-purple-400">~/mission</span> $ fix_memory_leak.ts</p>
+          <p className="text-gray-400">Detecting overflow...</p>
+          <p className="animate-pulse">_</p>
+        </div>
+        <div className="absolute -bottom-8 -right-8 opacity-10 rotate-12">
+          <Code2 size={100} />
+        </div>
+      </motion.div>
+
+      {/* 3. Community Pulse (Live Activity) */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.15 }}
+        className="col-span-1 md:col-span-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden group hover:shadow-lg transition-all"
+      >
+        <div className="flex justify-between items-start">
           <div>
-            <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight mb-1">Full Stack Mastery</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Join 500+ students</p>
+            <span className="flex items-center gap-2 text-xs font-bold text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full w-fit">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              LIVE
+            </span>
           </div>
-          <div className="mt-4 flex justify-end">
-            <div className="bg-white dark:bg-gray-800 p-2 rounded-full shadow-sm group-hover:translate-x-1 transition-transform">
-              <ArrowRight size={16} className="text-orange-500" />
+          <Users size={18} className="text-gray-400" />
+        </div>
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">128</h3>
+          <p className="text-xs text-gray-500">Builders Online</p>
+        </div>
+
+        {/* Fake Avatars */}
+        <div className="flex -space-x-2 mt-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className={`w-8 h-8 rounded-full border-2 border-white dark:border-gray-900 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[10px] text-gray-500`}>
+              U{i}
             </div>
+          ))}
+          <div className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-900 bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-[10px] text-blue-600 font-bold">
+            +
           </div>
         </div>
       </motion.div>
 
-
-
-      {/* 3. Latest Blog (Simple) */}
+      {/* 3.5 The "Manual" (Unique Project Request) - NEW REQUEST */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-        onClick={() => navigate('/blog')}
-        className="col-span-1 md:col-span-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-6 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group"
+        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }}
+        className="col-span-1 md:col-span-2 bg-indigo-600 text-white rounded-3xl p-6 relative overflow-hidden group cursor-pointer"
+        onClick={() => {
+          // Placeholder: could open a modal or navigate
+          alert("Protocol Initiated: Describe your unique vision in the next step.");
+        }}
       >
-        <div className="absolute top-4 right-4">
-          <ExternalLink size={18} className="text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
-        </div>
-        <div className="h-full flex flex-col justify-between">
-          <div className="bg-purple-100 dark:bg-purple-900/30 w-fit p-2 rounded-lg text-purple-600 dark:text-purple-400 mb-4">
-            <Newspaper size={20} />
-          </div>
+        {/* Background Grid Pattern */}
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+
+        <div className="relative z-10 flex flex-row justify-between items-center h-full">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Latest Read</p>
-            <h4 className="font-bold text-gray-900 dark:text-white leading-snug line-clamp-2">{BLOG_POSTS[0]?.title}</h4>
+            <div className="flex items-center gap-2 mb-2">
+              <Newspaper size={16} className="text-indigo-200" />
+              <span className="text-xs font-mono text-indigo-200 tracking-widest uppercase">The Builder's Codex</span>
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold leading-tight mb-2">Need a Unique Project?</h3>
+            <p className="text-indigo-100 text-sm max-w-sm mb-4">
+              Manual instructions to request a custom build or mentorship.
+            </p>
+            <div className="flex items-center gap-2 text-xs font-bold bg-white/10 w-fit px-3 py-2 rounded-lg hover:bg-white/20 transition-colors">
+              <span>READ PROTOCOL</span>
+              <ArrowRight size={14} />
+            </div>
+          </div>
+
+          {/* Visual: Documentation/Blueprint Icon */}
+          <div className="hidden sm:block opacity-80 group-hover:scale-110 transition-transform duration-500 rotate-[-10deg]">
+            <div className="w-24 h-32 bg-white text-indigo-900 rounded-lg p-3 shadow-2xl flex flex-col gap-2">
+              <div className="w-12 h-2 bg-indigo-200 rounded"></div>
+              <div className="w-full h-16 bg-indigo-50 rounded border-2 border-dashed border-indigo-200"></div>
+              <div className="w-16 h-2 bg-indigo-200 rounded mt-auto"></div>
+            </div>
           </div>
         </div>
       </motion.div>
