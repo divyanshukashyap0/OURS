@@ -15,7 +15,7 @@ const PROJECTS = [
         id: 1,
         title: 'Full Stack Netflix Clone',
         description: 'A complete replica of Netflix built with React, Firebase, and Stripe integration for subscriptions.',
-        image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8efe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        image: 'https://foolishdeveloper.com/wp-content/uploads/2024/01/Screenshot-356.png',
         tags: ['React', 'Firebase', 'Stripe', 'TMDB API'],
         price: '$2,000'
     },

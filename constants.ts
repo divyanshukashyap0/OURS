@@ -33,47 +33,81 @@ export const TECH_STACK: TechItem[] = [
 export const COURSES: Course[] = [
   {
     id: 1,
-    title: 'Full Stack MERN Blog Application',
-    description: 'Build a complete blog with React, Node, Express, and MongoDB. Includes Auth and Dashboard.',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    title: 'React.js Masterclass: Zero to Hero',
+    instructor: 'Alex Johnson',
+    description: 'Master React.js from scratch. Learn components, hooks, context API, and build real-world applications.',
+    duration: '12h 45m',
     level: 'Intermediate',
-    price: '$29.99',
-    rating: 4.8,
-    students: 1240,
-    tags: ['React', 'MERN', 'Full Stack']
+    rating: 4.9,
+    students: 12500,
+    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    tags: ['React', 'Frontend', 'Hooks'],
+    price: '$49.99'
   },
   {
     id: 2,
-    title: 'Modern E-Commerce with Next.js 14',
-    description: 'Learn the latest Next.js features while building a scalable e-commerce platform with Stripe.',
-    image: 'https://images.unsplash.com/photo-1557821552-17105176677c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    title: 'Advanced Next.js Pattern & Performance',
+    instructor: 'Sarah Smith',
+    description: 'Take your Next.js skills to the next level. Server Actions, App Router, optimization techniques, and more.',
+    duration: '8h 30m',
     level: 'Advanced',
-    price: '$49.99',
-    rating: 4.9,
-    students: 850,
-    tags: ['Next.js', 'Stripe', 'E-Commerce']
+    rating: 4.8,
+    students: 8200,
+    image: 'https://images.unsplash.com/photo-1649180556628-9ba704115795?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    tags: ['Next.js', 'SSR', 'Performance'],
+    price: '$59.99'
   },
   {
     id: 3,
-    title: 'React Native for Beginners',
-    description: 'Start building cross-platform mobile apps for iOS and Android using React Native.',
-    image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    level: 'Beginner',
-    price: 'Free',
-    rating: 4.7,
-    students: 3200,
-    tags: ['React Native', 'Mobile', 'iOS', 'Android']
+    title: 'Fullstack MERN Bootcamp',
+    instructor: 'Mike Brown',
+    description: 'Become a full-stack developer with the MERN stack. Build complete web applications with MongoDB, Express, React, and Node.',
+    duration: '24h 15m',
+    level: 'Intermediate',
+    rating: 4.9,
+    students: 20000,
+    image: 'https://images.unsplash.com/photo-1678911820864-e2c567c655d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    tags: ['MongoDB', 'Express', 'React', 'Node'],
+    price: '$89.99'
   },
   {
     id: 4,
-    title: 'Data Structures & Algorithms in JS',
-    description: 'Ace your technical interviews by mastering DSA using JavaScript.',
-    image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    level: 'Intermediate',
-    price: '$19.99',
-    rating: 4.6,
-    students: 1500,
-    tags: ['DSA', 'JavaScript', 'Interview']
+    title: 'Python for Data Science',
+    instructor: 'Emily Davis',
+    description: 'Learn Python for data analysis, visualization, and machine learning. Pandas, NumPy, and Scikit-learn covered.',
+    duration: '18h 00m',
+    level: 'Beginner',
+    rating: 4.7,
+    students: 15000,
+    image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    tags: ['Python', 'Data Science', 'Pandas'],
+    price: '$39.99'
+  },
+  {
+    id: 5,
+    title: 'UI/UX Design Principles',
+    instructor: 'Jessica Lee',
+    description: 'Understand the fundamentals of UI/UX design. theory, wireframing, prototyping, and user testing.',
+    duration: '6h 20m',
+    level: 'Beginner',
+    rating: 4.8,
+    students: 5000,
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    tags: ['Design', 'Figma', 'UI/UX'],
+    price: '$29.99'
+  },
+  {
+    id: 6,
+    title: 'Docker & Kubernetes Mastery',
+    instructor: 'David Wilson',
+    description: 'Master containerization and orchestration. Build scalable and resilient infrastructure with Docker and Kubernetes.',
+    duration: '10h 50m',
+    level: 'Advanced',
+    rating: 4.9,
+    students: 9800,
+    image: 'https://images.unsplash.com/photo-1605745341112-85968b19335b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    tags: ['DevOps', 'Docker', 'Kubernetes'],
+    price: '$69.99'
   }
 ];
 
@@ -82,7 +116,7 @@ export const PROJECTS: Project[] = [
     id: 1,
     title: 'Full Stack Netflix Clone',
     description: 'A complete replica of Netflix built with React, Firebase, and Stripe integration for subscriptions.',
-    image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8efe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: 'https://foolishdeveloper.com/wp-content/uploads/2024/01/Screenshot-356.png',
     tags: ['React', 'Firebase', 'Stripe', 'TMDB API'],
     price: '$2,000'
   },
@@ -181,7 +215,7 @@ export const BLOG_POSTS: BlogPost[] = [
     id: 1,
     title: 'The Future of Web Development: AI Integration',
     excerpt: 'How Artificial Intelligence is reshaping the way we build and interact with web applications.',
-    date: 'April 12, 2026',
+    date: 'April 12, 2024',
     category: 'Trends',
     image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: 'Full article content about AI integration...'
@@ -190,7 +224,7 @@ export const BLOG_POSTS: BlogPost[] = [
     id: 2,
     title: 'Mastering React Hooks',
     excerpt: 'A comprehensive guide to using useEffect, useState, and custom hooks effectively.',
-    date: 'April 08, 2026',
+    date: 'April 08, 2024',
     category: 'React',
     image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: 'Full article content about React Hooks...'
@@ -198,8 +232,8 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     id: 3,
     title: 'Tailwind CSS vs Bootstrap',
-    excerpt: 'Comparing the two most popular CSS frameworks in 2026.',
-    date: 'April 01, 2026',
+    excerpt: 'Comparing the two most popular CSS frameworks in 2024.',
+    date: 'April 01, 2024',
     category: 'CSS',
     image: 'https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: 'Full article content about Tailwind vs Bootstrap...'
@@ -208,7 +242,7 @@ export const BLOG_POSTS: BlogPost[] = [
     id: 4,
     title: 'Building Scalable Node.js APIs',
     excerpt: 'Best practices for structuring and optimizing your backend services.',
-    date: 'March 25, 2026',
+    date: 'March 25, 2024',
     category: 'Backend',
     image: 'https://images.unsplash.com/photo-1627398242450-2a01fea2686d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: 'Full article content about Node.js APIs...'
@@ -217,7 +251,7 @@ export const BLOG_POSTS: BlogPost[] = [
     id: 5,
     title: 'Next.js 14: What\'s New?',
     excerpt: 'Exploring server actions, partial prerendering, and other new features.',
-    date: 'March 18, 2026',
+    date: 'March 18, 2024',
     category: 'Next.js',
     image: 'https://images.unsplash.com/photo-1649180556628-9ba704115795?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: 'Full article content about Next.js 14...'
@@ -226,7 +260,7 @@ export const BLOG_POSTS: BlogPost[] = [
     id: 6,
     title: 'TypeScript for Beginners',
     excerpt: 'Why you should start using static typing in your JavaScript projects today.',
-    date: 'March 10, 2026',
+    date: 'March 10, 2024',
     category: 'TypeScript',
     image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: 'Full article content about TypeScript...'

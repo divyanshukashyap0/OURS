@@ -6,7 +6,7 @@ export interface TechItem {
 }
 
 export interface Course {
-  id: number;
+  id: number | string;
   title: string;
   description: string;
   image: string;
@@ -14,6 +14,8 @@ export interface Course {
   price: string;
   rating: number;
   students: number;
+  instructor: string;
+  duration: string;
   tags: string[];
 }
 
