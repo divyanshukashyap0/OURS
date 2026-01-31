@@ -63,8 +63,8 @@ const App: React.FC = () => {
               {/* Add dummy routes for sidebar links */}
               <Route path="source-code" element={<SourceCode />} />
               <Route path="courses" element={<CoursesPage />} />
-              <Route path="/checkout/:id" element={<CheckoutPage />} />
-              <Route path="/order-success" element={<OrderSuccessPage />} />
+              <Route path="checkout/:id" element={<CheckoutPage />} />
+              <Route path="order-success" element={<OrderSuccessPage />} />
             </Route>
           </Routes>
         </Router>
