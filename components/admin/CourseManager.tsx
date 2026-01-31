@@ -3,6 +3,7 @@ import { CourseData, getCourses, addCourse, updateCourse, deleteCourse } from '.
 import Button from '../ui/Button';
 import { Plus, Edit2, Trash2, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { COURSES } from '../../constants';
 
 const CourseManager: React.FC = () => {
     const [courses, setCourses] = useState<CourseData[]>([]);
@@ -92,8 +93,6 @@ const CourseManager: React.FC = () => {
             fetchCourses();
         }
     };
-
-    import { COURSES } from '../../constants';
 
     // ... inside component ...
 
