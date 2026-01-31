@@ -16,42 +16,47 @@ const TermsPage: React.FC = () => {
                 </div>
 
                 <div className="p-8 space-y-8 text-gray-700 dark:text-gray-300">
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/10 border-l-4 border-yellow-500 rounded-r-lg">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 rounded-r-lg">
                         <div className="flex gap-3">
-                            <AlertTriangle className="text-yellow-600 shrink-0" />
-                            <p className="text-sm text-yellow-800 dark:text-yellow-200 italic">
-                                <strong>Warning:</strong> By scrolling past this pixel, you agree to buy the developers a pizza if you ever meet them in person. This is a legally binding pizza contract.
+                            <AlertTriangle className="text-blue-600 shrink-0" />
+                            <p className="text-sm text-blue-800 dark:text-blue-200">
+                                <strong>tl;dr:</strong> Be nice, write good code, and don't blame us if you copy-paste a bug from StackOverflow.
                             </p>
                         </div>
                     </div>
 
                     <section>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">1. The "Tabs vs Spaces" Protocol</h2>
-                        <p className="mb-2">We use <strong>Spaces</strong>. If you submit a pull request with Tabs, our CI/CD pipeline is legally authorized to reject your code and publicly shame you on Twitter.</p>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">1. Code of Conduct</h2>
+                        <p className="mb-2">We respect all developers, regardless of their preferred IDE or indentation style. However, discrimination, harassment, or deploying breaking changes on a Friday evening will result in immediate termination of your account.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">2. Section 404: Liability Not Found</h2>
-                        <p>If our service goes down, do not panic. It is likely a feature, not a bug. We are not liable for any loss of data, loss of sanity, or keyboards destroyed in frustration.</p>
-                    </section>
-
-                    <section>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">3. The Zombie Clause</h2>
-                        <p>In the unlikely event of a zombie apocalypse:</p>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">2. Limitation of Liability</h2>
+                        <p>OURS provides this platform "as is". We are not responsible for:</p>
                         <ul className="list-disc pl-6 space-y-1 mt-2 text-sm">
-                            <li>All subscriptions are automatically cancelled.</li>
-                            <li>Our office becomes a designated safe zone (bring your own crossbow).</li>
-                            <li>This website will redirect to a survival guide.</li>
+                            <li>Data loss caused by accidental `rm -rf /` commands.</li>
+                            <li>Bugs introduced by copying code directly from our tutorials without reading the comments.</li>
+                            <li>Imposter syndrome induced by viewing our advanced projects.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">3. Service Availability</h2>
+                        <p>We aim for 99.9% uptime. The remaining 0.1% is reserved for:</p>
+                        <ul className="list-disc pl-6 space-y-1 mt-2 text-sm">
+                            <li>Critical security patches.</li>
+                            <li>Database migrations that sounded easy in the meeting.</li>
+                            <li>Unforeseeable cosmic ray events flipping bits in our servers.</li>
                         </ul>
                     </section>
 
                     <section>
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">4. Intellectual Property</h2>
-                        <p>You own your code. We own the platform. Similar to how you own your car, but the government owns the roads... except we are cooler than the government and have better dark mode support.</p>
+                        <p>You retain full ownership of the code you write. We retain ownership of the platform, the brand, and the cool CSS gradients. By using OURS, you grant us a non-exclusive license to showcase your public projects as examples of "What Awesome Looks Like."</p>
                     </section>
 
                     <div className="pt-8 text-center text-xs text-gray-400 border-t border-gray-200 dark:border-gray-800">
-                        <p>By clicking "I Agree" (which is imaginary, you implicitly agreed by being born), you surrender all rights to complain about CSS centering issues.</p>
+                        <p>By continuing to use OURS, you acknowledge that you have read `README.md` and agree to merge these terms into your lifestyle.</p>
                     </div>
                 </div>
             </div>
