@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, updateDoc, doc, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { ProjectRequest } from '../../types';
 import { Search, Filter, AlertCircle, Clock, CheckCircle, MoreVertical, Mail, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import EmailSenderModal from './EmailSenderModal';
 
 const ProjectRequestManager: React.FC = () => {
     const [requests, setRequests] = useState<ProjectRequest[]>([]);
+    const [templates, setTemplates] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<ProjectRequest['status'] | 'all'>('all');
     const [selectedRequest, setSelectedRequest] = useState<ProjectRequest | null>(null);
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
     useEffect(() => {
         fetchRequests();
+        // Fetch templates for the dropdown
+        const unsub = onSnapshot(collection(db, 'email_templates'), (snap) => {
+            setTemplates(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        });
+        return () => unsub();
     }, []);
 
     const fetchRequests = async () => {
@@ -237,8 +245,8 @@ const ProjectRequestManager: React.FC = () => {
                                             key={status}
                                             onClick={() => handleStatusUpdate(selectedRequest.id, status as any)}
                                             className={`px-4 py-2 rounded-lg text-sm font-bold border transition-all ${selectedRequest.status === status
-                                                    ? 'bg-blue-600 text-white border-blue-600'
-                                                    : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500'
+                                                ? 'bg-blue-600 text-white border-blue-600'
+                                                : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-blue-500 hover:text-blue-500'
                                                 }`}
                                         >
                                             {status.replace('_', ' ').toUpperCase()}
@@ -249,16 +257,27 @@ const ProjectRequestManager: React.FC = () => {
                         </div>
 
                         <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-end">
-                            <a
-                                href={`mailto:${selectedRequest.contactEmail}?subject=Re: Project Inquiry - ${selectedRequest.projectName}`}
+                            <button
+                                onClick={() => setIsEmailModalOpen(true)}
                                 className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg flex items-center gap-2"
                             >
-                                <Mail size={16} /> Reply via Email
-                            </a>
+                                <Mail size={16} /> Reply with Template
+                            </button>
                         </div>
                     </motion.div>
                 </div>
             )}
+
+            <EmailSenderModal
+                isOpen={isEmailModalOpen}
+                onClose={() => setIsEmailModalOpen(false)}
+                templates={templates}
+                defaultRecipient={selectedRequest?.contactEmail}
+                context={{
+                    name: selectedRequest?.contactEmail?.split('@')[0],
+                    projectTitle: selectedRequest?.projectName || 'Project',
+                }}
+            />
         </div>
     );
 };

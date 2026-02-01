@@ -5,6 +5,7 @@ import Button from '../ui/Button';
 import { db } from '../../lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { EmailTemplate } from '../../types';
+import EmailSenderModal from './EmailSenderModal';
 
 const EmailManager: React.FC = () => {
     const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -255,59 +256,13 @@ const EmailManager: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            <EmailSenderModal isOpen={isSenderOpen} onClose={() => setIsSenderOpen(false)} templates={templates} />
+            <EmailSenderModal
+                isOpen={isSenderOpen}
+                onClose={() => setIsSenderOpen(false)}
+                templates={templates}
+            />
         </div>
     );
 };
 
-const EmailSenderModal: React.FC<{ isOpen: boolean; onClose: () => void; templates: EmailTemplate[] }> = ({ isOpen, onClose, templates }) => {
-    const [email, setEmail] = useState('');
-    const [selectedTemplate, setSelectedTemplate] = useState('');
-    const [sending, setSending] = useState(false);
 
-    const handleSend = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSending(true);
-        // Find template type from ID if needed, or pass ID. For now assuming we pass 'type' from selection or 'custom'
-        const template = templates.find(t => t.id === selectedTemplate);
-        if (!template) return;
-
-        await import('../../lib/emailService').then(({ sendEmail }) =>
-            sendEmail(email, template.type, { name: 'Admin Test', projectTitle: 'Test Project', amount: '0.00' })
-        );
-
-        alert('Email sent!');
-        setSending(false);
-        onClose();
-    };
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl p-6 shadow-2xl">
-                <h3 className="text-lg font-bold mb-4">Send Test Email</h3>
-                <form onSubmit={handleSend} className="space-y-4">
-                    <div>
-                        <label className="block text-sm mb-1">To Email</label>
-                        <input value={email} onChange={e => setEmail(e.target.value)} className="w-full border p-2 rounded dark:bg-gray-900 dark:border-gray-700" required type="email" />
-                    </div>
-                    <div>
-                        <label className="block text-sm mb-1">Template</label>
-                        <select value={selectedTemplate} onChange={e => setSelectedTemplate(e.target.value)} className="w-full border p-2 rounded dark:bg-gray-900 dark:border-gray-700" required>
-                            <option value="">Select Template...</option>
-                            {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                        </select>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                        <Button variant="ghost" type="button" onClick={onClose}>Cancel</Button>
-                        <Button type="submit" disabled={sending}>{sending ? 'Sending...' : 'Send'}</Button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
-}
-
-export default EmailManager;
