@@ -128,7 +128,6 @@ const ProjectDetail: React.FC = () => {
                                                 <CheckCircle size={24} />
                                                 <div className="font-medium">You own this project!</div>
                                             </div>
-                                            {/* @ts-ignore - TS might complain if type not updated yet in front-end but data exists */}
                                             {project.githubLink ? (
                                                 <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="block w-full">
                                                     <Button size="lg" className="w-full text-lg py-6 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 shadow-xl gap-2">
@@ -147,9 +146,17 @@ const ProjectDetail: React.FC = () => {
                                         </Button>
                                     )}
 
-                                    <Button variant="outline" size="lg" className="w-full gap-2 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700">
-                                        <ExternalLink size={20} /> Live Preview
-                                    </Button>
+                                    {project.previewUrl ? (
+                                        <a href={project.previewUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
+                                            <Button variant="outline" size="lg" className="w-full gap-2 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700">
+                                                <ExternalLink size={20} /> Live Preview
+                                            </Button>
+                                        </a>
+                                    ) : (
+                                        <Button variant="outline" size="lg" disabled className="w-full gap-2 text-gray-400 border-gray-200 cursor-not-allowed">
+                                            <ExternalLink size={20} /> Live Preview
+                                        </Button>
+                                    )}
                                 </div>
 
                                 <hr className="my-8 border-gray-100 dark:border-gray-800" />

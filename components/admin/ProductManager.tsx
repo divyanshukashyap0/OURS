@@ -14,6 +14,7 @@ interface Project {
     image: string;
     tags: string[];
     githubLink?: string;
+    previewUrl?: string;
 }
 
 const ProductManager: React.FC = () => {
@@ -23,7 +24,7 @@ const ProductManager: React.FC = () => {
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
     // Form State
-    const [formData, setFormData] = useState<Partial<Project>>({ title: '', description: '', price: '', image: '', tags: [], githubLink: '' });
+    const [formData, setFormData] = useState<Partial<Project>>({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '' });
     const [tagInput, setTagInput] = useState('');
 
     // Real-time Data Subscription
@@ -64,7 +65,7 @@ const ProductManager: React.FC = () => {
             setFormData(project);
         } else {
             setEditingProject(null);
-            setFormData({ title: '', description: '', price: '', image: '', tags: [], githubLink: '' });
+            setFormData({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '' });
         }
         setIsModalOpen(true);
     };
@@ -78,7 +79,8 @@ const ProductManager: React.FC = () => {
                 price: formData.price || '',
                 image: formData.image || '',
                 tags: Array.isArray(formData.tags) ? formData.tags : [],
-                githubLink: formData.githubLink || ''
+                githubLink: formData.githubLink || '',
+                previewUrl: formData.previewUrl || ''
             };
 
             console.log("SANITIZED PAYLOAD:", dataToSave);
@@ -266,6 +268,16 @@ const ProductManager: React.FC = () => {
                                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none text-blue-600"
                                     />
                                     <p className="text-xs text-gray-500 mt-1">Visible only to users who have purchased this project.</p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preview Website URL</label>
+                                    <input
+                                        value={formData.previewUrl || ''}
+                                        onChange={e => setFormData({ ...formData, previewUrl: e.target.value })}
+                                        placeholder="https://example.com"
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none text-blue-600"
+                                    />
                                 </div>
 
                                 <div>

@@ -26,6 +26,8 @@ export interface Project {
   image: string;
   tags: string[];
   price?: string;
+  githubLink?: string;
+  previewUrl?: string;
 }
 
 export interface BlogPost {
