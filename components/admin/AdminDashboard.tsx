@@ -9,7 +9,7 @@ const AdminDashboard: React.FC = () => {
     const [stats, setStats] = useState([
         { label: 'Total Users', value: '0', change: '0%', icon: Users, color: 'blue' },
         { label: 'Revenue', value: '$0', change: '0%', icon: DollarSign, color: 'green' },
-        { label: 'Products', value: '0', change: '0', icon: ShoppingBag, color: 'purple' },
+        { label: 'Projects', value: '0', change: '0', icon: ShoppingBag, color: 'purple' },
         { label: 'Orders', value: '0', change: '0%', icon: Activity, color: 'orange' },
     ]);
     const [revenueData, setRevenueData] = useState<any[]>([]);
@@ -53,8 +53,8 @@ const AdminDashboard: React.FC = () => {
                 // Update Stats State
                 setStats([
                     { label: 'Total Users', value: usersSnap.data().count.toString(), change: '+100%', icon: Users, color: 'blue' },
-                    { label: 'Revenue', value: `₹${totalRevenue.toLocaleString()}`, change: '+100%', icon: DollarSign, color: 'green' },
-                    { label: 'Products', value: projectsSnap.data().count.toString(), change: '+0', icon: ShoppingBag, color: 'purple' },
+                    { label: 'Revenue', value: `$${totalRevenue.toLocaleString()}`, change: '+100%', icon: DollarSign, color: 'green' },
+                    { label: 'Projects', value: projectsSnap.data().count.toString(), change: '+0', icon: ShoppingBag, color: 'purple' },
                     { label: 'Orders', value: orderCount.toString(), change: '+100%', icon: Activity, color: 'orange' },
                 ]);
 

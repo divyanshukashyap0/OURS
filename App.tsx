@@ -52,7 +52,7 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }>
               <Route index element={<AdminDashboard />} />
-              <Route path="products" element={<ProductManager />} />
+              <Route path="projects" element={<ProductManager />} />
               <Route path="courses" element={<CourseManager />} />
               <Route path="settings" element={<AdminSettings />} /> {/* Added AdminSettings route */}
             </Route>

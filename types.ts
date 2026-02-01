@@ -28,6 +28,7 @@ export interface Project {
   price?: string;
   githubLink?: string;
   previewUrl?: string;
+  gallery?: string[];
 }
 
 export interface BlogPost {

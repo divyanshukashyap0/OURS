@@ -15,6 +15,7 @@ interface Project {
     tags: string[];
     githubLink?: string;
     previewUrl?: string;
+    gallery?: string[];
 }
 
 const ProductManager: React.FC = () => {
@@ -24,8 +25,9 @@ const ProductManager: React.FC = () => {
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
     // Form State
-    const [formData, setFormData] = useState<Partial<Project>>({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '' });
+    const [formData, setFormData] = useState<Partial<Project>>({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '', gallery: [] });
     const [tagInput, setTagInput] = useState('');
+    const [galleryInput, setGalleryInput] = useState('');
 
     // Real-time Data Subscription
     React.useEffect(() => {
@@ -65,7 +67,7 @@ const ProductManager: React.FC = () => {
             setFormData(project);
         } else {
             setEditingProject(null);
-            setFormData({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '' });
+            setFormData({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '', gallery: [] });
         }
         setIsModalOpen(true);
     };
@@ -80,7 +82,8 @@ const ProductManager: React.FC = () => {
                 image: formData.image || '',
                 tags: Array.isArray(formData.tags) ? formData.tags : [],
                 githubLink: formData.githubLink || '',
-                previewUrl: formData.previewUrl || ''
+                previewUrl: formData.previewUrl || '',
+                gallery: Array.isArray(formData.gallery) ? formData.gallery : []
             };
 
             console.log("SANITIZED PAYLOAD:", dataToSave);
@@ -112,6 +115,17 @@ const ProductManager: React.FC = () => {
 
     const removeTag = (index: number) => {
         setFormData(prev => ({ ...prev, tags: prev.tags?.filter((_, i) => i !== index) }));
+    };
+
+    const addGalleryImage = () => {
+        if (galleryInput.trim()) {
+            setFormData(prev => ({ ...prev, gallery: [...(prev.gallery || []), galleryInput.trim()] }));
+            setGalleryInput('');
+        }
+    };
+
+    const removeGalleryImage = (index: number) => {
+        setFormData(prev => ({ ...prev, gallery: prev.gallery?.filter((_, i) => i !== index) }));
     };
 
     return (
@@ -288,6 +302,36 @@ const ProductManager: React.FC = () => {
                                         onChange={e => setFormData({ ...formData, description: e.target.value })}
                                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                                     />
+                                </div>
+
+                                {/* Gallery Images */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gallery Images</label>
+                                    <div className="flex gap-2 mb-2">
+                                        <input
+                                            type="text"
+                                            value={galleryInput}
+                                            onChange={e => setGalleryInput(e.target.value)}
+                                            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addGalleryImage())}
+                                            className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                                            placeholder="Add image URL..."
+                                        />
+                                        <Button type="button" onClick={addGalleryImage} variant="secondary"><Plus size={18} /></Button>
+                                    </div>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {formData.gallery?.map((url, index) => (
+                                            <div key={index} className="relative group aspect-video bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
+                                                <img src={url} alt={`Gallery ${index}`} className="w-full h-full object-cover" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeGalleryImage(index)}
+                                                    className="absolute top-1 right-1 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    <X size={12} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* Tags Input */}

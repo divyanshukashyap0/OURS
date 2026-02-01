@@ -136,6 +136,23 @@ const ProjectDetail: React.FC = () => {
                                     <li className="flex items-start gap-2"><span className="text-blue-500 mt-1">•</span> Built with modern technologies and best practices.</li>
                                     <li className="flex items-start gap-2"><span className="text-blue-500 mt-1">•</span> Easy to customize and extend.</li>
                                 </ul>
+
+                                {project.gallery && project.gallery.length > 0 && (
+                                    <div className="mt-12">
+                                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Gallery</h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {project.gallery.map((image, index) => (
+                                                <div key={index} className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-800 hover:scale-[1.02] transition-transform duration-300">
+                                                    <img
+                                                        src={image}
+                                                        alt={`${project.title} screenshot ${index + 1}`}
+                                                        className="w-full h-auto object-cover"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

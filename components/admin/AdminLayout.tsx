@@ -12,7 +12,7 @@ const AdminLayout: React.FC = () => {
 
     const navItems = [
         { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
-        { path: '/admin/products', icon: Package, label: 'Products' },
+        { path: '/admin/projects', icon: Package, label: 'Projects' },
         { path: '/admin/courses', icon: BookOpen, label: 'Courses' },
         { path: '/admin/settings', icon: Settings, label: 'Settings' },
     ];
