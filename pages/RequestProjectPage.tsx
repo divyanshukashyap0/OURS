@@ -12,7 +12,8 @@ const RequestProjectPage: React.FC = () => {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
     const [loading, setLoading] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
+
+    const formRef = React.useRef<HTMLFormElement>(null);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -41,60 +42,16 @@ const RequestProjectPage: React.FC = () => {
                 status: 'pending'
             });
 
-            // 2. Prepare Email (Mailto fallback)
-            const subject = `[NEW PROJECT] ${formData.projectName} - ${formData.priority.toUpperCase()}`;
-            const body = `
-PROJECT REQUEST (The Builder's Protocol)
-----------------------------------------
-User: ${formData.contactEmail}
-Project Name: ${formData.projectName}
-Budget Range: $${formData.budget}
-Timeline Priority: ${formData.priority.toUpperCase()}
-
-THE VISION:
-${formData.description}
-
-CORE FEATURES:
-${formData.features}
-
-----------------------------------------
-Sent via Ours. Platform.
-            `;
-
-            // Open user's email client
-            const mailtoLink = `mailto:optistyle.india@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoLink;
-
-            setIsSuccess(true);
+            // 2. Submit Form Programmatically to FormSubmit
+            if (formRef.current) {
+                formRef.current.submit();
+            }
         } catch (error) {
             console.error("Error submitting request:", error);
             alert("Connection interrupted. Please try again.");
-        } finally {
             setLoading(false);
         }
     };
-
-    // Success Screen
-    if (isSuccess) {
-        return (
-            <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-6 text-center">
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="bg-green-500/10 p-6 rounded-full mb-6"
-                >
-                    <Send size={48} className="text-green-500" />
-                </motion.div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">Protocol Initiated.</h1>
-                <p className="text-gray-400 max-w-md mb-8">
-                    Your request has been secured in our database and the email client has been triggered. Please ensure you hit <strong>"Send"</strong> in your email app to finalize the connection.
-                </p>
-                <Button onClick={() => navigate('/')} variant="outline" className="border-gray-700 text-white hover:bg-gray-800">
-                    Return to Mission Control
-                </Button>
-            </div>
-        );
-    }
 
     // Single Page Layout (Responsive Form)
     return (
@@ -155,7 +112,18 @@ Sent via Ours. Platform.
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
                 >
-                    <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
+                    <form
+                        ref={formRef}
+                        action="https://formsubmit.co/optistyle.india@gmail.com"
+                        method="POST"
+                        onSubmit={handleSubmit}
+                        className="space-y-6 md:space-y-8"
+                    >
+                        {/* Hidden Configuration for FormSubmit */}
+                        <input type="hidden" name="_subject" value={`[NEW PROJECT] ${formData.projectName} - ${formData.priority.toUpperCase()}`} />
+                        <input type="hidden" name="_template" value="table" />
+                        <input type="hidden" name="_captcha" value="false" />
+                        <input type="hidden" name="_next" value="https://ours-platform.vercel.app/" />
 
                         {/* Section 1: Identity */}
                         <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8">
