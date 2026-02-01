@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import Section from './Section';
-import Button from './ui/Button';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { sendEmail } from '../lib/emailService';
+import Section from './Section';
+import Button from './ui/Button';
 
 const Contact: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -26,10 +27,19 @@ const Contact: React.FC = () => {
         return;
       }
 
+      // 1. Save to Firestore
       await addDoc(collection(db, 'subscribers'), {
         email,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        source: 'homepage_cta'
       });
+
+      // 2. Send Welcome Email
+      await sendEmail(email, 'welcome', {
+        name: 'Developer',
+        projectTitle: 'OURS Platform'
+      });
+
       setStatus('Success! You are now subscribed.');
       setEmail('');
     } catch (error) {
@@ -39,9 +49,10 @@ const Contact: React.FC = () => {
       setLoading(false);
     }
   };
+
   return (
     <Section id="contact" center>
-      <div className="bg-blue-600 rounded-2xl p-8 md:p-16 text-center text-white max-w-5xl mx-auto shadow-2xl relative overflow-hidden">
+      <div className="bg-blue-600 dark:bg-blue-700 rounded-2xl p-8 md:p-16 text-center text-white max-w-5xl mx-auto shadow-2xl relative overflow-hidden transition-colors">
 
         <div className="relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to start your journey?</h2>
@@ -56,11 +67,11 @@ const Contact: React.FC = () => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white"
+              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white dark:bg-white/90"
             />
             <Button
               variant="primary"
-              className="bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-70"
+              className="bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-70 dark:bg-black dark:hover:bg-gray-900"
               onClick={handleSubscribe}
               disabled={loading}
             >

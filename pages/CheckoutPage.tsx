@@ -4,8 +4,11 @@ import { PROJECTS } from '../constants';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../lib/config';
 import Button from '../components/ui/Button';
-import { ShieldCheck, CreditCard, Lock, Loader2, Info } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ShieldCheck, CreditCard, Lock, Loader2, Info, Tag } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { collection, query, where, getDocs, updateDoc, doc, increment } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { sendEmail } from '../lib/emailService';
 
 const CheckoutPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -13,6 +16,13 @@ const CheckoutPage: React.FC = () => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [project, setProject] = useState<any>(null);
+
+    // Coupon State
+    const [couponCode, setCouponCode] = useState('');
+    const [discount, setDiscount] = useState(0);
+    const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+    const [verifyingCoupon, setVerifyingCoupon] = useState(false);
+    const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     useEffect(() => {
         const found = PROJECTS.find(p => p.id === Number(id));
@@ -51,13 +61,16 @@ const CheckoutPage: React.FC = () => {
 
         // 2. Create Order via Backend
         let order;
-        const priceValue = parseFloat(project?.price.replace(/[^0-9.]/g, '') || '0');
+        // Calculate Discounted Price
+        const originalPrice = parseFloat(project?.price.replace(/[^0-9.]/g, '') || '0');
+        const finalPrice = Math.max(0, originalPrice - discount);
+
         try {
             const response = await fetch(`${API_BASE_URL}/api/create-order`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    amount: priceValue,
+                    amount: finalPrice,
                     currency: 'USD',
                     // Shorten receipt ID to max 40 chars. 
                     // rcpt_ + 8 chars of timestamp + _ + 4 chars random = ~18 chars
@@ -108,8 +121,10 @@ const CheckoutPage: React.FC = () => {
                                 userEmail: user.email,
                                 projectId: String(project.id),
                                 projectTitle: project.title,
-                                amount: priceValue, // Save original USD amount
+                                amount: finalPrice, // Save original USD amount
                                 currency: 'USD',
+                                discountApplied: discount,
+                                couponCode: appliedCoupon?.code || null
                             }
                         })
                     });
@@ -117,6 +132,20 @@ const CheckoutPage: React.FC = () => {
                     const verifyData = await verifyRes.json();
 
                     if (verifyData.status === 'success') {
+                        // Increment Coupon Usage
+                        if (appliedCoupon) {
+                            const couponRef = doc(db, 'coupons', appliedCoupon.id);
+                            await updateDoc(couponRef, { usedCount: increment(1) });
+                        }
+
+                        // Send Confirmation Email
+                        await sendEmail(user.email || '', 'order_confirmation', {
+                            name: user.displayName || 'Customer',
+                            amount: finalPrice.toFixed(2),
+                            projectTitle: project.title,
+                            orderId: order.id
+                        });
+
                         navigate('/order-success', {
                             state: {
                                 paymentId: response.razorpay_payment_id,
@@ -146,7 +175,66 @@ const CheckoutPage: React.FC = () => {
         setLoading(false);
     };
 
+    const handleVerifyCoupon = async () => {
+        if (!couponCode.trim()) return;
+        setVerifyingCoupon(true);
+        setCouponMessage(null);
+
+        try {
+            const q = query(collection(db, 'coupons'), where('code', '==', couponCode.toUpperCase()), where('isActive', '==', true));
+            const snapshot = await getDocs(q);
+
+            if (snapshot.empty) {
+                setCouponMessage({ type: 'error', text: 'Invalid coupon code.' });
+                setDiscount(0);
+                setAppliedCoupon(null);
+            } else {
+                const couponData = snapshot.docs[0].data();
+                const couponId = snapshot.docs[0].id;
+
+                // Check Expiry
+                if (new Date(couponData.validUntil) < new Date()) {
+                    setCouponMessage({ type: 'error', text: 'Coupon expired.' });
+                    setVerifyingCoupon(false);
+                    return;
+                }
+
+                // Check Usage Limit
+                if (couponData.usedCount >= couponData.usageLimit) {
+                    setCouponMessage({ type: 'error', text: 'Coupon usage limit reached.' });
+                    setVerifyingCoupon(false);
+                    return;
+                }
+
+                // Calculate Discount
+                const originalPrice = parseFloat(project?.price.replace(/[^0-9.]/g, '') || '0');
+                let discountAmount = 0;
+
+                if (couponData.discountType === 'percentage') {
+                    discountAmount = (originalPrice * couponData.discountValue) / 100;
+                } else {
+                    discountAmount = couponData.discountValue;
+                }
+
+                // Cap discount at total price
+                discountAmount = Math.min(discountAmount, originalPrice);
+
+                setDiscount(discountAmount);
+                setAppliedCoupon({ ...couponData, id: couponId });
+                setCouponMessage({ type: 'success', text: `Coupon applied! You saved $${discountAmount.toFixed(2)}` });
+            }
+        } catch (error) {
+            console.error("Coupon verify error:", error);
+            setCouponMessage({ type: 'error', text: 'Error verifying coupon.' });
+        } finally {
+            setVerifyingCoupon(false);
+        }
+    };
+
     if (!project) return null;
+
+    const originalPrice = parseFloat(project?.price?.replace(/[^0-9.]/g, '') || '0');
+    const finalPrice = Math.max(0, originalPrice - discount);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-20 px-4 md:px-8">
@@ -162,8 +250,52 @@ const CheckoutPage: React.FC = () => {
                             <p className="text-gray-500 text-sm line-clamp-2 mb-4">{project.description}</p>
                             <div className="flex justify-between items-center py-4 border-t border-gray-100 dark:border-gray-800">
                                 <span className="text-gray-600 dark:text-gray-400">Total Amount</span>
-                                <span className="text-2xl font-bold text-gray-900 dark:text-white">{project.price}</span>
+                                {discount > 0 ? (
+                                    <div className="text-right">
+                                        <span className="text-sm text-gray-400 line-through mr-2">${originalPrice.toFixed(2)}</span>
+                                        <span className="text-2xl font-bold text-green-600">${finalPrice.toFixed(2)}</span>
+                                    </div>
+                                ) : (
+                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">${originalPrice.toFixed(2)}</span>
+                                )}
                             </div>
+
+                            {/* Coupon Input */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Have a coupon?</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                        placeholder="Enter code"
+                                        disabled={!!appliedCoupon}
+                                        className="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono"
+                                    />
+                                    {appliedCoupon ? (
+                                        <Button variant="secondary" onClick={() => { setAppliedCoupon(null); setDiscount(0); setCouponCode(''); setCouponMessage(null); }}>
+                                            Remove
+                                        </Button>
+                                    ) : (
+                                        <Button variant="outline" onClick={handleVerifyCoupon} disabled={!couponCode || verifyingCoupon}>
+                                            {verifyingCoupon ? 'Checking...' : 'Apply'}
+                                        </Button>
+                                    )}
+                                </div>
+                                <AnimatePresence>
+                                    {couponMessage && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className={`text-sm mt-2 ${couponMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}
+                                        >
+                                            {couponMessage.text}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
                             <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg flex gap-3 text-sm text-blue-700 dark:text-blue-300">
                                 <Info size={18} className="shrink-0 mt-0.5" />
                                 <p>You will get lifetime access to the source code and documentation immediately after payment.</p>
@@ -203,7 +335,7 @@ const CheckoutPage: React.FC = () => {
                                     <Loader2 className="animate-spin mr-2" /> Processing...
                                 </>
                             ) : (
-                                `Pay ${project.price}`
+                                `Pay $${finalPrice.toFixed(2)}`
                             )}
                         </Button>
 

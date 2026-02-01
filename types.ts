@@ -45,3 +45,23 @@ export interface NavItem {
   label: string;
   href: string;
 }
+
+export interface Coupon {
+  id: string;
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  validUntil: string; // ISO date string
+  usageLimit: number;
+  usedCount: number;
+  isActive: boolean;
+}
+
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  body: string; // HTML content
+  type: 'order_confirmation' | 'welcome' | 'custom';
+  updatedAt: any;
+}
