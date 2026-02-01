@@ -265,4 +265,4 @@ const EmailManager: React.FC = () => {
     );
 };
 
-
+export default EmailManager;
