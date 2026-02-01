@@ -123,7 +123,7 @@ const RequestProjectPage: React.FC = () => {
                         <input type="hidden" name="_subject" value={`[NEW PROJECT] ${formData.projectName} - ${formData.priority.toUpperCase()}`} />
                         <input type="hidden" name="_template" value="table" />
                         <input type="hidden" name="_captcha" value="false" />
-                        <input type="hidden" name="_next" value="https://ours-platform.vercel.app/" />
+                        <input type="hidden" name="_next" value="https://ours2026.vercel.app/" />
 
                         {/* Section 1: Identity */}
                         <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8">
