@@ -16,6 +16,7 @@ import CourseManager from './components/admin/CourseManager';
 import BlogManager from './components/admin/BlogManager';
 import CouponManager from './components/admin/CouponManager';
 import EmailManager from './components/admin/EmailManager';
+import ProjectRequestManager from './components/admin/ProjectRequestManager';
 import AdminSettings from './components/admin/AdminSettings';
 import SourceCode from './components/SourceCode';
 import Layout from './components/Layout';
@@ -60,6 +61,7 @@ const App: React.FC = () => {
               <Route path="blogs" element={<BlogManager />} />
               <Route path="coupons" element={<CouponManager />} />
               <Route path="emails" element={<EmailManager />} />
+              <Route path="requests" element={<ProjectRequestManager />} />
               <Route path="settings" element={<AdminSettings />} /> {/* Added AdminSettings route */}
             </Route>
 

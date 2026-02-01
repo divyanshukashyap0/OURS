@@ -65,3 +65,16 @@ export interface EmailTemplate {
   type: 'order_confirmation' | 'welcome' | 'custom';
   updatedAt: any;
 }
+
+export interface ProjectRequest {
+  id: string;
+  projectName: string;
+  contactEmail: string;
+  budget: string;
+  priority: 'standard' | 'rush';
+  description: string;
+  features: string;
+  status: 'pending' | 'contacted' | 'in_progress' | 'completed';
+  userId: string;
+  createdAt: any;
+}
