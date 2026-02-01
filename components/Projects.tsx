@@ -1,12 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Section from './Section';
 import { PROJECTS } from '../constants';
 import { ExternalLink, Github, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Button from './ui/Button';
 import { useNavigate } from 'react-router-dom';
+import { db } from '../lib/firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 const Projects: React.FC = () => {
   const navigate = useNavigate();
+  const [projects, setProjects] = useState<any[]>(PROJECTS);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const fetchedProjects = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+
+        // Merge fetched projects with static ones, preferring fetched if IDs match (though IDs format differs)
+        // For simplicity and seeing admin changes, we'll prepend fetched projects or just show them.
+        // Let's combine them: Dynamic first, then Static.
+        if (fetchedProjects.length > 0) {
+          setProjects([...fetchedProjects, ...PROJECTS]);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+    fetchProjects();
+  }, []);
 
   return (
     <Section
@@ -47,7 +73,7 @@ const Projects: React.FC = () => {
           id="projects-scroll-container"
           className="flex md:grid md:grid-cols-3 gap-6 md:gap-8 overflow-x-auto md:overflow-visible pb-8 snap-x snap-mandatory px-4 md:px-0 -mx-4 md:mx-0 scrollbar-hide"
         >
-          {PROJECTS.map((project) => (
+          {projects.map((project) => (
             <div
               key={project.id}
               onClick={() => navigate(`/project/${project.id}`)}

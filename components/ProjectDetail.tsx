@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PROJECTS } from '../constants';
 import { db } from '../lib/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
+import { Project } from '../types';
 import Footer from './Footer';
 import Button from './ui/Button';
 import { ArrowLeft, ExternalLink, Github, Tag, CheckCircle } from 'lucide-react';
@@ -13,7 +14,29 @@ const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const project = PROJECTS.find((p) => p.id === Number(id));
+    // Initialize with static data logic, but allow state update
+    const [project, setProject] = React.useState<Project | undefined>(
+        PROJECTS.find((p) => p.id === Number(id))
+    );
+
+    useEffect(() => {
+        const fetchProject = async () => {
+            // If already found in static (and has number ID), great. 
+            // If not found, or if ID is not a number (likely a string from Firestore), try fetching.
+            if (!project && id) {
+                try {
+                    const docRef = doc(db, 'projects', id);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        setProject({ id: docSnap.id, ...docSnap.data() } as Project);
+                    }
+                } catch (error) {
+                    console.error("Error fetching project:", error);
+                }
+            }
+        };
+        fetchProject();
+    }, [id, project]);
 
     const [hasPurchased, setHasPurchased] = React.useState(false);
 

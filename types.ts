@@ -20,7 +20,7 @@ export interface Course {
 }
 
 export interface Project {
-  id: number;
+  id: string | number;
   title: string;
   description: string;
   image: string;
