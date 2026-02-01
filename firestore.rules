@@ -46,6 +46,30 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // Coupons: Public read (for checkout), Admin write
+    match /coupons/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Email Templates: Public read (for client-side sending), Admin write
+    match /email_templates/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Subscribers: Public create, Admin read
+    match /subscribers/{document=**} {
+      allow create: if true;
+      allow read: if isAdmin();
+    }
+
+    // Project Requests: Public create, Admin read
+    match /project_requests/{document=**} {
+      allow create: if true;
+      allow read: if isAdmin();
+    }
     
     // Default deny
     match /{document=**} {
