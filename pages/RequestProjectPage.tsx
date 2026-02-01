@@ -20,7 +20,7 @@ const RequestProjectPage: React.FC = () => {
         projectName: '',
         description: '',
         features: '',
-        budget: '500-1000',
+        budget: '5-10',
         priority: 'standard', // 'standard' or 'rush'
         contactEmail: currentUser?.email || ''
     });
@@ -166,10 +166,14 @@ const RequestProjectPage: React.FC = () => {
                                         value={formData.budget}
                                         onChange={handleChange}
                                     >
-                                        <option value="500-1000">$500 - $1,000</option>
-                                        <option value="1000-2500">$1,000 - $2,500</option>
-                                        <option value="2500-5000">$2,500 - $5,000</option>
-                                        <option value="5000+">$5,000+</option>
+                                        <option value="5-10">$5 - $10</option>
+                                        <option value="10-20">$10 - $20</option>
+                                        <option value="20-50">$20 - $30</option>
+                                        <option value="50-100">$30 - $40</option>
+                                        <option value="100-250">$40 - $50</option>
+                                        <option value="250-500">$50 - $60</option>
+                                        <option value="500-1000">$60 - $70</option>
+                                        <option value="1000+">$70 - $80</option>
                                     </select>
                                 </div>
                             </div>
