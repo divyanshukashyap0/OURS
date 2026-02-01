@@ -4,6 +4,8 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import Button from '../ui/Button';
 import { Save, Globe, Type, Share2, Mail } from 'lucide-react';
 import { SiteConfig } from '../../context/SiteContext';
+import { PROJECTS } from '../../constants';
+import { Database, UploadCloud } from 'lucide-react';
 
 const AdminSettings: React.FC = () => {
     const [settings, setSettings] = useState<SiteConfig>({
@@ -54,6 +56,34 @@ const AdminSettings: React.FC = () => {
         } catch (error) {
             console.error("Error saving settings:", error);
             alert('Failed to save settings.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSyncProjects = async () => {
+        if (!confirm('This will upload all static projects (from code) to the database. Existing projects with the same ID will be overwritten. Continue?')) return;
+
+        setLoading(true);
+        try {
+            let count = 0;
+            for (const project of PROJECTS) {
+                // Use String(project.id) as the doc ID
+                const docRef = doc(db, 'projects', String(project.id));
+                await setDoc(docRef, {
+                    ...project,
+                    // Ensure ID is stored as string in data too if we want consistency, 
+                    // though types.ts allows number | string.
+                    // Storing as is from constant.
+                    updatedAt: new Date(),
+                    isStatic: true // Marker for debugging
+                }, { merge: true });
+                count++;
+            }
+            alert(`Successfully synced ${count} projects to database.`);
+        } catch (error) {
+            console.error("Error syncing projects:", error);
+            alert("Failed to sync projects.");
         } finally {
             setLoading(false);
         }
@@ -111,6 +141,21 @@ const AdminSettings: React.FC = () => {
                         onChange={(e) => handleChange('heroSubtitle', e.target.value)}
                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
                     />
+                </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
+                <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-white">
+                    <Database size={20} className="text-green-500" /> Data Management
+                </h2>
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div>
+                        <h3 className="font-medium text-gray-900 dark:text-white">Sync Static Projects</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Upload built-in projects to database to enable editing.</p>
+                    </div>
+                    <Button onClick={handleSyncProjects} disabled={loading} variant="outline" className="gap-2">
+                        <UploadCloud size={18} /> {loading ? 'Syncing...' : 'Sync Projects'}
+                    </Button>
                 </div>
             </div>
 

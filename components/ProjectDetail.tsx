@@ -21,14 +21,19 @@ const ProjectDetail: React.FC = () => {
 
     useEffect(() => {
         const fetchProject = async () => {
-            // If already found in static (and has number ID), great. 
-            // If not found, or if ID is not a number (likely a string from Firestore), try fetching.
-            if (!project && id) {
+            if (id) {
                 try {
                     const docRef = doc(db, 'projects', id);
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
-                        setProject({ id: docSnap.id, ...docSnap.data() } as Project);
+                        const dbData = docSnap.data();
+                        setProject(prev => ({
+                            ...prev,
+                            ...dbData,
+                            id: docSnap.id,
+                            // Ensure tags are arrays
+                            tags: Array.isArray(dbData.tags) ? dbData.tags : (prev?.tags || [])
+                        } as Project));
                     }
                 } catch (error) {
                     console.error("Error fetching project:", error);
@@ -36,7 +41,7 @@ const ProjectDetail: React.FC = () => {
             }
         };
         fetchProject();
-    }, [id, project]);
+    }, [id]);
 
     const [hasPurchased, setHasPurchased] = React.useState(false);
 
