@@ -13,6 +13,7 @@ import InvoicePage from './pages/InvoicePage';
 import AdminDashboard from './components/admin/AdminDashboard';
 import ProductManager from './components/admin/ProductManager';
 import CourseManager from './components/admin/CourseManager';
+import BlogManager from './components/admin/BlogManager';
 import AdminSettings from './components/admin/AdminSettings';
 import SourceCode from './components/SourceCode';
 import Layout from './components/Layout';
@@ -54,6 +55,7 @@ const App: React.FC = () => {
               <Route index element={<AdminDashboard />} />
               <Route path="projects" element={<ProductManager />} />
               <Route path="courses" element={<CourseManager />} />
+              <Route path="blogs" element={<BlogManager />} />
               <Route path="settings" element={<AdminSettings />} /> {/* Added AdminSettings route */}
             </Route>
 

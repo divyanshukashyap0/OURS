@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, Settings, LogOut, Menu, X, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Package, Settings, LogOut, Menu, X, BookOpen, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 
@@ -14,6 +14,7 @@ const AdminLayout: React.FC = () => {
         { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
         { path: '/admin/projects', icon: Package, label: 'Projects' },
         { path: '/admin/courses', icon: BookOpen, label: 'Courses' },
+        { path: '/admin/blogs', icon: FileText, label: 'Blogs' },
         { path: '/admin/settings', icon: Settings, label: 'Settings' },
     ];
 

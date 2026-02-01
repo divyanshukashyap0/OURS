@@ -138,27 +138,59 @@ const CourseManager: React.FC = () => {
             {loading ? (
                 <div className="flex justify-center p-8"><LogoLoader /></div>
             ) : (
-                <div className="grid gap-4">
-                    {courses.map(course => (
-                        <div key={course.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex justify-between items-center">
-                            <div className="flex gap-4 items-center">
-                                <img src={course.image} alt={course.title} className="w-16 h-16 rounded object-cover" />
-                                <div>
-                                    <h3 className="font-bold text-gray-900 dark:text-white">{course.title}</h3>
-                                    <p className="text-sm text-gray-500">{course.instructor} • {course.price}</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <button onClick={() => handleOpenModal(course)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-blue-600">
-                                    <Edit2 size={18} />
-                                </button>
-                                <button onClick={() => course.id && handleDelete(course.id)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-red-600">
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                    {courses.length === 0 && <p className="text-center text-gray-500">No courses found. Click 'Seed Default Courses' to import them.</p>}
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-gray-50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 font-medium">
+                                <tr>
+                                    <th className="px-6 py-4">Course</th>
+                                    <th className="px-6 py-4">Instructor</th>
+                                    <th className="px-6 py-4">Price</th>
+                                    <th className="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                <AnimatePresence>
+                                    {courses.map(course => (
+                                        <motion.tr
+                                            key={course.id}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            onClick={() => handleOpenModal(course)}
+                                            className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
+                                        >
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <img src={course.image} alt={course.title} className="w-8 h-8 rounded object-cover" />
+                                                    <div className="font-medium text-gray-900 dark:text-white max-w-xs truncate">{course.title}</div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{course.instructor}</td>
+                                            <td className="px-6 py-4 text-gray-900 dark:text-white font-medium">{course.price}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); course.id && handleDelete(course.id); }}
+                                                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    ))}
+                                </AnimatePresence>
+                                {courses.length === 0 && (
+                                    <tr>
+                                        <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                                            No courses found. Click 'Seed Default Courses' to import them.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
