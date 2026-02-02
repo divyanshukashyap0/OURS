@@ -177,8 +177,8 @@ const RequestProjectPage: React.FC = () => {
                                 key={section.id}
                                 onClick={() => setCurrentSection(section.id)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${currentSection === section.id
-                                        ? 'bg-mono-950 dark:bg-white text-white dark:text-mono-950'
-                                        : 'bg-white dark:bg-mono-800 text-mono-600 dark:text-mono-400 border border-mono-200 dark:border-mono-700 hover:border-mono-400'
+                                    ? 'bg-mono-950 dark:bg-white text-white dark:text-mono-950'
+                                    : 'bg-white dark:bg-mono-800 text-mono-600 dark:text-mono-400 border border-mono-200 dark:border-mono-700 hover:border-mono-400'
                                     }`}
                             >
                                 <section.icon size={16} />
@@ -200,11 +200,40 @@ const RequestProjectPage: React.FC = () => {
                         method="POST"
                         onSubmit={handleSubmit}
                     >
-                        {/* Hidden Configuration */}
+                        {/* Hidden Configuration for FormSubmit */}
                         <input type="hidden" name="_subject" value={`[SRS] ${formData.projectName} - ${formData.priority.toUpperCase()}`} />
                         <input type="hidden" name="_template" value="table" />
                         <input type="hidden" name="_captcha" value="false" />
                         <input type="hidden" name="_next" value="https://ours2026.vercel.app/" />
+
+                        {/* Hidden inputs to ensure ALL data is sent to FormSubmit */}
+                        <input type="hidden" name="Project Name" value={formData.projectName} />
+                        <input type="hidden" name="Project Type" value={formData.projectType} />
+                        <input type="hidden" name="Contact Email" value={formData.contactEmail} />
+                        <input type="hidden" name="Contact Phone" value={formData.contactPhone} />
+                        <input type="hidden" name="Company Name" value={formData.companyName} />
+                        <input type="hidden" name="Problem Statement" value={formData.problemStatement} />
+                        <input type="hidden" name="Project Objectives" value={formData.projectObjectives} />
+                        <input type="hidden" name="Success Criteria" value={formData.successCriteria} />
+                        <input type="hidden" name="In-Scope Features" value={formData.inScopeFeatures} />
+                        <input type="hidden" name="MVP Features" value={formData.mvpFeatures} />
+                        <input type="hidden" name="Out of Scope" value={formData.outOfScopeFeatures} />
+                        <input type="hidden" name="Future Enhancements" value={formData.futureEnhancements} />
+                        <input type="hidden" name="Tech Stack" value={formData.techStack} />
+                        <input type="hidden" name="Platform Requirements" value={formData.platformRequirements.join(', ')} />
+                        <input type="hidden" name="Integrations" value={formData.integrations} />
+                        <input type="hidden" name="Performance Requirements" value={formData.performanceRequirements} />
+                        <input type="hidden" name="Security Requirements" value={formData.securityRequirements} />
+                        <input type="hidden" name="Target Audience" value={formData.targetAudience} />
+                        <input type="hidden" name="User Roles" value={formData.userRoles} />
+                        <input type="hidden" name="User Flows" value={formData.userFlows} />
+                        <input type="hidden" name="Budget" value={formData.budget} />
+                        <input type="hidden" name="Timeline" value={formData.timeline} />
+                        <input type="hidden" name="Constraints" value={formData.constraints} />
+                        <input type="hidden" name="Dependencies" value={formData.dependencies} />
+                        <input type="hidden" name="Design References" value={formData.designReferences} />
+                        <input type="hidden" name="Additional Notes" value={formData.additionalNotes} />
+                        <input type="hidden" name="Priority" value={formData.priority} />
 
                         {/* Section 1: Project Overview */}
                         {currentSection === 1 && (
@@ -390,8 +419,8 @@ const RequestProjectPage: React.FC = () => {
                                                 { value: 'pwa', label: 'PWA', icon: Globe },
                                             ].map(platform => (
                                                 <label key={platform.value} className={`cursor-pointer border rounded-xl p-3 flex items-center gap-2 transition-all ${formData.platformRequirements.includes(platform.value)
-                                                        ? 'border-mono-950 dark:border-white bg-mono-100 dark:bg-mono-800'
-                                                        : 'border-mono-200 dark:border-mono-700 hover:border-mono-400'
+                                                    ? 'border-mono-950 dark:border-white bg-mono-100 dark:bg-mono-800'
+                                                    : 'border-mono-200 dark:border-mono-700 hover:border-mono-400'
                                                     }`}>
                                                     <input type="checkbox" name="platformRequirements" value={platform.value}
                                                         checked={formData.platformRequirements.includes(platform.value)}
@@ -525,8 +554,8 @@ const RequestProjectPage: React.FC = () => {
                                         <label className={labelClass}>Priority Level</label>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                                             <label className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all ${formData.priority === 'standard'
-                                                    ? 'border-mono-950 dark:border-white bg-mono-100 dark:bg-mono-800'
-                                                    : 'border-mono-200 dark:border-mono-700 hover:border-mono-400'
+                                                ? 'border-mono-950 dark:border-white bg-mono-100 dark:bg-mono-800'
+                                                : 'border-mono-200 dark:border-mono-700 hover:border-mono-400'
                                                 }`}>
                                                 <input type="radio" name="priority" value="standard" className="hidden"
                                                     checked={formData.priority === 'standard'} onChange={handleChange} />
@@ -534,8 +563,8 @@ const RequestProjectPage: React.FC = () => {
                                                 <span className="text-xs text-mono-500">14-21 Days Turnaround</span>
                                             </label>
                                             <label className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all ${formData.priority === 'rush'
-                                                    ? 'border-mono-950 dark:border-white bg-mono-100 dark:bg-mono-800'
-                                                    : 'border-mono-200 dark:border-mono-700 hover:border-mono-400'
+                                                ? 'border-mono-950 dark:border-white bg-mono-100 dark:bg-mono-800'
+                                                : 'border-mono-200 dark:border-mono-700 hover:border-mono-400'
                                                 }`}>
                                                 <input type="radio" name="priority" value="rush" className="hidden"
                                                     checked={formData.priority === 'rush'} onChange={handleChange} />
