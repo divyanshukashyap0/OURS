@@ -36,6 +36,7 @@ import CareersPage from './pages/CareersPage';
 import TermsPage from './pages/TermsPage';
 import RequestProjectPage from './pages/RequestProjectPage';
 import InstallPWA from './components/InstallPWA';
+import ScrollToTop from './components/ScrollToTop';
 import { SiteProvider } from './context/SiteContext';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -45,6 +46,7 @@ const App: React.FC = () => {
       <SiteProvider>
         <AuthProvider>
           <Router>
+            <ScrollToTop />
             <InstallPWA />
             <Routes>
               {/* Public Routes */}
