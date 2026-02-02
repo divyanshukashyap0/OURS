@@ -1,45 +1,51 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Layers, User } from 'lucide-react';
+import { Home, BookOpen, Layers, User, Code } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const BottomNav: React.FC = () => {
     const location = useLocation();
 
     const navItems = [
-        { label: 'Home', icon: <Home size={22} />, path: '/' },
-        { label: 'Courses', icon: <BookOpen size={22} />, path: '/courses' },
-        { label: 'Projects', icon: <Layers size={22} />, path: '/projects' },
-        { label: 'Account', icon: <User size={22} />, path: '/account' },
+        { label: 'Home', icon: Home, path: '/' },
+        { label: 'Courses', icon: BookOpen, path: '/courses' },
+        { label: 'Projects', icon: Layers, path: '/projects' },
+        { label: 'Request', icon: Code, path: '/request-project' },
+        { label: 'Account', icon: User, path: '/account' },
     ];
 
-    // Only show on mobile
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-gray-950/80 backdrop-blur-xl border-t border-gray-800 pb-safe pt-2 px-2 shadow-2xl">
-            <nav className="flex justify-around items-center h-16 max-w-lg mx-auto">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white/90 dark:bg-mono-950/90 backdrop-blur-xl border-t border-mono-100 dark:border-mono-800 pb-safe">
+            <nav className="flex justify-around items-center h-16 max-w-lg mx-auto px-2">
                 {navItems.map((item) => {
                     const isActive = location.pathname === item.path;
+                    const Icon = item.icon;
 
                     return (
                         <NavLink
                             key={item.label}
                             to={item.path}
-                            className={({ isActive }) => `
-                                relative flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors duration-200
-                                ${isActive ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'}
-                            `}
+                            className="relative flex flex-col items-center justify-center flex-1 h-full py-2 touch-manipulation active:scale-95 transition-transform"
                         >
                             {isActive && (
                                 <motion.div
                                     layoutId="bottomNavIndicator"
-                                    className="absolute -top-2 w-10 h-1 bg-blue-500 rounded-b-lg shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                                    className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-mono-950 dark:bg-white rounded-b-full"
                                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                                 />
                             )}
-                            <div className="relative">
-                                {item.icon}
+                            <div className={`relative transition-colors duration-200 ${isActive
+                                    ? 'text-mono-950 dark:text-white'
+                                    : 'text-mono-400 dark:text-mono-500'
+                                }`}>
+                                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                             </div>
-                            <span className="text-[10px] font-medium tracking-wide">{item.label}</span>
+                            <span className={`text-[10px] font-medium mt-1 transition-colors duration-200 ${isActive
+                                    ? 'text-mono-950 dark:text-white'
+                                    : 'text-mono-400 dark:text-mono-500'
+                                }`}>
+                                {item.label}
+                            </span>
                         </NavLink>
                     );
                 })}

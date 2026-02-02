@@ -4,66 +4,85 @@ export default {
         "./index.html",
         "./**/*.{js,ts,jsx,tsx}",
     ],
-    darkMode: 'class', // Enforcing dark mode via class, but we will hardcode it on body
+    darkMode: 'class',
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Outfit', 'sans-serif'],
-                mono: ['JetBrains Mono', 'monospace'],
+                sans: ['Inter', 'system-ui', 'sans-serif'],
             },
             colors: {
-                tech: {
-                    primary: '#0ea5e9', // Sky 500
-                    secondary: '#6366f1', // Indigo 500
-                    accent: '#10b981',   // Emerald 500
-                    dark: '#0f172a',     // Slate 900
-                    darker: '#020617',   // Slate 950
-                    card: '#1e293b',     // Slate 800
+                // Premium Monochrome Palette
+                mono: {
+                    white: '#FFFFFF',
+                    50: '#FAFAFA',
+                    100: '#F5F5F5',
+                    200: '#E5E5E5',
+                    300: '#D4D4D4',
+                    400: '#A3A3A3',
+                    500: '#737373',
+                    600: '#525252',
+                    700: '#404040',
+                    800: '#262626',
+                    900: '#171717',
+                    950: '#0A0A0A', // Soft black - primary text
+                    black: '#000000',
                 },
-                primary: {
-                    50: '#eef2ff',
-                    100: '#e0e7ff',
-                    200: '#c7d2fe',
-                    300: '#a5b4fc',
-                    400: '#818cf8',
-                    500: '#6366f1',
-                    600: '#4f46e5',
-                    700: '#4338ca',
-                    800: '#3730a3',
-                    900: '#312e81',
-                },
+                // Simplified gray scale for compatibility
                 gray: {
-                    50: '#f8fafc',
-                    100: '#f1f5f9',
-                    200: '#e2e8f0',
-                    300: '#cbd5e1',
-                    400: '#94a3b8',
-                    500: '#64748b',
-                    600: '#475569',
-                    700: '#334155',
-                    800: '#1e293b',
-                    900: '#0f172a',
-                    950: '#020617',
+                    50: '#FAFAFA',
+                    100: '#F5F5F5',
+                    200: '#E5E5E5',
+                    300: '#D4D4D4',
+                    400: '#A3A3A3',
+                    500: '#737373',
+                    600: '#525252',
+                    700: '#404040',
+                    800: '#262626',
+                    900: '#171717',
+                    950: '#0A0A0A',
                 }
             },
             animation: {
-                'fade-in': 'fadeIn 0.5s ease-out',
-                'slide-up': 'slideUp 0.5s ease-out',
-                'blink': 'blink 1s step-end infinite',
+                'fade-in': 'fadeIn 0.6s ease-out forwards',
+                'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                'fade-in-down': 'fadeInDown 0.6s ease-out forwards',
+                'slide-up': 'slideUp 0.6s ease-out forwards',
+                'scale-in': 'scaleIn 0.4s ease-out forwards',
             },
             keyframes: {
                 fadeIn: {
                     '0%': { opacity: '0' },
                     '100%': { opacity: '1' },
                 },
+                fadeInUp: {
+                    '0%': { opacity: '0', transform: 'translateY(30px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                fadeInDown: {
+                    '0%': { opacity: '0', transform: 'translateY(-20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
                 slideUp: {
                     '0%': { transform: 'translateY(20px)', opacity: '0' },
                     '100%': { transform: 'translateY(0)', opacity: '1' },
                 },
-                blink: {
-                    '0%, 100%': { opacity: '1' },
-                    '50%': { opacity: '0' },
-                }
+                scaleIn: {
+                    '0%': { transform: 'scale(0.95)', opacity: '0' },
+                    '100%': { transform: 'scale(1)', opacity: '1' },
+                },
+            },
+            transitionDuration: {
+                '400': '400ms',
+                '600': '600ms',
+            },
+            transitionTimingFunction: {
+                'premium': 'cubic-bezier(0.16, 1, 0.3, 1)',
+            },
+            spacing: {
+                '18': '4.5rem',
+                '22': '5.5rem',
+                '26': '6.5rem',
+                '30': '7.5rem',
             }
         }
     },

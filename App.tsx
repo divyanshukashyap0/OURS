@@ -37,73 +37,75 @@ import TermsPage from './pages/TermsPage';
 import RequestProjectPage from './pages/RequestProjectPage';
 import InstallPWA from './components/InstallPWA';
 import { SiteProvider } from './context/SiteContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 const App: React.FC = () => {
   return (
-    <SiteProvider> {/* Wrapped with SiteProvider */}
-      <AuthProvider>
-        <Router>
-          <InstallPWA /> {/* Integrated PWA Prompt */}
-          <Routes>
-            {/* Public Routes */} {/* Added comment */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
+    <ThemeProvider>
+      <SiteProvider>
+        <AuthProvider>
+          <Router>
+            <InstallPWA />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
 
-            {/* Admin Routes */} {/* Added comment */}
-            <Route path="/admin" element={
-              <ProtectedRoute role="admin"> {/* Added role prop */}
-                <AdminLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<AdminDashboard />} />
-              <Route path="projects" element={<ProductManager />} />
-              <Route path="courses" element={<CourseManager />} />
-              <Route path="blogs" element={<BlogManager />} />
-              <Route path="coupons" element={<CouponManager />} />
-              <Route path="emails" element={<EmailManager />} />
-              <Route path="requests" element={<ProjectRequestManager />} />
-              <Route path="settings" element={<AdminSettings />} /> {/* Added AdminSettings route */}
-            </Route>
+              {/* Admin Routes */}
+              <Route path="/admin" element={
+                <ProtectedRoute role="admin">
+                  <AdminLayout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<AdminDashboard />} />
+                <Route path="projects" element={<ProductManager />} />
+                <Route path="courses" element={<CourseManager />} />
+                <Route path="blogs" element={<BlogManager />} />
+                <Route path="coupons" element={<CouponManager />} />
+                <Route path="emails" element={<EmailManager />} />
+                <Route path="requests" element={<ProjectRequestManager />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
 
-            {/* Invoice Route */}
-            <Route path="/invoice/:id" element={
-              <ProtectedRoute>
-                <InvoicePage />
-              </ProtectedRoute>
-            } />
+              {/* Invoice Route */}
+              <Route path="/invoice/:id" element={
+                <ProtectedRoute>
+                  <InvoicePage />
+                </ProtectedRoute>
+              } />
 
-            {/* Account Route */}
-            <Route path="/account" element={
-              <ProtectedRoute>
-                <Navbar />
-                <AccountPage />
-              </ProtectedRoute>
-            } />
+              {/* Account Route */}
+              <Route path="/account" element={
+                <ProtectedRoute>
+                  <Navbar />
+                  <AccountPage />
+                </ProtectedRoute>
+              } />
 
-            {/* Main App Routes */}
-            <Route element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="projects" element={<ProjectsPage />} />
-              <Route path="blog" element={<BlogPage />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="project/:id" element={<ProjectDetail />} />
-              <Route path="blog/:id" element={<BlogDetail />} />
-              {/* Add dummy routes for sidebar links */}
-              <Route path="source-code" element={<SourceCode />} />
-              <Route path="courses" element={<CoursesPage />} />
-              <Route path="checkout/:id" element={<CheckoutPage />} />
-              <Route path="order-success" element={<OrderSuccessPage />} />
-              <Route path="tutorials" element={<TutorialsPage />} />
-              <Route path="pricing" element={<PricingPage />} />
-              <Route path="contact" element={<ContactPage />} />
-              <Route path="careers" element={<CareersPage />} />
-              <Route path="terms" element={<TermsPage />} />
-              <Route path="request-project" element={<RequestProjectPage />} /> {/* New Project Request Route */}
-            </Route>
-          </Routes>
-        </Router>
-      </AuthProvider>
-    </SiteProvider>
+              {/* Main App Routes */}
+              <Route element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="projects" element={<ProjectsPage />} />
+                <Route path="blog" element={<BlogPage />} />
+                <Route path="about" element={<AboutPage />} />
+                <Route path="project/:id" element={<ProjectDetail />} />
+                <Route path="blog/:id" element={<BlogDetail />} />
+                <Route path="source-code" element={<SourceCode />} />
+                <Route path="courses" element={<CoursesPage />} />
+                <Route path="checkout/:id" element={<CheckoutPage />} />
+                <Route path="order-success" element={<OrderSuccessPage />} />
+                <Route path="tutorials" element={<TutorialsPage />} />
+                <Route path="pricing" element={<PricingPage />} />
+                <Route path="contact" element={<ContactPage />} />
+                <Route path="careers" element={<CareersPage />} />
+                <Route path="terms" element={<TermsPage />} />
+                <Route path="request-project" element={<RequestProjectPage />} />
+              </Route>
+            </Routes>
+          </Router>
+        </AuthProvider>
+      </SiteProvider>
+    </ThemeProvider>
   );
 };
 

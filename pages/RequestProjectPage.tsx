@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send, Code, Clock, ShieldCheck, Mail, ArrowRight } from 'lucide-react';
+import {
+    ArrowLeft, Send, Code, Clock, ShieldCheck, Mail,
+    Target, Users, Layers, Database, Smartphone, Globe,
+    CheckCircle2, AlertTriangle, FileText
+} from 'lucide-react';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
@@ -12,21 +16,67 @@ const RequestProjectPage: React.FC = () => {
     const navigate = useNavigate();
     const { currentUser } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [currentSection, setCurrentSection] = useState(1);
 
     const formRef = React.useRef<HTMLFormElement>(null);
 
-    // Form State
+    // Comprehensive SRS Form State
     const [formData, setFormData] = useState({
+        // Section 1: Project Overview
         projectName: '',
-        description: '',
-        features: '',
-        budget: '5-10',
-        priority: 'standard', // 'standard' or 'rush'
-        contactEmail: currentUser?.email || ''
+        projectType: 'web-app',
+        contactEmail: currentUser?.email || '',
+        contactPhone: '',
+        companyName: '',
+
+        // Section 2: Problem & Objectives
+        problemStatement: '',
+        projectObjectives: '',
+        successCriteria: '',
+
+        // Section 3: Scope & Features
+        inScopeFeatures: '',
+        outOfScopeFeatures: '',
+        mvpFeatures: '',
+        futureEnhancements: '',
+
+        // Section 4: Technical Requirements
+        techStack: 'any',
+        platformRequirements: [] as string[],
+        integrations: '',
+        performanceRequirements: '',
+        securityRequirements: '',
+
+        // Section 5: User Requirements
+        targetAudience: '',
+        userRoles: '',
+        userFlows: '',
+
+        // Section 6: Constraints & Dependencies
+        budget: '20-50',
+        timeline: 'flexible',
+        constraints: '',
+        dependencies: '',
+
+        // Section 7: Additional Info
+        designReferences: '',
+        additionalNotes: '',
+        priority: 'standard'
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, checked } = e.target;
+        const arr = formData[name as keyof typeof formData] as string[];
+        if (checked) {
+            setFormData({ ...formData, [name]: [...arr, value] });
+        } else {
+            setFormData({ ...formData, [name]: arr.filter(v => v !== value) });
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -34,15 +84,14 @@ const RequestProjectPage: React.FC = () => {
         setLoading(true);
 
         try {
-            // 1. Save to Firestore
             await addDoc(collection(db, 'project_requests'), {
                 ...formData,
+                platformRequirements: formData.platformRequirements.join(', '),
                 userId: currentUser?.uid || 'anonymous',
                 createdAt: serverTimestamp(),
                 status: 'pending'
             });
 
-            // 2. Submit Form Programmatically to FormSubmit
             if (formRef.current) {
                 formRef.current.submit();
             }
@@ -53,196 +102,524 @@ const RequestProjectPage: React.FC = () => {
         }
     };
 
-    // Single Page Layout (Responsive Form)
+    const sections = [
+        { id: 1, title: 'Overview', icon: FileText },
+        { id: 2, title: 'Problem & Goals', icon: Target },
+        { id: 3, title: 'Scope & Features', icon: Layers },
+        { id: 4, title: 'Technical', icon: Database },
+        { id: 5, title: 'Users', icon: Users },
+        { id: 6, title: 'Constraints', icon: AlertTriangle },
+        { id: 7, title: 'Submit', icon: Send },
+    ];
+
+    const inputClass = "w-full bg-mono-50 dark:bg-mono-800 border border-mono-200 dark:border-mono-700 rounded-xl px-4 py-3 text-mono-950 dark:text-white focus:border-mono-950 dark:focus:border-white focus:ring-1 focus:ring-mono-950 dark:focus:ring-white outline-none transition-all placeholder:text-mono-400";
+    const labelClass = "block text-sm font-medium text-mono-700 dark:text-mono-300 mb-2";
+    const sectionClass = "bg-white dark:bg-mono-900 border border-mono-100 dark:border-mono-800 rounded-2xl p-6 md:p-8 space-y-6";
+
     return (
-        <div className="min-h-screen bg-gray-950 text-white font-sans selection:bg-indigo-500/30 overflow-x-hidden">
+        <div className="min-h-screen bg-mono-50 dark:bg-mono-950 text-mono-950 dark:text-white font-sans">
             <div className="max-w-4xl mx-auto px-6 py-8 md:py-12">
 
-                {/* Header / Intro Section */}
-                <div className="mb-12 text-center md:text-left">
+                {/* Header */}
+                <div className="mb-10">
                     <button
                         onClick={() => navigate('/')}
-                        className="mb-6 text-gray-500 hover:text-white flex items-center justify-center md:justify-start gap-2 transition-colors"
+                        className="mb-6 text-mono-500 hover:text-mono-950 dark:hover:text-white flex items-center gap-2 transition-colors"
                     >
-                        <ArrowLeft size={16} /> Back to Dashboard
+                        <ArrowLeft size={16} /> Back to Home
                     </button>
 
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
-                        <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg rotate-3 shrink-0">
-                            <Code size={32} className="text-white" />
+                    <div className="flex items-start gap-4">
+                        <div className="w-14 h-14 bg-mono-950 dark:bg-white rounded-2xl flex items-center justify-center shrink-0">
+                            <FileText size={28} className="text-white dark:text-mono-950" />
                         </div>
                         <div>
-                            <h1 className="text-3xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
-                                The Builder's Protocol
+                            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                                Software Requirements Specification
                             </h1>
-                            <p className="text-gray-400 max-w-xl mx-auto md:mx-0">
-                                Initiate a custom build request. We transform your raw idea into a fully functional, production-ready application in <strong className="text-white">MAX 7 days</strong>.
+                            <p className="text-mono-500 dark:text-mono-400">
+                                Complete this detailed form to help us understand your project requirements.
                             </p>
                         </div>
                     </div>
 
-                    {/* Feature Pills (Responsive Grid) */}
-                    <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-                        <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 flex items-center gap-3">
-                            <Clock className="text-indigo-400 shrink-0" size={20} />
-                            <div className="text-left">
-                                <h3 className="font-bold text-sm text-white">7-Day Sprint</h3>
-                                <p className="text-[10px] text-gray-400">Rapid development cycle.</p>
+                    {/* Feature Pills */}
+                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="bg-white dark:bg-mono-800 p-4 rounded-xl border border-mono-100 dark:border-mono-700 flex items-center gap-3">
+                            <Clock className="text-mono-600 dark:text-mono-400" size={20} />
+                            <div>
+                                <h3 className="font-semibold text-sm">7-Day Sprint</h3>
+                                <p className="text-xs text-mono-500">Rapid development</p>
                             </div>
                         </div>
-                        <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 flex items-center gap-3">
-                            <ShieldCheck className="text-indigo-400 shrink-0" size={20} />
-                            <div className="text-left">
-                                <h3 className="font-bold text-sm text-white">Full Ownership</h3>
-                                <p className="text-[10px] text-gray-400">100% source code ownership.</p>
+                        <div className="bg-white dark:bg-mono-800 p-4 rounded-xl border border-mono-100 dark:border-mono-700 flex items-center gap-3">
+                            <ShieldCheck className="text-mono-600 dark:text-mono-400" size={20} />
+                            <div>
+                                <h3 className="font-semibold text-sm">Full Ownership</h3>
+                                <p className="text-xs text-mono-500">100% source code</p>
                             </div>
                         </div>
-                        <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 flex items-center gap-3">
-                            <Mail className="text-indigo-400 shrink-0" size={20} />
-                            <div className="text-left">
-                                <h3 className="font-bold text-sm text-white">Auto-Connect</h3>
-                                <p className="text-[10px] text-gray-400">Direct engineering line.</p>
+                        <div className="bg-white dark:bg-mono-800 p-4 rounded-xl border border-mono-100 dark:border-mono-700 flex items-center gap-3">
+                            <Mail className="text-mono-600 dark:text-mono-400" size={20} />
+                            <div>
+                                <h3 className="font-semibold text-sm">Direct Support</h3>
+                                <p className="text-xs text-mono-500">Engineering contact</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                {/* Section Navigation */}
+                <div className="mb-8 overflow-x-auto pb-2">
+                    <div className="flex gap-2 min-w-max">
+                        {sections.map((section) => (
+                            <button
+                                key={section.id}
+                                onClick={() => setCurrentSection(section.id)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${currentSection === section.id
+                                        ? 'bg-mono-950 dark:bg-white text-white dark:text-mono-950'
+                                        : 'bg-white dark:bg-mono-800 text-mono-600 dark:text-mono-400 border border-mono-200 dark:border-mono-700 hover:border-mono-400'
+                                    }`}
+                            >
+                                <section.icon size={16} />
+                                {section.title}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
+                    key={currentSection}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3 }}
                 >
                     <form
                         ref={formRef}
                         action="https://formsubmit.co/optistyle.india@gmail.com"
                         method="POST"
                         onSubmit={handleSubmit}
-                        className="space-y-6 md:space-y-8"
                     >
-                        {/* Hidden Configuration for FormSubmit */}
-                        <input type="hidden" name="_subject" value={`[NEW PROJECT] ${formData.projectName} - ${formData.priority.toUpperCase()}`} />
+                        {/* Hidden Configuration */}
+                        <input type="hidden" name="_subject" value={`[SRS] ${formData.projectName} - ${formData.priority.toUpperCase()}`} />
                         <input type="hidden" name="_template" value="table" />
                         <input type="hidden" name="_captcha" value="false" />
                         <input type="hidden" name="_next" value="https://ours2026.vercel.app/" />
 
-                        {/* Section 1: Identity */}
-                        <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8">
-                            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-indigo-400">
-                                <span className="bg-indigo-500/20 w-8 h-8 rounded-lg flex items-center justify-center text-sm">1</span>
-                                Identity
-                            </h3>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="col-span-1 md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Project Name / Codename</label>
-                                    <input
-                                        type="text"
-                                        name="projectName"
-                                        required
-                                        className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-gray-600"
-                                        placeholder="e.g. Project Orion"
-                                        value={formData.projectName}
-                                        onChange={handleChange}
-                                    />
+                        {/* Section 1: Project Overview */}
+                        {currentSection === 1 && (
+                            <div className={sectionClass}>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="bg-mono-100 dark:bg-mono-800 w-10 h-10 rounded-xl flex items-center justify-center font-bold">1</span>
+                                    <h2 className="text-xl font-bold">Project Overview</h2>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Contact Email</label>
-                                    <input
-                                        type="email"
-                                        name="contactEmail"
-                                        required
-                                        className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 outline-none transition-all"
-                                        value={formData.contactEmail}
-                                        onChange={handleChange}
-                                    />
-                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="md:col-span-2">
+                                        <label className={labelClass}>Project Name / Codename *</label>
+                                        <input type="text" name="projectName" required className={inputClass}
+                                            placeholder="e.g. Project Orion, TaskMaster Pro"
+                                            value={formData.projectName} onChange={handleChange} />
+                                    </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Budget Range</label>
-                                    <select
-                                        name="budget"
-                                        className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 outline-none transition-all appearance-none"
-                                        value={formData.budget}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="5-10">$5 - $10</option>
-                                        <option value="10-20">$10 - $20</option>
-                                        <option value="20-50">$20 - $30</option>
-                                        <option value="50-100">$30 - $40</option>
-                                        <option value="100-250">$40 - $50</option>
-                                        <option value="250-500">$50 - $60</option>
-                                        <option value="500-1000">$60 - $70</option>
-                                        <option value="1000+">$70 - $80</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                                    <div>
+                                        <label className={labelClass}>Project Type *</label>
+                                        <select name="projectType" className={inputClass} value={formData.projectType} onChange={handleChange}>
+                                            <option value="web-app">Web Application</option>
+                                            <option value="mobile-app">Mobile Application</option>
+                                            <option value="desktop-app">Desktop Application</option>
+                                            <option value="api-backend">API / Backend Service</option>
+                                            <option value="landing-page">Landing Page / Website</option>
+                                            <option value="ecommerce">E-Commerce Platform</option>
+                                            <option value="saas">SaaS Product</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
 
-                        {/* Section 2: Specs */}
-                        <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8">
-                            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-indigo-400">
-                                <span className="bg-indigo-500/20 w-8 h-8 rounded-lg flex items-center justify-center text-sm">2</span>
-                                Technical Specs
-                            </h3>
+                                    <div>
+                                        <label className={labelClass}>Company / Organization</label>
+                                        <input type="text" name="companyName" className={inputClass}
+                                            placeholder="Your company name (optional)"
+                                            value={formData.companyName} onChange={handleChange} />
+                                    </div>
 
-                            <div className="space-y-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">The Vision</label>
-                                    <textarea
-                                        name="description"
-                                        required
-                                        rows={4}
-                                        className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 outline-none transition-all placeholder:text-gray-600"
-                                        placeholder="Describe what you want to build. What problem does it solve?"
-                                        value={formData.description}
-                                        onChange={handleChange}
-                                    />
-                                </div>
+                                    <div>
+                                        <label className={labelClass}>Contact Email *</label>
+                                        <input type="email" name="contactEmail" required className={inputClass}
+                                            value={formData.contactEmail} onChange={handleChange} />
+                                    </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Core Features</label>
-                                    <textarea
-                                        name="features"
-                                        required
-                                        rows={3}
-                                        className="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-indigo-500 outline-none transition-all placeholder:text-gray-600"
-                                        placeholder="- Feature 1&#10;- Feature 2&#10;- Feature 3"
-                                        value={formData.features}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Urgency</label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <label className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all ${formData.priority === 'standard' ? 'border-indigo-500 bg-indigo-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
-                                            <input type="radio" name="priority" value="standard" className="hidden" onChange={handleChange} />
-                                            <span className="font-bold">Standard</span>
-                                            <span className="text-xs text-gray-400">14-21 Days Turnaround</span>
-                                        </label>
-                                        <label className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all ${formData.priority === 'rush' ? 'border-red-500 bg-red-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
-                                            <input type="radio" name="priority" value="rush" className="hidden" onChange={handleChange} />
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-bold text-red-400">Rush Protocol</span>
-                                                <span className="bg-red-500/20 text-red-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded">Fast</span>
-                                            </div>
-                                            <span className="text-xs text-gray-400">7-Day MAX Guarantee</span>
-                                        </label>
+                                    <div>
+                                        <label className={labelClass}>Contact Phone</label>
+                                        <input type="tel" name="contactPhone" className={inputClass}
+                                            placeholder="+1 (555) 123-4567"
+                                            value={formData.contactPhone} onChange={handleChange} />
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div className="flex justify-end pt-4">
-                            <Button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full md:w-auto px-10 py-4 text-base bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-lg shadow-indigo-600/20"
-                            >
-                                {loading ? <LogoLoader size={24} color="white" /> : 'Submit & Initialize Protocol'}
-                            </Button>
-                        </div>
+                                <div className="flex justify-end pt-4">
+                                    <Button variant="primary" onClick={() => setCurrentSection(2)}>
+                                        Next: Problem & Goals
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Section 2: Problem Statement & Objectives */}
+                        {currentSection === 2 && (
+                            <div className={sectionClass}>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="bg-mono-100 dark:bg-mono-800 w-10 h-10 rounded-xl flex items-center justify-center font-bold">2</span>
+                                    <h2 className="text-xl font-bold">Problem Statement & Objectives</h2>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className={labelClass}>Problem Statement *</label>
+                                        <p className="text-xs text-mono-500 mb-2">What problem does this software solve? Who faces this problem?</p>
+                                        <textarea name="problemStatement" required rows={4} className={inputClass}
+                                            placeholder="Describe the current pain points and challenges that this project aims to address..."
+                                            value={formData.problemStatement} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Project Objectives *</label>
+                                        <p className="text-xs text-mono-500 mb-2">What are the main goals of this project?</p>
+                                        <textarea name="projectObjectives" required rows={3} className={inputClass}
+                                            placeholder="1. Reduce manual data entry by 80%&#10;2. Enable real-time collaboration&#10;3. Provide analytics dashboard"
+                                            value={formData.projectObjectives} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Success Criteria</label>
+                                        <p className="text-xs text-mono-500 mb-2">How will you measure if this project is successful?</p>
+                                        <textarea name="successCriteria" rows={2} className={inputClass}
+                                            placeholder="e.g. 1000 active users within 3 months, 50% reduction in processing time..."
+                                            value={formData.successCriteria} onChange={handleChange} />
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between pt-4">
+                                    <Button variant="secondary" onClick={() => setCurrentSection(1)}>Previous</Button>
+                                    <Button variant="primary" onClick={() => setCurrentSection(3)}>Next: Scope & Features</Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Section 3: Scope & Features */}
+                        {currentSection === 3 && (
+                            <div className={sectionClass}>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="bg-mono-100 dark:bg-mono-800 w-10 h-10 rounded-xl flex items-center justify-center font-bold">3</span>
+                                    <h2 className="text-xl font-bold">Scope & Features</h2>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className={labelClass}>In-Scope Features (Must Have) *</label>
+                                        <p className="text-xs text-mono-500 mb-2">Core features that MUST be included in the first release.</p>
+                                        <textarea name="inScopeFeatures" required rows={4} className={inputClass}
+                                            placeholder="- User authentication (email, Google OAuth)&#10;- Dashboard with analytics&#10;- CRUD operations for projects&#10;- Email notifications"
+                                            value={formData.inScopeFeatures} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>MVP Features (Minimum Viable Product)</label>
+                                        <p className="text-xs text-mono-500 mb-2">If we need to prioritize, which features are absolutely essential?</p>
+                                        <textarea name="mvpFeatures" rows={3} className={inputClass}
+                                            placeholder="- User login&#10;- Create/View items&#10;- Basic search"
+                                            value={formData.mvpFeatures} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Out of Scope (Explicitly NOT Included)</label>
+                                        <p className="text-xs text-mono-500 mb-2">Features that should NOT be part of this phase.</p>
+                                        <textarea name="outOfScopeFeatures" rows={2} className={inputClass}
+                                            placeholder="- Mobile app (web only for now)&#10;- Multi-language support"
+                                            value={formData.outOfScopeFeatures} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Future Enhancements (Nice to Have)</label>
+                                        <p className="text-xs text-mono-500 mb-2">Features for future versions.</p>
+                                        <textarea name="futureEnhancements" rows={2} className={inputClass}
+                                            placeholder="- AI recommendations&#10;- Integration with Slack"
+                                            value={formData.futureEnhancements} onChange={handleChange} />
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between pt-4">
+                                    <Button variant="secondary" onClick={() => setCurrentSection(2)}>Previous</Button>
+                                    <Button variant="primary" onClick={() => setCurrentSection(4)}>Next: Technical</Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Section 4: Technical Requirements */}
+                        {currentSection === 4 && (
+                            <div className={sectionClass}>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="bg-mono-100 dark:bg-mono-800 w-10 h-10 rounded-xl flex items-center justify-center font-bold">4</span>
+                                    <h2 className="text-xl font-bold">Technical Requirements</h2>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className={labelClass}>Preferred Tech Stack</label>
+                                        <select name="techStack" className={inputClass} value={formData.techStack} onChange={handleChange}>
+                                            <option value="any">No Preference (You Decide)</option>
+                                            <option value="react-node">React + Node.js</option>
+                                            <option value="nextjs">Next.js (Full Stack)</option>
+                                            <option value="react-firebase">React + Firebase</option>
+                                            <option value="vue-node">Vue.js + Node.js</option>
+                                            <option value="react-native">React Native (Mobile)</option>
+                                            <option value="flutter">Flutter (Mobile)</option>
+                                            <option value="python-django">Python + Django</option>
+                                            <option value="other">Other (specify in notes)</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Platform Requirements</label>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
+                                            {[
+                                                { value: 'web', label: 'Web Browser', icon: Globe },
+                                                { value: 'ios', label: 'iOS', icon: Smartphone },
+                                                { value: 'android', label: 'Android', icon: Smartphone },
+                                                { value: 'desktop', label: 'Desktop', icon: Layers },
+                                                { value: 'pwa', label: 'PWA', icon: Globe },
+                                            ].map(platform => (
+                                                <label key={platform.value} className={`cursor-pointer border rounded-xl p-3 flex items-center gap-2 transition-all ${formData.platformRequirements.includes(platform.value)
+                                                        ? 'border-mono-950 dark:border-white bg-mono-100 dark:bg-mono-800'
+                                                        : 'border-mono-200 dark:border-mono-700 hover:border-mono-400'
+                                                    }`}>
+                                                    <input type="checkbox" name="platformRequirements" value={platform.value}
+                                                        checked={formData.platformRequirements.includes(platform.value)}
+                                                        onChange={handleCheckboxChange} className="hidden" />
+                                                    <platform.icon size={18} className="text-mono-500" />
+                                                    <span className="text-sm">{platform.label}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Required Integrations</label>
+                                        <textarea name="integrations" rows={2} className={inputClass}
+                                            placeholder="e.g. Stripe for payments, SendGrid for emails, Google Maps API..."
+                                            value={formData.integrations} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Performance Requirements</label>
+                                        <textarea name="performanceRequirements" rows={2} className={inputClass}
+                                            placeholder="e.g. Page load under 2s, support 1000 concurrent users..."
+                                            value={formData.performanceRequirements} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Security Requirements</label>
+                                        <textarea name="securityRequirements" rows={2} className={inputClass}
+                                            placeholder="e.g. HTTPS, data encryption, GDPR compliance, 2FA..."
+                                            value={formData.securityRequirements} onChange={handleChange} />
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between pt-4">
+                                    <Button variant="secondary" onClick={() => setCurrentSection(3)}>Previous</Button>
+                                    <Button variant="primary" onClick={() => setCurrentSection(5)}>Next: Users</Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Section 5: User Requirements */}
+                        {currentSection === 5 && (
+                            <div className={sectionClass}>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="bg-mono-100 dark:bg-mono-800 w-10 h-10 rounded-xl flex items-center justify-center font-bold">5</span>
+                                    <h2 className="text-xl font-bold">User Requirements</h2>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className={labelClass}>Target Audience *</label>
+                                        <p className="text-xs text-mono-500 mb-2">Who will use this software?</p>
+                                        <textarea name="targetAudience" required rows={2} className={inputClass}
+                                            placeholder="e.g. Small business owners, age 25-45, who need to manage inventory..."
+                                            value={formData.targetAudience} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>User Roles & Permissions</label>
+                                        <p className="text-xs text-mono-500 mb-2">Different types of users and their access levels.</p>
+                                        <textarea name="userRoles" rows={3} className={inputClass}
+                                            placeholder="- Admin: Full access, manage users&#10;- Manager: View reports, manage team&#10;- User: Basic CRUD operations"
+                                            value={formData.userRoles} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Key User Flows</label>
+                                        <p className="text-xs text-mono-500 mb-2">Main workflows users will perform.</p>
+                                        <textarea name="userFlows" rows={3} className={inputClass}
+                                            placeholder="1. User signs up → Verifies email → Completes profile&#10;2. User creates project → Adds tasks → Invites team"
+                                            value={formData.userFlows} onChange={handleChange} />
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between pt-4">
+                                    <Button variant="secondary" onClick={() => setCurrentSection(4)}>Previous</Button>
+                                    <Button variant="primary" onClick={() => setCurrentSection(6)}>Next: Constraints</Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Section 6: Constraints & Dependencies */}
+                        {currentSection === 6 && (
+                            <div className={sectionClass}>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="bg-mono-100 dark:bg-mono-800 w-10 h-10 rounded-xl flex items-center justify-center font-bold">6</span>
+                                    <h2 className="text-xl font-bold">Constraints & Dependencies</h2>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className={labelClass}>Budget Range *</label>
+                                            <select name="budget" required className={inputClass} value={formData.budget} onChange={handleChange}>
+                                                <option value="10-20">$10 - $20</option>
+                                                <option value="20-50">$20 - $50</option>
+                                                <option value="50-100">$50 - $100</option>
+                                                <option value="100-200">$100 - $200</option>
+                                                <option value="200-500">$200 - $500</option>
+                                                <option value="500+">$500+</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className={labelClass}>Timeline Preference *</label>
+                                            <select name="timeline" required className={inputClass} value={formData.timeline} onChange={handleChange}>
+                                                <option value="urgent">Urgent (7 days)</option>
+                                                <option value="normal">Normal (2-3 weeks)</option>
+                                                <option value="flexible">Flexible (1 month+)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Known Constraints</label>
+                                        <p className="text-xs text-mono-500 mb-2">Any limitations or restrictions we should know about.</p>
+                                        <textarea name="constraints" rows={2} className={inputClass}
+                                            placeholder="e.g. Must work offline, limited hosting budget, specific compliance requirements..."
+                                            value={formData.constraints} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>External Dependencies</label>
+                                        <p className="text-xs text-mono-500 mb-2">Third-party systems or approvals required.</p>
+                                        <textarea name="dependencies" rows={2} className={inputClass}
+                                            placeholder="e.g. Waiting for API access from partner, need design approval from marketing..."
+                                            value={formData.dependencies} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Priority Level</label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                                            <label className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all ${formData.priority === 'standard'
+                                                    ? 'border-mono-950 dark:border-white bg-mono-100 dark:bg-mono-800'
+                                                    : 'border-mono-200 dark:border-mono-700 hover:border-mono-400'
+                                                }`}>
+                                                <input type="radio" name="priority" value="standard" className="hidden"
+                                                    checked={formData.priority === 'standard'} onChange={handleChange} />
+                                                <span className="font-bold">Standard</span>
+                                                <span className="text-xs text-mono-500">14-21 Days Turnaround</span>
+                                            </label>
+                                            <label className={`cursor-pointer border rounded-xl p-4 flex flex-col gap-2 transition-all ${formData.priority === 'rush'
+                                                    ? 'border-mono-950 dark:border-white bg-mono-100 dark:bg-mono-800'
+                                                    : 'border-mono-200 dark:border-mono-700 hover:border-mono-400'
+                                                }`}>
+                                                <input type="radio" name="priority" value="rush" className="hidden"
+                                                    checked={formData.priority === 'rush'} onChange={handleChange} />
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold">Rush</span>
+                                                    <span className="bg-mono-950 dark:bg-white text-white dark:text-mono-950 text-[10px] uppercase font-bold px-2 py-0.5 rounded">Fast</span>
+                                                </div>
+                                                <span className="text-xs text-mono-500">7-Day MAX Guarantee</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between pt-4">
+                                    <Button variant="secondary" onClick={() => setCurrentSection(5)}>Previous</Button>
+                                    <Button variant="primary" onClick={() => setCurrentSection(7)}>Next: Review & Submit</Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Section 7: Additional Info & Submit */}
+                        {currentSection === 7 && (
+                            <div className={sectionClass}>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="bg-mono-100 dark:bg-mono-800 w-10 h-10 rounded-xl flex items-center justify-center font-bold">7</span>
+                                    <h2 className="text-xl font-bold">Additional Information & Submit</h2>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className={labelClass}>Design References</label>
+                                        <p className="text-xs text-mono-500 mb-2">Links to designs, mockups, or reference websites.</p>
+                                        <textarea name="designReferences" rows={2} className={inputClass}
+                                            placeholder="https://dribbble.com/example&#10;https://figma.com/file/..."
+                                            value={formData.designReferences} onChange={handleChange} />
+                                    </div>
+
+                                    <div>
+                                        <label className={labelClass}>Additional Notes</label>
+                                        <textarea name="additionalNotes" rows={3} className={inputClass}
+                                            placeholder="Anything else we should know about this project..."
+                                            value={formData.additionalNotes} onChange={handleChange} />
+                                    </div>
+
+                                    {/* Summary Preview */}
+                                    <div className="bg-mono-50 dark:bg-mono-800 rounded-xl p-6 border border-mono-200 dark:border-mono-700">
+                                        <h3 className="font-bold mb-4 flex items-center gap-2">
+                                            <CheckCircle2 size={18} className="text-green-500" />
+                                            Request Summary
+                                        </h3>
+                                        <div className="grid grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                                <span className="text-mono-500">Project:</span>
+                                                <p className="font-medium">{formData.projectName || 'Not specified'}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-mono-500">Type:</span>
+                                                <p className="font-medium capitalize">{formData.projectType.replace('-', ' ')}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-mono-500">Budget:</span>
+                                                <p className="font-medium">${formData.budget}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-mono-500">Timeline:</span>
+                                                <p className="font-medium capitalize">{formData.timeline}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between pt-6">
+                                    <Button variant="secondary" onClick={() => setCurrentSection(6)}>Previous</Button>
+                                    <Button
+                                        type="submit"
+                                        variant="primary"
+                                        disabled={loading}
+                                        className="px-8"
+                                    >
+                                        {loading ? <LogoLoader size={24} /> : 'Submit SRS Document'}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </form>
                 </motion.div>
             </div>

@@ -5,69 +5,298 @@
 @layer base {
   :root {
     -webkit-tap-highlight-color: transparent;
+    --color-soft-black: #0A0A0A;
+    --color-white: #FFFFFF;
+    --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Logo spin animation */
+  @keyframes logo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .logo-spin-initial {
+    animation: logo-spin 1s ease-out 1;
+  }
+
+  .logo-spin-hover:hover {
+    animation: logo-spin 0.7s ease-in-out 1;
   }
 
   html {
     @apply scroll-smooth;
   }
 
+  /* Light Mode (Default) */
   body {
-    @apply bg-gray-950 text-gray-100 font-sans antialiased;
+    @apply bg-white text-mono-950 font-sans antialiased;
     touch-action: manipulation;
     padding-bottom: env(safe-area-inset-bottom);
-    /* iOS Safe Area */
+    transition: background-color var(--transition-slow), color var(--transition-slow);
   }
 
-  /* Fluid Typography using clamp() */
+  /* Dark Mode */
+  .dark body {
+    @apply bg-mono-950 text-mono-100;
+  }
+
+  /* Premium Typography - Strong Hierarchy */
   h1 {
-    font-size: clamp(2.25rem, 5vw + 1rem, 4.5rem);
+    font-size: clamp(2.5rem, 6vw + 1rem, 5rem);
+    @apply font-bold tracking-tight leading-tight;
   }
 
   h2 {
-    font-size: clamp(1.875rem, 4vw + 1rem, 3.75rem);
+    font-size: clamp(2rem, 4vw + 1rem, 3.5rem);
+    @apply font-bold tracking-tight leading-tight;
   }
 
   h3 {
-    font-size: clamp(1.5rem, 3vw + 1rem, 3rem);
+    font-size: clamp(1.5rem, 3vw + 0.5rem, 2.25rem);
+    @apply font-semibold tracking-tight;
+  }
+
+  h4 {
+    font-size: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
+    @apply font-semibold;
   }
 
   p {
-    font-size: clamp(1rem, 2vw + 0.5rem, 1.125rem);
+    font-size: clamp(1rem, 1.5vw + 0.25rem, 1.125rem);
+    @apply leading-relaxed;
   }
 
-  /* Enforce dark mode styles by default since we are removing valid light mode */
-  .dark body {
-    @apply bg-gray-950 text-gray-100;
+  /* Remove default link colors */
+  a {
+    @apply text-inherit no-underline;
   }
 }
 
 @layer components {
+
+  /* Premium Primary Button - Black bg, white text */
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 active:scale-95 shadow-lg shadow-primary-500/20;
+    @apply bg-mono-950 text-white font-medium py-3.5 px-7 rounded-full transition-all duration-400 ease-premium hover:bg-mono-800 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-mono-950 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
+  .dark .btn-primary {
+    @apply bg-white text-mono-950 hover:bg-mono-100;
+  }
+
+  /* Premium Secondary Button - White bg, black border */
   .btn-secondary {
-    @apply bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 active:scale-95 border border-gray-700;
+    @apply bg-transparent text-mono-950 font-medium py-3.5 px-7 rounded-full border border-mono-300 transition-all duration-400 ease-premium hover:border-mono-950 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-mono-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
+  .dark .btn-secondary {
+    @apply text-white border-mono-700 hover:border-white;
+  }
+
+  /* Ghost Button */
+  .btn-ghost {
+    @apply bg-transparent text-mono-600 font-medium py-3 px-5 rounded-full transition-all duration-400 ease-premium hover:text-mono-950 hover:bg-mono-100 active:scale-[0.98];
+  }
+
+  .dark .btn-ghost {
+    @apply text-mono-400 hover:text-white hover:bg-mono-800;
+  }
+
+  /* Premium Input Field */
   .input-field {
-    @apply bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 w-full;
+    @apply bg-white border border-mono-200 rounded-xl px-4 py-3.5 text-mono-950 placeholder-mono-400 transition-all duration-400 ease-premium focus:outline-none focus:ring-2 focus:ring-mono-950 focus:border-transparent w-full;
+  }
+
+  .dark .input-field {
+    @apply bg-mono-900 border-mono-700 text-white placeholder-mono-500 focus:ring-white;
+  }
+
+  /* Premium Card */
+  .card {
+    @apply bg-white rounded-2xl border border-mono-100 shadow-sm transition-all duration-400 ease-premium hover:shadow-lg hover:border-mono-200;
+  }
+
+  .dark .card {
+    @apply bg-mono-900 border-mono-800 hover:border-mono-700;
+  }
+
+  /* Section Spacing */
+  .section-padding {
+    @apply py-24 md:py-32 lg:py-40;
+  }
+
+  /* Container with max-width for readability */
+  .container-narrow {
+    @apply max-w-4xl mx-auto px-6;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-6 lg:px-8;
+  }
+
+  /* Fade in on scroll animation helper */
+  .fade-in-section {
+    @apply opacity-0 translate-y-8 transition-all duration-600 ease-premium;
+  }
+
+  .fade-in-section.visible {
+    @apply opacity-100 translate-y-0;
+  }
+
+  /* Subtle divider */
+  .divider {
+    @apply border-t border-mono-100;
+  }
+
+  .dark .divider {
+    @apply border-mono-800;
   }
 }
 
-/* Custom Scrollbar for Authentic Tech Look */
+/* Premium Scrollbar - Minimal */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-950;
+  @apply bg-mono-50;
+}
+
+.dark ::-webkit-scrollbar-track {
+  @apply bg-mono-900;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-800 rounded-full;
+  @apply bg-mono-300 rounded-full;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-mono-700;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-700;
+  @apply bg-mono-400;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  @apply bg-mono-600;
+}
+
+/* Selection color */
+::selection {
+  @apply bg-mono-950 text-white;
+}
+
+.dark ::selection {
+  @apply bg-white text-mono-950;
+}
+
+/* ========== MOBILE PWA ENHANCEMENTS ========== */
+
+/* Safe area padding for notched devices */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Hide scrollbar for mobile carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch-friendly tap targets (min 44x44px) */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Prevent pull-to-refresh on mobile */
+.no-pull-refresh {
+  overscroll-behavior-y: contain;
+}
+
+/* Mobile-optimized text sizes */
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 8vw, 3rem);
+    line-height: 1.15;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+
+  /* Larger touch targets on mobile */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  /* Better tap feedback */
+  button:active,
+  a:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Smooth momentum scrolling on iOS */
+.momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Bottom navigation safe spacing */
+.has-bottom-nav {
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* PWA standalone mode adjustments */
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior: none;
+  }
+
+  /* Hide address bar space in standalone */
+  .standalone-pt {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* Improve form inputs on mobile */
+@media (max-width: 640px) {
+
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+    /* Prevents iOS zoom */
+    border-radius: 12px;
+  }
 }

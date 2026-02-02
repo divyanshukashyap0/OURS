@@ -1,0 +1,42 @@
+{
+    "name": "OURS - Developer Platform",
+    "short_name": "OURS",
+    "description": "Premium developer resources, courses, and projects",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#0A0A0A",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "education",
+        "developer tools",
+        "productivity"
+    ],
+    "screenshots": [],
+    "shortcuts": [
+        {
+            "name": "Projects",
+            "url": "/projects",
+            "description": "Browse all projects"
+        },
+        {
+            "name": "Courses",
+            "url": "/courses",
+            "description": "Explore courses"
+        }
+    ]
+}

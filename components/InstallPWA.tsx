@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, X } from 'lucide-react';
+import { Download, X, Smartphone } from 'lucide-react';
 import Button from './ui/Button';
 
 const InstallPWA: React.FC = () => {
@@ -14,9 +14,8 @@ const InstallPWA: React.FC = () => {
             setSupportsPWA(true);
             setPromptInstall(e);
 
-            // Delay showing the prompt by 3 seconds as requested
+            // Delay showing the prompt by 3 seconds
             setTimeout(() => {
-                // Check if user has already dismissed it recently (optional optimization, skipping for now to strict requirements)
                 setShowBanner(true);
             }, 3000);
         };
@@ -27,15 +26,12 @@ const InstallPWA: React.FC = () => {
 
     const handleInstallClick = (e: React.MouseEvent) => {
         e.preventDefault();
-        if (!promptInstall) {
-            return;
-        }
+        if (!promptInstall) return;
+
         promptInstall.prompt();
         promptInstall.userChoice.then((choiceResult: any) => {
             if (choiceResult.outcome === 'accepted') {
                 console.log('User accepted the install prompt');
-            } else {
-                console.log('User dismissed the install prompt');
             }
             setShowBanner(false);
         });
@@ -53,28 +49,48 @@ const InstallPWA: React.FC = () => {
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
-                className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-gray-900 border border-gray-800 p-4 rounded-xl shadow-2xl z-50 flex flex-col gap-4"
+                className="fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 bg-white dark:bg-mono-900 border border-mono-200 dark:border-mono-700 p-4 rounded-2xl shadow-2xl z-[200]"
             >
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-                            <Download size={20} className="text-white" />
+                        <div className="w-12 h-12 bg-mono-950 dark:bg-white rounded-xl flex items-center justify-center">
+                            <Smartphone size={24} className="text-white dark:text-mono-950" />
                         </div>
                         <div>
-                            <h4 className="font-bold text-white text-sm">Install App</h4>
-                            <p className="text-xs text-gray-400">Add to Home Screen for the best experience.</p>
+                            <h4 className="font-bold text-mono-950 dark:text-white">Install OURS</h4>
+                            <p className="text-xs text-mono-500 dark:text-mono-400">Get the full app experience</p>
                         </div>
                     </div>
-                    <button onClick={handleDismiss} className="text-gray-500 hover:text-white p-1">
-                        <X size={16} />
+                    <button
+                        onClick={handleDismiss}
+                        className="text-mono-400 hover:text-mono-950 dark:hover:text-white p-1 transition-colors"
+                    >
+                        <X size={18} />
                     </button>
                 </div>
+
+                {/* Benefits */}
+                <div className="flex gap-2 text-xs text-mono-500 dark:text-mono-400 mb-4">
+                    <span className="bg-mono-100 dark:bg-mono-800 px-2 py-1 rounded-full">Offline</span>
+                    <span className="bg-mono-100 dark:bg-mono-800 px-2 py-1 rounded-full">Fast</span>
+                    <span className="bg-mono-100 dark:bg-mono-800 px-2 py-1 rounded-full">Push Alerts</span>
+                </div>
+
                 <div className="flex gap-2">
-                    <Button onClick={handleDismiss} variant="outline" className="flex-1 text-xs py-2 h-auto">
-                        Maybe Later
+                    <Button
+                        onClick={handleDismiss}
+                        variant="secondary"
+                        className="flex-1 text-sm py-2.5"
+                    >
+                        Later
                     </Button>
-                    <Button onClick={handleInstallClick} className="flex-1 text-xs py-2 h-auto bg-indigo-600 hover:bg-indigo-500 text-white">
-                        Install Now
+                    <Button
+                        onClick={handleInstallClick}
+                        variant="primary"
+                        leftIcon={<Download size={16} />}
+                        className="flex-1 text-sm py-2.5"
+                    >
+                        Install
                     </Button>
                 </div>
             </motion.div>
