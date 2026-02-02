@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from './ui/Button';
 import { useAuth } from '../context/AuthContext';
@@ -84,14 +84,6 @@ const Navbar: React.FC = () => {
 
           {/* Right Section */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-mono-500 hover:text-mono-950 dark:text-mono-400 dark:hover:text-white transition-colors duration-300"
-              aria-label="Toggle theme"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
 
             {user ? (
               <div className="flex items-center gap-3 pl-4 border-l border-mono-200 dark:border-mono-700">
@@ -139,13 +131,6 @@ const Navbar: React.FC = () => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-3">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-mono-500 dark:text-mono-400 transition-colors"
-              aria-label="Toggle theme"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-mono-700 dark:text-mono-200 p-2 active:scale-95 transition-transform"
