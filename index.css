@@ -33,12 +33,13 @@
     @apply scroll-smooth;
   }
 
-  /* Light Mode (Default) */
+  /* Force Dark Mode (Default) */
   body {
-    @apply bg-white text-mono-950 font-sans antialiased;
+    @apply bg-mono-950 text-mono-100 font-sans antialiased;
     touch-action: manipulation;
     padding-bottom: env(safe-area-inset-bottom);
     transition: background-color var(--transition-slow), color var(--transition-slow);
+    overflow-x: hidden;
   }
 
   /* Dark Mode */

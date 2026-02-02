@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -21,13 +21,16 @@
   <link rel="icon" type="image/png" href="/logo.png" />
   <link rel="apple-touch-icon" href="/logo.png" />
 
+  <!-- Preload Critical Logo -->
+  <link rel="preload" as="image" href="/logo.png">
+
   <!-- Premium Font - Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
 
-  <!-- Prevent iOS zoom on input focus -->
+  <!-- Prevent iOS zoom on input focus & Force Dark BG -->
   <style>
     @supports (-webkit-touch-callout: none) {
 
@@ -37,10 +40,15 @@
         font-size: 16px !important;
       }
     }
+
+    body {
+      background-color: #0A0A0A;
+      color: #F5F5F5;
+    }
   </style>
 </head>
 
-<body class="bg-white text-mono-950 transition-colors duration-400 antialiased">
+<body class="bg-mono-950 text-mono-100 transition-colors duration-400 antialiased overflow-x-hidden">
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

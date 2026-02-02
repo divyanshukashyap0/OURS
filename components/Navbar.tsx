@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const { appName } = useSite();
-  const { isDark, toggleTheme } = useTheme();
+  // Theme is now forced to dark mode globally
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
