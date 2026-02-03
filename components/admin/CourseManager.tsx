@@ -4,7 +4,6 @@ import Button from '../ui/Button';
 import { Plus, Edit2, Trash2, X } from 'lucide-react';
 import LogoLoader from '../ui/LogoLoader';
 import { motion, AnimatePresence } from 'framer-motion';
-import { COURSES } from '../../constants';
 
 const CourseManager: React.FC = () => {
     const [courses, setCourses] = useState<CourseData[]>([]);
@@ -95,44 +94,13 @@ const CourseManager: React.FC = () => {
         }
     };
 
-    // ... inside component ...
-
-    const handleSeed = async () => {
-        setLoading(true);
-        try {
-            for (const course of COURSES) {
-                // Remove ID as Firestore generates it, or use it as string
-                const { id, ...courseData } = course;
-                // Cast to compatible type or adjust
-                await addCourse({
-                    ...courseData,
-                    price: course.price,
-                    rating: course.rating,
-                    students: (typeof course.students === "string" ? parseInt(course.students) : course.students), // sanitize
-                    tags: course.tags || []
-                } as any);
-            }
-            fetchCourses();
-            alert("Courses seeded successfully!");
-        } catch (error) {
-            console.error("Seeding failed:", error);
-        }
-    };
-
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Manage Courses</h2>
-                <div className="flex gap-2">
-                    {courses.length === 0 && (
-                        <Button onClick={handleSeed} variant="secondary" className="flex items-center gap-2">
-                            <img src="/logo.png" className="w-4 h-4" /> Seed Default Courses
-                        </Button>
-                    )}
-                    <Button onClick={() => handleOpenModal()} className="flex items-center gap-2">
-                        <Plus size={18} /> Add Course
-                    </Button>
-                </div>
+                <Button onClick={() => handleOpenModal()} className="flex items-center gap-2">
+                    <Plus size={18} /> Add Course
+                </Button>
             </div>
 
             {loading ? (

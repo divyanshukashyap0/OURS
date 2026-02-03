@@ -59,7 +59,7 @@ const ContactPage: React.FC = () => {
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-400">Physical Node</p>
-                                        <p className="font-medium">Kanpur, Uttar Pradesh, IN</p>
+                                        <p className="font-medium">Everywhere in world, IN</p>
                                     </div>
                                 </div>
                             </div>

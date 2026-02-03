@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { PROJECTS } from '../constants';
+import { getProjectById, ProjectData } from '../lib/projects';
 import { db } from '../lib/firebase';
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
-import { Project } from '../types';
 import Footer from './Footer';
 import Button from './ui/Button';
 import { ArrowLeft, ExternalLink, Github, Tag, CheckCircle } from 'lucide-react';
@@ -14,29 +13,19 @@ const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { user } = useAuth();
-    // Initialize with static data logic, but allow state update
-    const [project, setProject] = React.useState<Project | undefined>(
-        PROJECTS.find((p) => p.id === Number(id))
-    );
+    const [project, setProject] = useState<ProjectData | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProject = async () => {
             if (id) {
                 try {
-                    const docRef = doc(db, 'projects', id);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        const dbData = docSnap.data();
-                        setProject(prev => ({
-                            ...prev,
-                            ...dbData,
-                            id: docSnap.id,
-                            // Ensure tags are arrays
-                            tags: Array.isArray(dbData.tags) ? dbData.tags : (prev?.tags || [])
-                        } as Project));
-                    }
+                    const data = await getProjectById(id);
+                    setProject(data);
                 } catch (error) {
                     console.error("Error fetching project:", error);
+                } finally {
+                    setLoading(false);
                 }
             }
         };
@@ -83,6 +72,13 @@ const ProjectDetail: React.FC = () => {
         navigate(`/checkout/${id}`);
     };
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
+                <div className="text-gray-600 dark:text-gray-400">Loading...</div>
+            </div>
+        );
+    }
 
     if (!project) {
         return (

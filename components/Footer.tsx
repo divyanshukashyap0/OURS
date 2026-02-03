@@ -115,7 +115,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-3 text-sm text-mono-500 dark:text-mono-400">
               <li>optistyle.india@gmail.com</li>
               <li>+91 8005343226</li>
-              <li>Kanpur, Uttar Pradesh</li>
+              <li>Everywhere in world</li>
             </ul>
           </div>
         </div>

@@ -166,35 +166,162 @@ const BLOG_POSTS = [
     }
 ];
 
+const COURSES = [
+    {
+        id: 1,
+        title: 'React.js Masterclass: Zero to Hero',
+        instructor: 'Alex Johnson',
+        description: 'Master React.js from scratch. Learn components, hooks, context API, and build real-world applications.',
+        duration: '12h 45m',
+        level: 'Intermediate',
+        rating: 4.9,
+        students: 12500,
+        image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        tags: ['React', 'Frontend', 'Hooks'],
+        price: '$49.99'
+    },
+    {
+        id: 2,
+        title: 'Advanced Next.js Pattern & Performance',
+        instructor: 'Sarah Smith',
+        description: 'Take your Next.js skills to the next level. Server Actions, App Router, optimization techniques, and more.',
+        duration: '8h 30m',
+        level: 'Advanced',
+        rating: 4.8,
+        students: 8200,
+        image: 'https://images.unsplash.com/photo-1649180556628-9ba704115795?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        tags: ['Next.js', 'SSR', 'Performance'],
+        price: '$59.99'
+    },
+    {
+        id: 3,
+        title: 'Fullstack MERN Bootcamp',
+        instructor: 'Mike Brown',
+        description: 'Become a full-stack developer with the MERN stack. Build complete web applications with MongoDB, Express, React, and Node.',
+        duration: '24h 15m',
+        level: 'Intermediate',
+        rating: 4.9,
+        students: 20000,
+        image: 'https://images.unsplash.com/photo-1678911820864-e2c567c655d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        tags: ['MongoDB', 'Express', 'React', 'Node'],
+        price: '$89.99'
+    },
+    {
+        id: 4,
+        title: 'Python for Data Science',
+        instructor: 'Emily Davis',
+        description: 'Learn Python for data analysis, visualization, and machine learning. Pandas, NumPy, and Scikit-learn covered.',
+        duration: '18h 00m',
+        level: 'Beginner',
+        rating: 4.7,
+        students: 15000,
+        image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        tags: ['Python', 'Data Science', 'Pandas'],
+        price: '$39.99'
+    },
+    {
+        id: 5,
+        title: 'UI/UX Design Principles',
+        instructor: 'Jessica Lee',
+        description: 'Understand the fundamentals of UI/UX design. theory, wireframing, prototyping, and user testing.',
+        duration: '6h 20m',
+        level: 'Beginner',
+        rating: 4.8,
+        students: 5000,
+        image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        tags: ['Design', 'Figma', 'UI/UX'],
+        price: '$29.99'
+    },
+    {
+        id: 6,
+        title: 'Docker & Kubernetes Mastery',
+        instructor: 'David Wilson',
+        description: 'Master containerization and orchestration. Build scalable and resilient infrastructure with Docker and Kubernetes.',
+        duration: '10h 50m',
+        level: 'Advanced',
+        rating: 4.9,
+        students: 9800,
+        image: 'https://images.unsplash.com/photo-1605745341112-85968b19335b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        tags: ['DevOps', 'Docker', 'Kubernetes'],
+        price: '$69.99'
+    }
+];
+
 async function seedData() {
-    console.log('Starting migration...');
+    console.log('🌱 Starting seeding process...');
+    console.log('⚠️  NOTE: This will ONLY create documents that do NOT already exist.');
+    console.log('   Existing documents will be preserved to protect admin updates.\n');
 
     // Seed Projects
-    console.log(`Uploading ${PROJECTS.length} projects...`);
+    console.log(`📁 Checking ${PROJECTS.length} projects...`);
+    let projectsCreated = 0;
+    let projectsSkipped = 0;
     for (const project of PROJECTS) {
-        // Use custom ID as string to match our generic string assumption in some places, or keep simple
-        // Using string ID is generally safer for Firestore
         const docRef = db.collection('projects').doc(String(project.id));
-        await docRef.set({
-            ...project,
-            // ensure ID is consistently stored
-            id: project.id
-        });
-        process.stdout.write('.');
+        const docSnap = await docRef.get();
+
+        if (!docSnap.exists) {
+            await docRef.set({
+                ...project,
+                id: project.id,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            projectsCreated++;
+            process.stdout.write('+');
+        } else {
+            projectsSkipped++;
+            process.stdout.write('-');
+        }
     }
-    console.log('\nProjects uploaded successfully.');
+    console.log(`\n   ✅ Projects: ${projectsCreated} created, ${projectsSkipped} skipped\n`);
 
     // Seed Blogs
-    console.log(`Uploading ${BLOG_POSTS.length} blog posts...`);
+    console.log(`📝 Checking ${BLOG_POSTS.length} blog posts...`);
+    let blogsCreated = 0;
+    let blogsSkipped = 0;
     for (const post of BLOG_POSTS) {
         const docRef = db.collection('blogs').doc(String(post.id));
-        await docRef.set({
-            ...post,
-            id: post.id
-        });
-        process.stdout.write('.');
+        const docSnap = await docRef.get();
+
+        if (!docSnap.exists) {
+            await docRef.set({
+                ...post,
+                id: post.id,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            blogsCreated++;
+            process.stdout.write('+');
+        } else {
+            blogsSkipped++;
+            process.stdout.write('-');
+        }
     }
-    console.log('\nBlog posts uploaded successfully.');
+    console.log(`\n   ✅ Blog posts: ${blogsCreated} created, ${blogsSkipped} skipped\n`);
+
+    // Seed Courses
+    console.log(`🎓 Checking ${COURSES.length} courses...`);
+    let coursesCreated = 0;
+    let coursesSkipped = 0;
+    for (const course of COURSES) {
+        const docRef = db.collection('courses').doc(String(course.id));
+        const docSnap = await docRef.get();
+
+        if (!docSnap.exists) {
+            await docRef.set({
+                ...course,
+                id: course.id,
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            coursesCreated++;
+            process.stdout.write('+');
+        } else {
+            coursesSkipped++;
+            process.stdout.write('-');
+        }
+    }
+    console.log(`\n   ✅ Courses: ${coursesCreated} created, ${coursesSkipped} skipped\n`);
+
+    console.log('🎉 Seeding complete! All existing documents were preserved.');
 }
 
 seedData().catch(console.error);

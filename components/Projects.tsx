@@ -1,29 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { getProjects } from '../lib/projects';
 import Section from './Section';
-import { PROJECTS } from '../constants';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Button from './ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { db } from '../lib/firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 const Projects: React.FC = () => {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState<any[]>(PROJECTS);
+  const [projects, setProjects] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
-        const querySnapshot = await getDocs(q);
-        const fetchedProjects = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        if (fetchedProjects.length > 0) {
-          setProjects([...fetchedProjects, ...PROJECTS]);
-        }
+        const fetchedProjects = await getProjects();
+        setProjects(fetchedProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }

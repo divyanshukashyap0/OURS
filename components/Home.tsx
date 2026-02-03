@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Code2, Newspaper } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { db } from '../lib/firebase';
-import { collection, getDocs, limit, query } from 'firebase/firestore';
+import { getProjects } from '../lib/projects';
 import Hero from './Hero';
 
 const Home: React.FC = () => {
@@ -13,13 +12,8 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const q = query(collection(db, 'projects'), limit(6));
-        const querySnapshot = await getDocs(q);
-        const fetchedProjects = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setProjects(fetchedProjects);
+        const fetchedProjects = await getProjects();
+        setProjects(fetchedProjects.slice(0, 6));
       } catch (error) {
         console.error("Error fetching projects:", error);
       }

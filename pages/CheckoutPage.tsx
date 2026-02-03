@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { PROJECTS } from '../constants';
+import { getProjectById } from '../lib/projects';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../lib/config';
 import Button from '../components/ui/Button';
@@ -25,12 +25,17 @@ const CheckoutPage: React.FC = () => {
     const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     useEffect(() => {
-        const found = PROJECTS.find(p => p.id === Number(id));
-        if (found) {
-            setProject(found);
-        } else {
-            navigate('/projects');
-        }
+        const fetchProject = async () => {
+            if (id) {
+                const found = await getProjectById(id);
+                if (found) {
+                    setProject(found);
+                } else {
+                    navigate('/projects');
+                }
+            }
+        };
+        fetchProject();
     }, [id, navigate]);
 
     const loadRazorpay = () => {

@@ -48,7 +48,7 @@ const InvoicePage: React.FC = () => {
                             <span className="text-2xl font-bold tracking-tight text-gray-900">OURS.</span>
                         </div>
                         <p className="text-gray-500 text-sm">
-                            Kanpur, Uttar Pradesh<br />
+                            Everywhere in world<br />
                             208025 <br />
                             support@ours-platform.com <br />
                             +91 8005343226

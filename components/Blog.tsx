@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Section from './Section';
-import { BLOG_POSTS } from '../constants';
+import { getBlogPosts, BlogData } from '../lib/blogs';
 import { useNavigate } from 'react-router-dom';
 
 const Blog: React.FC = () => {
   const navigate = useNavigate();
+  const [posts, setPosts] = useState<BlogData[]>([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const data = await getBlogPosts();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching blog posts:", error);
+      }
+    };
+    fetchPosts();
+  }, []);
 
   return (
     <Section
@@ -13,7 +26,7 @@ const Blog: React.FC = () => {
       subtitle="Tips, tricks, and tutorials to keep you up to date with the industry."
     >
       <div className="max-w-4xl mx-auto space-y-8">
-        {BLOG_POSTS.map((post) => (
+        {posts.map((post) => (
           <article
             key={post.id}
             onClick={() => navigate(`/blog/${post.id}`)}

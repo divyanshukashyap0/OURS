@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { BLOG_POSTS } from '../constants';
+import { getBlogPostById, BlogData } from '../lib/blogs';
 import Footer from './Footer';
 import Button from './ui/Button';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
@@ -8,11 +8,34 @@ import { ArrowLeft, Calendar, User } from 'lucide-react';
 const BlogDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const post = BLOG_POSTS.find((p) => p.id === Number(id));
+    const [post, setPost] = useState<BlogData | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+
+        const fetchPost = async () => {
+            if (id) {
+                try {
+                    const data = await getBlogPostById(id);
+                    setPost(data);
+                } catch (error) {
+                    console.error("Error fetching blog post:", error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+        fetchPost();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
+                <div className="text-gray-600 dark:text-gray-400">Loading...</div>
+            </div>
+        );
+    }
 
     if (!post) {
         return (
