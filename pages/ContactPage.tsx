@@ -41,7 +41,7 @@ const ContactPage: React.FC = () => {
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-400">SMTP Endpoint</p>
-                                        <p className="font-medium">optistyle.india@gmail.com</p>
+                                        <p className="font-medium">ours.system26@gmail.com</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">

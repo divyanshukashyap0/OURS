@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // CHANGE THIS TO YOUR EMAIL
-const EMAIL_TO_PROMOTE = "YOUR_EMAIL_HERE";
+const EMAIL_TO_PROMOTE = "ours.system26@gmail.com";
 
 async function main() {
     if (EMAIL_TO_PROMOTE === "YOUR_EMAIL_HERE") {

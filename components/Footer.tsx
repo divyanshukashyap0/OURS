@@ -113,7 +113,7 @@ const Footer: React.FC = () => {
               Get in Touch
             </h4>
             <ul className="space-y-3 text-sm text-mono-500 dark:text-mono-400">
-              <li>optistyle.india@gmail.com</li>
+              <li>ours.system26@gmail.com</li>
               <li>+91 8005343226</li>
               <li>Everywhere in world</li>
             </ul>
