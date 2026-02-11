@@ -70,6 +70,12 @@ service cloud.firestore {
       allow create: if true;
       allow read: if isAdmin();
     }
+
+    // Student Requests: Authenticated users create, Admin full access
+    match /student_requests/{document=**} {
+      allow create: if request.auth != null;
+      allow read, write: if isAdmin();
+    }
     
     // Default deny
     match /{document=**} {

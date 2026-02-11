@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProjectById, ProjectData } from '../lib/projects';
 import { db } from '../lib/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import Footer from './Footer';
 import Button from './ui/Button';
@@ -15,6 +15,24 @@ const ProjectDetail: React.FC = () => {
     const { user } = useAuth();
     const [project, setProject] = useState<ProjectData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [studentStatus, setStudentStatus] = useState<string | null>(null);
+
+    // Fetch User's Student Status
+    useEffect(() => {
+        const fetchStudentStatus = async () => {
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (userDoc.exists()) {
+                        setStudentStatus(userDoc.data().studentStatus);
+                    }
+                } catch (error) {
+                    console.error("Error fetching student status:", error);
+                }
+            }
+        };
+        fetchStudentStatus();
+    }, [user]);
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -163,11 +181,13 @@ const ProjectDetail: React.FC = () => {
                                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">One-time payment. Lifetime access.</p>
 
                                 <div className="space-y-4">
-                                    {hasPurchased ? (
+                                    {hasPurchased || (user && studentStatus === 'verified' && project.isStudentFree) ? (
                                         <>
                                             <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-3 text-green-700 dark:text-green-300 mb-2">
                                                 <CheckCircle size={24} />
-                                                <div className="font-medium">You own this project!</div>
+                                                <div className="font-medium">
+                                                    {hasPurchased ? "You own this project!" : "Free Student Access Unlocked!"}
+                                                </div>
                                             </div>
                                             {project.githubLink ? (
                                                 <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="block w-full">

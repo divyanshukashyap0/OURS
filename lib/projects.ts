@@ -23,6 +23,7 @@ export interface ProjectData {
     previewUrl?: string;
     gallery?: string[];
     createdAt?: Timestamp;
+    isStudentFree?: boolean; // New Field: If true, verified students get it free
 }
 
 const COLLECTION_NAME = 'projects';

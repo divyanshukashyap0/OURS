@@ -396,7 +396,8 @@ const AccountPage: React.FC = () => {
                                                     <div className="flex items-center gap-3 mb-2">
                                                         <div className={`p-2 rounded-lg ${profile.studentStatus === 'verified' ? 'bg-green-100 text-green-600' :
                                                             profile.studentStatus === 'pending' ? 'bg-yellow-100 text-yellow-600' :
-                                                                'bg-gray-100 text-gray-600'
+                                                                profile.studentStatus === 'rejected' ? 'bg-red-100 text-red-600' :
+                                                                    'bg-gray-100 text-gray-600'
                                                             }`}>
                                                             <School size={24} />
                                                         </div>
@@ -404,12 +405,14 @@ const AccountPage: React.FC = () => {
                                                             <h4 className="font-medium text-gray-900 dark:text-white">
                                                                 {profile.studentStatus === 'verified' ? 'Verified Student' :
                                                                     profile.studentStatus === 'pending' ? 'Verification Pending' :
-                                                                        'Not Verified'}
+                                                                        profile.studentStatus === 'rejected' ? 'Verification Rejected' :
+                                                                            'Not Verified'}
                                                             </h4>
                                                             <p className="text-sm text-gray-500">
                                                                 {profile.studentStatus === 'verified' ? 'You have access to student-exclusive free projects.' :
                                                                     profile.studentStatus === 'pending' ? 'We are reviewing your student ID.' :
-                                                                        'Verify your student status to unlock free projects.'}
+                                                                        profile.studentStatus === 'rejected' ? 'Your student ID was rejected. Please upload a valid ID.' :
+                                                                            'Verify your student status to unlock free projects.'}
                                                             </p>
                                                         </div>
                                                     </div>
