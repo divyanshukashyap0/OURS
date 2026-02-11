@@ -13,7 +13,7 @@ const Home: React.FC = () => {
     const fetchProjects = async () => {
       try {
         const fetchedProjects = await getProjects();
-        setProjects(fetchedProjects.slice(0, 6));
+        setProjects(fetchedProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
@@ -22,8 +22,20 @@ const Home: React.FC = () => {
   }, []);
 
   const featuredProject = projects.length > 0 ? projects[0] : null;
-  const secondaryProject = projects.length > 1 ? projects[1] : null;
-  const recentProjects = projects.length > 2 ? projects.slice(2, 6) : [];
+
+  // Logic for Trending/Secondary Project
+  // 1. Look for a manually marked trending project
+  const manuallyTrending = projects.find(p => p.isTrending);
+  // 2. Fallback to the second project if no manual trending, enabling automatic trending behavior (2nd newest)
+  // Ensure we don't pick the featured project as trending if fallback happens
+  const secondaryProject = manuallyTrending && manuallyTrending.id !== featuredProject?.id
+    ? manuallyTrending
+    : (projects.length > 1 ? projects[1] : null);
+
+  // Recent projects: Filter out featured and secondary, then take 4
+  const recentProjects = projects
+    .filter(p => p.id !== featuredProject?.id && p.id !== secondaryProject?.id)
+    .slice(0, 4);
 
   return (
     <div className="bg-white dark:bg-mono-950 transition-colors">

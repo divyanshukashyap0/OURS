@@ -17,6 +17,7 @@ interface Project {
     previewUrl?: string;
     gallery?: string[];
     isStudentFree?: boolean;
+    isTrending?: boolean;
 }
 
 const ProductManager: React.FC = () => {
@@ -26,7 +27,7 @@ const ProductManager: React.FC = () => {
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
     // Form State
-    const [formData, setFormData] = useState<Partial<Project>>({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '', gallery: [], isStudentFree: false });
+    const [formData, setFormData] = useState<Partial<Project>>({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '', gallery: [], isStudentFree: false, isTrending: false });
     const [tagInput, setTagInput] = useState('');
     const [galleryInput, setGalleryInput] = useState('');
 
@@ -68,7 +69,7 @@ const ProductManager: React.FC = () => {
             setFormData(project);
         } else {
             setEditingProject(null);
-            setFormData({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '', gallery: [], isStudentFree: false });
+            setFormData({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '', gallery: [], isStudentFree: false, isTrending: false });
         }
         setIsModalOpen(true);
     };
@@ -85,7 +86,8 @@ const ProductManager: React.FC = () => {
                 githubLink: formData.githubLink || '',
                 previewUrl: formData.previewUrl || '',
                 gallery: Array.isArray(formData.gallery) ? formData.gallery : [],
-                isStudentFree: formData.isStudentFree || false
+                isStudentFree: formData.isStudentFree || false,
+                isTrending: formData.isTrending || false
             };
 
             console.log("SANITIZED PAYLOAD:", dataToSave);
@@ -381,6 +383,19 @@ const ProductManager: React.FC = () => {
                                     />
                                     <label htmlFor="isStudentFree" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                         Free for Students
+                                    </label>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="isTrending"
+                                        checked={formData.isTrending || false}
+                                        onChange={e => setFormData({ ...formData, isTrending: e.target.checked })}
+                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    />
+                                    <label htmlFor="isTrending" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Set as Trending Project
                                     </label>
                                 </div>
 

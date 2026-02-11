@@ -24,6 +24,7 @@ export interface ProjectData {
     gallery?: string[];
     createdAt?: Timestamp;
     isStudentFree?: boolean; // New Field: If true, verified students get it free
+    isTrending?: boolean; // New Field: Manually set as Trending
 }
 
 const COLLECTION_NAME = 'projects';
