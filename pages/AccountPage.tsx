@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../lib/firebase';
-import { doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, MapPin, BookOpen, School, Calendar, Save, Camera, LayoutDashboard, Package, ExternalLink } from 'lucide-react';
@@ -20,6 +20,11 @@ interface UserProfile {
 
     mobile: string;
     role?: string;
+
+    // Student Fields
+    isStudent?: boolean;
+    studentStatus?: 'pending' | 'verified' | 'rejected' | null;
+    studentIdUrl?: string;
 }
 
 interface Project {
@@ -174,6 +179,45 @@ const AccountPage: React.FC = () => {
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleStudentIdUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !user) return;
+
+        // In a real app, upload to Storage (Firebase Storage/S3)
+        // For this demo, we'll use Base64 (Not recommended for prod large files)
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            const base64Url = reader.result as string;
+
+            try {
+                // 1. Update User Profile
+                const userRef = doc(db, 'users', user.uid);
+                await updateDoc(userRef, {
+                    studentStatus: 'pending',
+                    studentIdUrl: base64Url
+                });
+
+                setProfile(prev => ({ ...prev, studentStatus: 'pending', studentIdUrl: base64Url }));
+
+                // 2. Create Verification Request
+                await addDoc(collection(db, 'student_requests'), {
+                    userId: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || profile.displayName,
+                    idCardUrl: base64Url,
+                    status: 'pending',
+                    createdAt: serverTimestamp()
+                });
+
+                alert("Student ID uploaded! Verification pending.");
+            } catch (error) {
+                console.error("Error uploading ID:", error);
+                alert("Failed to upload ID.");
+            }
+        };
+        reader.readAsDataURL(file);
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center"><LogoLoader size={50} /></div>;
@@ -335,6 +379,58 @@ const AccountPage: React.FC = () => {
                                                 {age !== null && (
                                                     <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-4 py-2 rounded-lg font-bold text-lg whitespace-nowrap min-w-[80px] text-center">
                                                         {age} Yrs
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr className="border-gray-100 dark:border-gray-800" />
+
+                                    {/* Student Status Section */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Student Status</h3>
+                                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <div className={`p-2 rounded-lg ${profile.studentStatus === 'verified' ? 'bg-green-100 text-green-600' :
+                                                            profile.studentStatus === 'pending' ? 'bg-yellow-100 text-yellow-600' :
+                                                                'bg-gray-100 text-gray-600'
+                                                            }`}>
+                                                            <School size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-medium text-gray-900 dark:text-white">
+                                                                {profile.studentStatus === 'verified' ? 'Verified Student' :
+                                                                    profile.studentStatus === 'pending' ? 'Verification Pending' :
+                                                                        'Not Verified'}
+                                                            </h4>
+                                                            <p className="text-sm text-gray-500">
+                                                                {profile.studentStatus === 'verified' ? 'You have access to student-exclusive free projects.' :
+                                                                    profile.studentStatus === 'pending' ? 'We are reviewing your student ID.' :
+                                                                        'Verify your student status to unlock free projects.'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {profile.studentStatus !== 'verified' && profile.studentStatus !== 'pending' && (
+                                                    <div>
+                                                        <input
+                                                            type="file"
+                                                            id="student-id-upload"
+                                                            className="hidden"
+                                                            accept="image/*"
+                                                            onChange={handleStudentIdUpload}
+                                                        />
+                                                        <Button
+                                                            variant="outline"
+                                                            type="button"
+                                                            onClick={() => document.getElementById('student-id-upload')?.click()}
+                                                        >
+                                                            Upload ID Card
+                                                        </Button>
                                                     </div>
                                                 )}
                                             </div>

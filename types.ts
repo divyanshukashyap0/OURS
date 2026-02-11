@@ -29,6 +29,17 @@ export interface Project {
   githubLink?: string;
   previewUrl?: string;
   gallery?: string[];
+  isStudentFree?: boolean; // New Field
+}
+
+export interface StudentRequest {
+  id: string;
+  userId: string;
+  email: string;
+  displayName: string;
+  idCardUrl: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: any;
 }
 
 export interface BlogPost {
@@ -77,4 +88,16 @@ export interface ProjectRequest {
   status: 'pending' | 'contacted' | 'in_progress' | 'completed';
   userId: string;
   createdAt: any;
+}
+
+export interface Tutorial {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  videoUrl: string;
+  duration: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  tags: string[];
+  createdAt?: any;
 }

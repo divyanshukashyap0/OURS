@@ -6,7 +6,7 @@ import { API_BASE_URL } from '../lib/config';
 import Button from '../components/ui/Button';
 import { ShieldCheck, CreditCard, Lock, Loader2, Info, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, query, where, getDocs, updateDoc, doc, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs, updateDoc, doc, increment, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { sendEmail } from '../lib/emailService';
 
@@ -23,6 +23,11 @@ const CheckoutPage: React.FC = () => {
     const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
     const [verifyingCoupon, setVerifyingCoupon] = useState(false);
     const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+    // Derived State
+    const originalPrice = project ? parseFloat(project.price.replace(/[^0-9.]/g, '') || '0') : 0;
+    const isStudentEligible = user?.studentStatus === 'verified' && project?.isStudentFree;
+    const finalPrice = isStudentEligible ? 0 : Math.max(0, originalPrice - discount);
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -64,11 +69,48 @@ const CheckoutPage: React.FC = () => {
             return;
         }
 
+        // Student Free Bypass
+        if (finalPrice === 0 && isStudentEligible) {
+            try {
+                // Create Order Record in Firestore directly
+                await addDoc(collection(db, 'orders'), {
+                    userId: user.uid,
+                    userEmail: user.email,
+                    projectId: String(project.id),
+                    projectTitle: project.title,
+                    amount: 0,
+                    currency: 'USD',
+                    status: 'paid', // Auto-paid
+                    paymentId: 'student_free_' + Date.now(),
+                    createdAt: serverTimestamp(),
+                    isStudentFreeRedemption: true
+                });
+
+                // Send Email
+                await sendEmail(user.email || '', 'order_confirmation', {
+                    name: user.displayName || 'Student',
+                    amount: '0.00',
+                    projectTitle: project.title,
+                    orderId: 'STUDENT-FREE'
+                });
+
+                navigate('/order-success', {
+                    state: {
+                        paymentId: 'STUDENT_FREE_ACCESS',
+                        projectTitle: project.title
+                    }
+                });
+                return;
+            } catch (err) {
+                console.error("Student redemption error:", err);
+                alert("Failed to redeem student offer.");
+                setLoading(false);
+                return;
+            }
+        }
+
         // 2. Create Order via Backend
         let order;
-        // Calculate Discounted Price
-        const originalPrice = parseFloat(project?.price.replace(/[^0-9.]/g, '') || '0');
-        const finalPrice = Math.max(0, originalPrice - discount);
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/create-order`, {
@@ -238,9 +280,6 @@ const CheckoutPage: React.FC = () => {
 
     if (!project) return null;
 
-    const originalPrice = parseFloat(project?.price?.replace(/[^0-9.]/g, '') || '0');
-    const finalPrice = Math.max(0, originalPrice - discount);
-
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-20 px-4 md:px-8">
             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
@@ -259,6 +298,12 @@ const CheckoutPage: React.FC = () => {
                                     <div className="text-right">
                                         <span className="text-sm text-gray-400 line-through mr-2">${originalPrice.toFixed(2)}</span>
                                         <span className="text-2xl font-bold text-green-600">${finalPrice.toFixed(2)}</span>
+                                    </div>
+                                ) : isStudentEligible ? (
+                                    <div className="text-right">
+                                        <span className="text-sm text-gray-400 line-through mr-2">${originalPrice.toFixed(2)}</span>
+                                        <span className="text-2xl font-bold text-green-600">FREE</span>
+                                        <div className="text-xs text-blue-600 font-medium mt-1">Student Benefit Unlocked!</div>
                                     </div>
                                 ) : (
                                     <span className="text-2xl font-bold text-gray-900 dark:text-white">${originalPrice.toFixed(2)}</span>
@@ -339,6 +384,8 @@ const CheckoutPage: React.FC = () => {
                                 <>
                                     <Loader2 className="animate-spin mr-2" /> Processing...
                                 </>
+                            ) : isStudentEligible ? (
+                                "Claim for Free"
                             ) : (
                                 `Pay $${finalPrice.toFixed(2)}`
                             )}
