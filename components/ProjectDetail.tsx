@@ -20,15 +20,24 @@ const ProjectDetail: React.FC = () => {
     // Fetch User's Student Status
     useEffect(() => {
         const fetchStudentStatus = async () => {
+            console.log("AuthContext User:", user); // DEBUG
             if (user) {
                 try {
                     const userDoc = await getDoc(doc(db, 'users', user.uid));
                     if (userDoc.exists()) {
-                        setStudentStatus(userDoc.data().studentStatus);
+                        const data = userDoc.data();
+                        const status = data.studentStatus;
+                        console.log("Firestore User Data:", data); // DEBUG
+                        console.log("Fetched User Student Status:", status); // DEBUG
+                        setStudentStatus(status);
+                    } else {
+                        console.log("User doc not found in Firestore for UID:", user.uid);
                     }
                 } catch (error) {
                     console.error("Error fetching student status:", error);
                 }
+            } else {
+                console.log("No user logged in (AuthContext user is null)");
             }
         };
         fetchStudentStatus();
@@ -38,7 +47,10 @@ const ProjectDetail: React.FC = () => {
         const fetchProject = async () => {
             if (id) {
                 try {
+                    console.log("Fetching project with ID:", id); // DEBUG
                     const data = await getProjectById(id);
+                    console.log("Fetched Project Data Full Object:", data); // DEBUG
+                    console.log("Is Student Free Value:", data?.isStudentFree); // DEBUG
                     setProject(data);
                 } catch (error) {
                     console.error("Error fetching project:", error);
