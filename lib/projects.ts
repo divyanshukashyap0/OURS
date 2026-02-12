@@ -25,6 +25,10 @@ export interface ProjectData {
     createdAt?: Timestamp;
     isStudentFree?: boolean; // New Field: If true, verified students get it free
     isTrending?: boolean; // New Field: Manually set as Trending
+    features?: string[]; // New Field: Key selling points
+    technologies?: string[]; // New Field: Tech stack
+    demoVideoUrl?: string; // New Field: Video preview URL
+    longDescription?: string; // New Field: Rich text description
 }
 
 const COLLECTION_NAME = 'projects';

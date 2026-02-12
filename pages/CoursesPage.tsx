@@ -7,10 +7,13 @@ import LogoLoader from '../components/ui/LogoLoader';
 import { motion } from 'framer-motion';
 import { CourseData, getCourses } from '../lib/courses';
 
+import { useNavigate } from 'react-router-dom';
+
 const CoursesPage: React.FC = () => {
     const [courses, setCourses] = useState<CourseData[]>([]);
     const [loading, setLoading] = useState(true);
     const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
 
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
@@ -82,7 +85,8 @@ const CoursesPage: React.FC = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
-                                    className="min-w-[85vw] md:min-w-0 md:w-auto snap-center bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-200 group flex flex-col"
+                                    onClick={() => navigate(`/courses/${course.id}`)}
+                                    className="min-w-[85vw] md:min-w-0 md:w-auto snap-center bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-200 group flex flex-col cursor-pointer"
                                 >
                                     {/* Image Header */}
                                     <div className="relative h-48 overflow-hidden">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mail, ArrowUpRight, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../ui/Button';
+import Input from '../ui/Input';
 import { EmailTemplate } from '../../types';
 
 interface EmailSenderModalProps {
@@ -22,7 +23,7 @@ const EmailSenderModal: React.FC<EmailSenderModalProps> = ({
     onClose,
     templates,
     defaultRecipient = '',
-    context = {}
+    context
 }) => {
     const [recipient, setRecipient] = useState(defaultRecipient);
     const [selectedTemplateId, setSelectedTemplateId] = useState('');
@@ -44,10 +45,10 @@ const EmailSenderModal: React.FC<EmailSenderModalProps> = ({
                 let filledBody = template.body;
 
                 const replacements: Record<string, string> = {
-                    '{{name}}': context.name || 'User',
-                    '{{projectTitle}}': context.projectTitle || 'Project',
-                    '{{amount}}': context.amount || '0.00',
-                    '{{orderId}}': context.orderId || 'N/A'
+                    '{{name}}': context?.name || 'User',
+                    '{{projectTitle}}': context?.projectTitle || 'Project',
+                    '{{amount}}': context?.amount || '0.00',
+                    '{{orderId}}': context?.orderId || 'N/A'
                 };
 
                 for (const [key, value] of Object.entries(replacements)) {
@@ -85,56 +86,63 @@ const EmailSenderModal: React.FC<EmailSenderModalProps> = ({
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="relative w-full max-w-lg bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6"
+                    className="relative w-full max-w-lg bg-white dark:bg-mono-900 rounded-2xl shadow-2xl p-6 border border-mono-200 dark:border-mono-800"
                 >
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <Mail size={24} className="text-blue-500" />
+                        <h3 className="text-xl font-bold text-mono-950 dark:text-white flex items-center gap-2">
+                            <Mail size={24} className="text-neon-cyan" />
                             Quick Reply
                         </h3>
-                        <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                        <button onClick={onClose} className="text-mono-500 hover:text-mono-700 dark:hover:text-mono-300">
                             <X size={20} />
                         </button>
                     </div>
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To</label>
-                            <input
+                            <Input
+                                label="To"
                                 type="email"
                                 value={recipient}
                                 onChange={(e) => setRecipient(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="recipient@example.com"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Template</label>
-                            <select
-                                value={selectedTemplateId}
-                                onChange={(e) => setSelectedTemplateId(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
-                            >
-                                <option value="">-- Choose a canned response --</option>
-                                {templates.map(t => (
-                                    <option key={t.id} value={t.id}>{t.name}</option>
-                                ))}
-                            </select>
+                            <label className="block text-sm font-medium text-mono-700 dark:text-mono-300 mb-1 ml-1">Select Template</label>
+                            <div className="relative">
+                                <select
+                                    value={selectedTemplateId}
+                                    onChange={(e) => setSelectedTemplateId(e.target.value)}
+                                    className="w-full px-4 py-3 rounded-xl border border-mono-200 dark:border-mono-700 bg-mono-50 dark:bg-mono-900 focus:ring-2 focus:ring-neon-cyan/50 outline-none text-mono-950 dark:text-white appearance-none"
+                                >
+                                    <option value="">-- Choose a canned response --</option>
+                                    {templates.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-mono-400">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
 
                         {selectedTemplateId && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
-                                className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/50"
+                                className="bg-neon-cyan/5 p-4 rounded-xl border border-neon-cyan/20"
                             >
                                 <div className="mb-2">
-                                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Subject</span>
-                                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{subject}</p>
+                                    <span className="text-xs font-bold text-neon-cyan uppercase">Subject</span>
+                                    <p className="text-sm font-medium text-mono-800 dark:text-mono-200">{subject}</p>
                                 </div>
                                 <div>
-                                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Preview</span>
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap max-h-40 overflow-y-auto">{body}</p>
+                                    <span className="text-xs font-bold text-neon-cyan uppercase">Preview</span>
+                                    <p className="text-sm text-mono-600 dark:text-mono-300 whitespace-pre-wrap max-h-40 overflow-y-auto">{body}</p>
                                 </div>
                             </motion.div>
                         )}
@@ -144,7 +152,7 @@ const EmailSenderModal: React.FC<EmailSenderModalProps> = ({
                             <Button
                                 onClick={handleOpenGmail}
                                 disabled={!selectedTemplateId}
-                                className="bg-red-600 hover:bg-red-700 text-white"
+                                className="bg-red-600 hover:bg-red-700 text-white border-none"
                                 leftIcon={<ArrowUpRight size={18} />}
                             >
                                 Open in Gmail

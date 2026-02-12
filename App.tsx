@@ -29,6 +29,7 @@ import SignupPage from './pages/SignupPage';
 import AccountPage from './pages/AccountPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import CoursesPage from './pages/CoursesPage';
+import CourseDetailsPage from './pages/CourseDetailsPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import TutorialsPage from './pages/TutorialsPage';
@@ -98,6 +99,7 @@ const App: React.FC = () => {
                 <Route path="blog/:id" element={<BlogDetail />} />
                 <Route path="source-code" element={<SourceCode />} />
                 <Route path="courses" element={<CoursesPage />} />
+                <Route path="courses/:id" element={<CourseDetailsPage />} />
                 <Route path="checkout/:id" element={<CheckoutPage />} />
                 <Route path="order-success" element={<OrderSuccessPage />} />
                 <Route path="tutorials" element={<TutorialsPage />} />

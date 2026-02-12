@@ -50,6 +50,11 @@ export interface BlogPost {
   category: string;
   image: string;
   content: string; // Added for detail view
+  tags?: string[];
+  author?: string;
+  readTime?: string;
+  createdAt?: any; // Firestore Timestamp
+  updatedAt?: any; // Firestore Timestamp
 }
 
 export interface NavItem {

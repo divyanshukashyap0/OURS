@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getBlogPostById, BlogData } from '../lib/blogs';
 import Footer from './Footer';
 import Button from './ui/Button';
-import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Clock, Tag } from 'lucide-react';
 
 const BlogDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -51,7 +52,12 @@ const BlogDetail: React.FC = () => {
 
 
             <main className="flex-grow pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-3xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="max-w-3xl mx-auto"
+                >
                     <Button
                         variant="ghost"
                         onClick={() => navigate('/')}
@@ -68,14 +74,29 @@ const BlogDetail: React.FC = () => {
                             <h1 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
                                 {post.title}
                             </h1>
-                            <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 text-sm border-b border-gray-100 dark:border-gray-800 pb-8">
+                            <div className="flex flex-wrap items-center gap-6 text-gray-500 dark:text-gray-400 text-sm border-b border-gray-100 dark:border-gray-800 pb-8 mb-8">
                                 <span className="flex items-center gap-2">
                                     <Calendar size={16} /> {post.date}
                                 </span>
                                 <span className="flex items-center gap-2">
-                                    <User size={16} /> Admin
+                                    <User size={16} /> {post.author || 'Admin'}
                                 </span>
+                                {post.readTime && (
+                                    <span className="flex items-center gap-2">
+                                        <Clock size={16} /> {post.readTime}
+                                    </span>
+                                )}
                             </div>
+
+                            {post.tags && post.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-8">
+                                    {post.tags.map((tag, idx) => (
+                                        <span key={idx} className="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-sm font-medium border border-gray-200 dark:border-gray-700 flex items-center gap-1">
+                                            <Tag size={12} /> {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="rounded-xl overflow-hidden mb-10 h-64 md:h-96">
@@ -91,10 +112,10 @@ const BlogDetail: React.FC = () => {
                                 {post.excerpt}
                             </p>
                             {post.content ? (
-                                <p>{post.content}</p>
+                                <div className="whitespace-pre-wrap">{post.content}</div>
                             ) : (
                                 <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit...
                                 </p>
                             )}
                             <h2 className="text-2xl font-bold mt-8 mb-4">Getting Started</h2>
@@ -103,7 +124,7 @@ const BlogDetail: React.FC = () => {
                             </p>
                         </div>
                     </article>
-                </div>
+                </motion.div>
             </main>
 
             <Footer />

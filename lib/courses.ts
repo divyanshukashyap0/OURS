@@ -24,6 +24,13 @@ export interface CourseData {
     instructor: string;
     duration: string;
     tags: string[];
+    whatYouLearn: string[];
+    whatYouGet: string[];
+    videos?: { title: string; url: string }[];
+    gallery?: string[];
+    audioFiles?: { title: string; url: string }[];
+    studyMaterials?: { title: string; url: string }[];
+    chapters?: { id: string; title: string; content: string }[];
     createdAt?: Timestamp;
 }
 

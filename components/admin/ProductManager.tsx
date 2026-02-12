@@ -27,9 +27,26 @@ const ProductManager: React.FC = () => {
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
     // Form State
-    const [formData, setFormData] = useState<Partial<Project>>({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '', gallery: [], isStudentFree: false, isTrending: false });
+    const [formData, setFormData] = useState<Partial<Project>>({
+        title: '',
+        description: '',
+        price: '',
+        image: '',
+        tags: [],
+        githubLink: '',
+        previewUrl: '',
+        gallery: [],
+        isStudentFree: false,
+        isTrending: false,
+        features: [],
+        technologies: [],
+        demoVideoUrl: '',
+        longDescription: ''
+    });
     const [tagInput, setTagInput] = useState('');
     const [galleryInput, setGalleryInput] = useState('');
+    const [featureInput, setFeatureInput] = useState('');
+    const [techInput, setTechInput] = useState('');
 
     // Real-time Data Subscription
     React.useEffect(() => {
@@ -69,7 +86,22 @@ const ProductManager: React.FC = () => {
             setFormData(project);
         } else {
             setEditingProject(null);
-            setFormData({ title: '', description: '', price: '', image: '', tags: [], githubLink: '', previewUrl: '', gallery: [], isStudentFree: false, isTrending: false });
+            setFormData({
+                title: '',
+                description: '',
+                price: '',
+                image: '',
+                tags: [],
+                githubLink: '',
+                previewUrl: '',
+                gallery: [],
+                isStudentFree: false,
+                isTrending: false,
+                features: [],
+                technologies: [],
+                demoVideoUrl: '',
+                longDescription: ''
+            });
         }
         setIsModalOpen(true);
     };
@@ -87,7 +119,11 @@ const ProductManager: React.FC = () => {
                 previewUrl: formData.previewUrl || '',
                 gallery: Array.isArray(formData.gallery) ? formData.gallery : [],
                 isStudentFree: formData.isStudentFree || false,
-                isTrending: formData.isTrending || false
+                isTrending: formData.isTrending || false,
+                features: Array.isArray(formData.features) ? formData.features : [],
+                technologies: Array.isArray(formData.technologies) ? formData.technologies : [],
+                demoVideoUrl: formData.demoVideoUrl || '',
+                longDescription: formData.longDescription || ''
             };
 
             console.log("SANITIZED PAYLOAD:", dataToSave);
@@ -130,6 +166,28 @@ const ProductManager: React.FC = () => {
 
     const removeGalleryImage = (index: number) => {
         setFormData(prev => ({ ...prev, gallery: prev.gallery?.filter((_, i) => i !== index) }));
+    };
+
+    const addFeature = () => {
+        if (featureInput.trim()) {
+            setFormData(prev => ({ ...prev, features: [...(prev.features || []), featureInput.trim()] }));
+            setFeatureInput('');
+        }
+    };
+
+    const removeFeature = (index: number) => {
+        setFormData(prev => ({ ...prev, features: prev.features?.filter((_, i) => i !== index) }));
+    };
+
+    const addTech = () => {
+        if (techInput.trim()) {
+            setFormData(prev => ({ ...prev, technologies: [...(prev.technologies || []), techInput.trim()] }));
+            setTechInput('');
+        }
+    };
+
+    const removeTech = (index: number) => {
+        setFormData(prev => ({ ...prev, technologies: prev.technologies?.filter((_, i) => i !== index) }));
     };
 
     return (
@@ -317,6 +375,75 @@ const ProductManager: React.FC = () => {
                                         onChange={e => setFormData({ ...formData, description: e.target.value })}
                                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Long Description (Markdown / Detailed)</label>
+                                    <textarea
+                                        rows={6}
+                                        value={formData.longDescription || ''}
+                                        onChange={e => setFormData({ ...formData, longDescription: e.target.value })}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none font-mono text-sm"
+                                        placeholder="# Key Details..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Demo Video URL</label>
+                                    <input
+                                        value={formData.demoVideoUrl || ''}
+                                        onChange={e => setFormData({ ...formData, demoVideoUrl: e.target.value })}
+                                        placeholder="https://youtube.com/..."
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+
+                                {/* Features Input */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Features (Key Selling Points)</label>
+                                    <div className="flex gap-2 mb-2">
+                                        <input
+                                            type="text"
+                                            value={featureInput}
+                                            onChange={e => setFeatureInput(e.target.value)}
+                                            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addFeature())}
+                                            className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                                            placeholder="Add feature..."
+                                        />
+                                        <Button type="button" onClick={addFeature} variant="secondary"><Plus size={18} /></Button>
+                                    </div>
+                                    <ul className="space-y-1">
+                                        {formData.features?.map((feature, index) => (
+                                            <li key={index} className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-lg text-sm">
+                                                <span>{feature}</span>
+                                                <button type="button" onClick={() => removeFeature(index)} className="text-gray-400 hover:text-red-500"><X size={14} /></button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Technologies Input */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Technologies (Tech Stack)</label>
+                                    <div className="flex gap-2 mb-2">
+                                        <input
+                                            type="text"
+                                            value={techInput}
+                                            onChange={e => setTechInput(e.target.value)}
+                                            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTech())}
+                                            className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                                            placeholder="Add technology..."
+                                        />
+                                        <Button type="button" onClick={addTech} variant="secondary"><Plus size={18} /></Button>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {formData.technologies?.map((tech, index) => (
+                                            <span key={index} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 text-sm text-indigo-700 dark:text-indigo-300">
+                                                {tech}
+                                                <button type="button" onClick={() => removeTech(index)} className="hover:text-red-500"><X size={14} /></button>
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* Gallery Images */}

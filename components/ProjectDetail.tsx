@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProjectById, ProjectData } from '../lib/projects';
 import { db } from '../lib/firebase';
@@ -124,7 +125,12 @@ const ProjectDetail: React.FC = () => {
 
 
             <main className="flex-grow pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-6xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="max-w-6xl mx-auto"
+                >
                     <Button
                         variant="ghost"
                         onClick={() => navigate('/')}
@@ -136,12 +142,13 @@ const ProjectDetail: React.FC = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                         {/* Main Content */}
                         <div className="lg:col-span-2 space-y-8">
-                            <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800">
+                            <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 relative group">
                                 <img
                                     src={project.image}
                                     alt={project.title}
-                                    className="w-full h-auto object-cover"
+                                    className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                                 />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
                             </div>
 
                             <div className="prose dark:prose-invert max-w-none">
@@ -151,17 +158,54 @@ const ProjectDetail: React.FC = () => {
                                 </p>
 
                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Description</h3>
-                                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                                </p>
+                                <div className="text-gray-600 dark:text-gray-400 leading-relaxed mb-8 whitespace-pre-wrap">
+                                    {project.longDescription || project.description}
+                                </div>
 
-                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Key Features</h3>
-                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-600 dark:text-gray-400">
-                                    <li className="flex items-start gap-2"><span className="text-blue-500 mt-1">•</span> High performance and optimized for speed.</li>
-                                    <li className="flex items-start gap-2"><span className="text-blue-500 mt-1">•</span> Responsive design looking great on all devices.</li>
-                                    <li className="flex items-start gap-2"><span className="text-blue-500 mt-1">•</span> Built with modern technologies and best practices.</li>
-                                    <li className="flex items-start gap-2"><span className="text-blue-500 mt-1">•</span> Easy to customize and extend.</li>
-                                </ul>
+                                {project.demoVideoUrl && (
+                                    <div className="mb-12">
+                                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Video Preview</h3>
+                                        <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-800 aspect-video">
+                                            <iframe
+                                                src={project.demoVideoUrl.replace('watch?v=', 'embed/')}
+                                                title="Project Demo"
+                                                className="w-full h-full"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            ></iframe>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {project.features && project.features.length > 0 && (
+                                    <div className="mb-12">
+                                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Key Features</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {project.features.map((feature, idx) => (
+                                                <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800">
+                                                    <div className="mt-1 p-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full">
+                                                        <CheckCircle size={16} />
+                                                    </div>
+                                                    <span className="text-gray-700 dark:text-gray-300 font-medium">{feature}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {project.technologies && project.technologies.length > 0 && (
+                                    <div className="mb-12">
+                                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Tech Stack</h3>
+                                        <div className="flex flex-wrap gap-3">
+                                            {project.technologies.map((tech, idx) => (
+                                                <div key={idx} className="px-4 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 font-medium border border-indigo-100 dark:border-indigo-800 shadow-sm flex items-center gap-2">
+                                                    <Tag size={16} />
+                                                    {tech}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {project.gallery && project.gallery.length > 0 && (
                                     <div className="mt-12">
@@ -247,7 +291,7 @@ const ProjectDetail: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </main>
         </div>
     );

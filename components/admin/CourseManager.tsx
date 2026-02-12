@@ -22,10 +22,22 @@ const CourseManager: React.FC = () => {
         image: '',
         rating: 5.0,
         students: 0,
-        tags: []
+        tags: [],
+        whatYouLearn: [],
+        whatYouGet: [],
+        videos: [],
+        gallery: [],
+        audioFiles: [],
+        studyMaterials: []
     });
 
     const [tagsInput, setTagsInput] = useState('');
+    const [whatYouLearnInput, setWhatYouLearnInput] = useState('');
+    const [whatYouGetInput, setWhatYouGetInput] = useState('');
+    const [videosInput, setVideosInput] = useState('');
+    const [galleryInput, setGalleryInput] = useState('');
+    const [audioInput, setAudioInput] = useState('');
+    const [chaptersInput, setChaptersInput] = useState('');
 
     useEffect(() => {
         fetchCourses();
@@ -48,6 +60,13 @@ const CourseManager: React.FC = () => {
             setEditingCourse(course);
             setFormData(course);
             setTagsInput(course.tags ? course.tags.join(', ') : '');
+            setWhatYouLearnInput(course.whatYouLearn ? course.whatYouLearn.join('\n') : '');
+            setWhatYouGetInput(course.whatYouGet ? course.whatYouGet.join('\n') : '');
+            setVideosInput(course.videos ? course.videos.map(v => `${v.title} | ${v.url}`).join('\n') : '');
+            setGalleryInput(course.gallery ? course.gallery.join('\n') : '');
+            setAudioInput(course.audioFiles ? course.audioFiles.map(a => `${a.title} | ${a.url}`).join('\n') : '');
+            setStudyInput(course.studyMaterials ? course.studyMaterials.map(s => `${s.title} | ${s.url}`).join('\n') : '');
+            setChaptersInput(course.chapters ? course.chapters.map(c => `### ${c.title}\n${c.content}\n---`).join('\n') : '');
         } else {
             setEditingCourse(null);
             setFormData({
@@ -60,18 +79,79 @@ const CourseManager: React.FC = () => {
                 image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800',
                 rating: 5.0,
                 students: 0,
-                tags: []
+                tags: [],
+                whatYouLearn: [],
+                whatYouGet: [],
+                videos: [],
+                gallery: [],
+                audioFiles: [],
+                studyMaterials: [],
+                chapters: []
             });
             setTagsInput('');
+            setWhatYouLearnInput('');
+            setWhatYouGetInput('');
+            setVideosInput('');
+            setGalleryInput('');
+            setAudioInput('');
+            setStudyInput('');
+            setChaptersInput('');
         }
         setIsModalOpen(true);
     };
 
     const handleSave = async () => {
         try {
+            const parseContentItems = (input: string) => {
+                return input.split('\n')
+                    .map(line => {
+                        const [title, url] = line.split('|').map(s => s.trim());
+                        if (title && url) return { title, url };
+                        return null;
+                    })
+                    .filter(item => item !== null) as { title: string; url: string }[];
+            };
+
+            const parseChapters = (input: string) => {
+                // Split by separator '---'
+                return input.split('---').map((chunk, idx) => {
+                    const lines = chunk.trim().split('\n');
+                    if (lines.length === 0) return null;
+
+                    let title = `Chapter ${idx + 1}`;
+                    let content = chunk.trim();
+
+                    // Try to find a title line starting with ###
+                    const titleLineIndex = lines.findIndex(l => l.trim().startsWith('###'));
+                    if (titleLineIndex !== -1) {
+                        title = lines[titleLineIndex].replace(/^###\s*/, '').trim();
+                        // Remove title line from content
+                        const contentLines = [...lines];
+                        contentLines.splice(titleLineIndex, 1);
+                        content = contentLines.join('\n').trim();
+                    }
+
+                    if (!content && !title) return null;
+                    if (content === '' && title.startsWith('Chapter')) return null; // skip empty chunks
+
+                    return {
+                        id: `chap-${Date.now()}-${idx}`,
+                        title,
+                        content
+                    };
+                }).filter(c => c !== null) as { id: string; title: string; content: string }[];
+            };
+
             const courseData = {
                 ...formData,
-                tags: tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag !== '')
+                tags: tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
+                whatYouLearn: whatYouLearnInput.split('\n').map(item => item.trim()).filter(item => item !== ''),
+                whatYouGet: whatYouGetInput.split('\n').map(item => item.trim()).filter(item => item !== ''),
+                videos: parseContentItems(videosInput),
+                gallery: galleryInput.split('\n').map(url => url.trim()).filter(url => url !== ''),
+                audioFiles: parseContentItems(audioInput),
+                studyMaterials: parseContentItems(studyInput),
+                chapters: parseChapters(chaptersInput)
             } as CourseData;
 
             if (editingCourse && editingCourse.id) {
@@ -251,6 +331,77 @@ const CourseManager: React.FC = () => {
                                         value={tagsInput}
                                         onChange={e => setTagsInput(e.target.value)}
                                         placeholder="React, Frontend, Web"
+                                    />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium mb-1">What You'll Learn (One per line)</label>
+                                    <textarea
+                                        className="w-full p-2 rounded border bg-transparent"
+                                        rows={4}
+                                        value={whatYouLearnInput}
+                                        onChange={e => setWhatYouLearnInput(e.target.value)}
+                                        placeholder="Build a full-stack app&#10;Master React Hooks&#10;Deploy to production"
+                                    />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium mb-1">What You Get (One per line)</label>
+                                    <textarea
+                                        className="w-full p-2 rounded border bg-transparent"
+                                        rows={4}
+                                        value={whatYouGetInput}
+                                        onChange={e => setWhatYouGetInput(e.target.value)}
+                                        placeholder="Certificate of completion&#10;Downloadable resources&#10;Lifetime access"
+                                    />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium mb-1">Chapters (Text Content)</label>
+                                    <p className="text-xs text-mono-500 mb-2">Use ### Title to start a chapter. Separate chapters with ---</p>
+                                    <textarea
+                                        className="w-full p-2 rounded border bg-transparent font-mono text-sm"
+                                        rows={8}
+                                        value={chaptersInput}
+                                        onChange={e => setChaptersInput(e.target.value)}
+                                        placeholder="### Introduction&#10;Welcome to the course...&#10;&#10;---&#10;&#10;### Chapter 1&#10;Let's get started..."
+                                    />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium mb-1">Videos (Title | URL per line)</label>
+                                    <textarea
+                                        className="w-full p-2 rounded border bg-transparent"
+                                        rows={3}
+                                        value={videosInput}
+                                        onChange={e => setVideosInput(e.target.value)}
+                                        placeholder="Intro | https://youtube.com/..."
+                                    />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium mb-1">Image Gallery (URL per line)</label>
+                                    <textarea
+                                        className="w-full p-2 rounded border bg-transparent"
+                                        rows={3}
+                                        value={galleryInput}
+                                        onChange={e => setGalleryInput(e.target.value)}
+                                        placeholder="https://example.com/image1.jpg"
+                                    />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium mb-1">Audio Files (Title | URL per line)</label>
+                                    <textarea
+                                        className="w-full p-2 rounded border bg-transparent"
+                                        rows={3}
+                                        value={audioInput}
+                                        onChange={e => setAudioInput(e.target.value)}
+                                        placeholder="Podcast Ep 1 | https://example.com/audio.mp3"
+                                    />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium mb-1">Study Materials (Title | URL per line)</label>
+                                    <textarea
+                                        className="w-full p-2 rounded border bg-transparent"
+                                        rows={3}
+                                        value={studyInput}
+                                        onChange={e => setStudyInput(e.target.value)}
+                                        placeholder="Cheat Sheet | https://example.com/sheet.pdf"
                                     />
                                 </div>
                             </div>

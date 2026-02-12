@@ -19,8 +19,12 @@ const BlogManager: React.FC = () => {
         content: '',
         image: '',
         category: '',
-        date: new Date().toISOString().split('T')[0]
+        date: '',
+        tags: [],
+        author: '',
+        readTime: ''
     });
+    const [tagInput, setTagInput] = useState('');
 
     useEffect(() => {
         const q = query(collection(db, 'blogs'), orderBy('date', 'desc'));
@@ -56,7 +60,13 @@ const BlogManager: React.FC = () => {
     const handleOpenModal = (post?: BlogPost) => {
         if (post) {
             setEditingPost(post);
-            setFormData(post);
+            setFormData({
+                ...post,
+                date: post.date || new Date().toISOString().split('T')[0], // Ensure date is string
+                tags: Array.isArray(post.tags) ? post.tags : [],
+                author: post.author || '',
+                readTime: post.readTime || ''
+            });
         } else {
             setEditingPost(null);
             setFormData({
@@ -65,7 +75,10 @@ const BlogManager: React.FC = () => {
                 content: '',
                 image: '',
                 category: '',
-                date: new Date().toISOString().split('T')[0]
+                date: new Date().toISOString().split('T')[0],
+                tags: [],
+                author: 'Admin',
+                readTime: '5 min read'
             });
         }
         setIsModalOpen(true);
@@ -92,6 +105,17 @@ const BlogManager: React.FC = () => {
         } catch (error: any) {
             alert(`Failed to save post: ${error.message}`);
         }
+    };
+
+    const addTag = () => {
+        if (tagInput.trim()) {
+            setFormData(prev => ({ ...prev, tags: [...(prev.tags || []), tagInput.trim()] }));
+            setTagInput('');
+        }
+    };
+
+    const removeTag = (index: number) => {
+        setFormData(prev => ({ ...prev, tags: prev.tags?.filter((_, i) => i !== index) }));
     };
 
     return (
@@ -250,6 +274,52 @@ const BlogManager: React.FC = () => {
                                         onChange={e => setFormData({ ...formData, content: e.target.value })}
                                         className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none font-mono text-sm"
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Author Name | Role</label>
+                                    <input
+                                        type="text"
+                                        value={formData.author || ''}
+                                        onChange={e => setFormData({ ...formData, author: e.target.value })}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="John Doe | Senior Dev"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Read Time</label>
+                                    <input
+                                        type="text"
+                                        value={formData.readTime || ''}
+                                        onChange={e => setFormData({ ...formData, readTime: e.target.value })}
+                                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="5 min read"
+                                    />
+                                </div>
+
+                                {/* Tags Input */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tags</label>
+                                    <div className="flex gap-2 mb-2">
+                                        <input
+                                            type="text"
+                                            value={tagInput}
+                                            onChange={e => setTagInput(e.target.value)}
+                                            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                                            className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                                            placeholder="Add tag..."
+                                        />
+                                        <Button type="button" onClick={addTag} variant="secondary"><Plus size={18} /></Button>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {formData.tags?.map((tag, index) => (
+                                            <span key={index} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-sm text-blue-700 dark:text-blue-300">
+                                                {tag}
+                                                <button type="button" onClick={() => removeTag(index)} className="hover:text-red-500"><X size={14} /></button>
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 <div className="flex items-center justify-end gap-3 mt-8">

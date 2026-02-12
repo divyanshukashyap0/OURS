@@ -39,8 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         email: currentUser.email,
                         displayName: currentUser.displayName || '',
                         photoURL: currentUser.photoURL || '',
+                        role: 'user', // Default role
+                        purchasedCourses: [], // Initialize with empty array
                         createdAt: serverTimestamp(),
-                        role: 'user' // Default role
                     });
                 } else {
                     // 12/28/2026: Optional - Update last logged in could go here

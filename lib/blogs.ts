@@ -20,6 +20,9 @@ export interface BlogData {
     category: string;
     image: string;
     content: string;
+    tags?: string[]; // New Field
+    author?: string; // New Field: "Name | Role" or just Name
+    readTime?: string; // New Field: e.g., "5 min read"
     createdAt?: Timestamp;
 }
 
