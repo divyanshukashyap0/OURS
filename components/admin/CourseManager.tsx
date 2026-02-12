@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { CourseData, getCourses, addCourse, updateCourse, deleteCourse } from '../../lib/courses';
+import { CourseData, getCourses, addCourse, updateCourse, deleteCourse, Chapter } from '../../lib/courses';
 import Button from '../ui/Button';
-import { Plus, Edit2, Trash2, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, BookOpen, GripVertical, Eye, Lock } from 'lucide-react';
 import LogoLoader from '../ui/LogoLoader';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -28,8 +28,18 @@ const CourseManager: React.FC = () => {
         videos: [],
         gallery: [],
         audioFiles: [],
-        studyMaterials: []
+        studyMaterials: [],
+        chapters: []
     });
+
+    const [chapterInput, setChapterInput] = useState<{ title: string, content: string, duration: string, isFreePreview: boolean }>({
+        title: '',
+        content: '',
+        duration: '',
+        isFreePreview: false
+    });
+    const [editingChapterId, setEditingChapterId] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<'details' | 'content' | 'chapters'>('details');
 
     const [tagsInput, setTagsInput] = useState('');
     const [whatYouLearnInput, setWhatYouLearnInput] = useState('');
@@ -37,7 +47,7 @@ const CourseManager: React.FC = () => {
     const [videosInput, setVideosInput] = useState('');
     const [galleryInput, setGalleryInput] = useState('');
     const [audioInput, setAudioInput] = useState('');
-    const [chaptersInput, setChaptersInput] = useState('');
+    const [studyInput, setStudyInput] = useState('');
 
     useEffect(() => {
         fetchCourses();
@@ -66,7 +76,6 @@ const CourseManager: React.FC = () => {
             setGalleryInput(course.gallery ? course.gallery.join('\n') : '');
             setAudioInput(course.audioFiles ? course.audioFiles.map(a => `${a.title} | ${a.url}`).join('\n') : '');
             setStudyInput(course.studyMaterials ? course.studyMaterials.map(s => `${s.title} | ${s.url}`).join('\n') : '');
-            setChaptersInput(course.chapters ? course.chapters.map(c => `### ${c.title}\n${c.content}\n---`).join('\n') : '');
         } else {
             setEditingCourse(null);
             setFormData({
@@ -95,9 +104,64 @@ const CourseManager: React.FC = () => {
             setGalleryInput('');
             setAudioInput('');
             setStudyInput('');
-            setChaptersInput('');
         }
+        setActiveTab('details');
         setIsModalOpen(true);
+    };
+
+    const handleAddChapter = () => {
+        if (!chapterInput.title) return;
+
+        const newChapter: Chapter = {
+            id: editingChapterId || Date.now().toString(),
+            title: chapterInput.title,
+            content: chapterInput.content, // We might want a richer editor later
+            duration: chapterInput.duration,
+            isFreePreview: chapterInput.isFreePreview
+        };
+
+        if (editingChapterId) {
+            setFormData(prev => ({
+                ...prev,
+                chapters: prev.chapters?.map(c => c.id === editingChapterId ? newChapter : c)
+            }));
+            setEditingChapterId(null);
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                chapters: [...(prev.chapters || []), newChapter]
+            }));
+        }
+
+        setChapterInput({ title: '', content: '', duration: '', isFreePreview: false });
+    };
+
+    const handleEditChapter = (chapter: Chapter) => {
+        setChapterInput({
+            title: chapter.title,
+            content: chapter.content,
+            duration: chapter.duration || '',
+            isFreePreview: chapter.isFreePreview || false
+        });
+        setEditingChapterId(chapter.id);
+        // Switch to form view if we had one, but here it's inline or separate
+    };
+
+    const handleDeleteChapter = (id: string) => {
+        setFormData(prev => ({
+            ...prev,
+            chapters: prev.chapters?.filter(c => c.id !== id)
+        }));
+    };
+
+    const moveChapter = (index: number, direction: 'up' | 'down') => {
+        const chapters = [...(formData.chapters || [])];
+        if (direction === 'up' && index > 0) {
+            [chapters[index], chapters[index - 1]] = [chapters[index - 1], chapters[index]];
+        } else if (direction === 'down' && index < chapters.length - 1) {
+            [chapters[index], chapters[index + 1]] = [chapters[index + 1], chapters[index]];
+        }
+        setFormData(prev => ({ ...prev, chapters }));
     };
 
     const handleSave = async () => {
@@ -112,36 +176,6 @@ const CourseManager: React.FC = () => {
                     .filter(item => item !== null) as { title: string; url: string }[];
             };
 
-            const parseChapters = (input: string) => {
-                // Split by separator '---'
-                return input.split('---').map((chunk, idx) => {
-                    const lines = chunk.trim().split('\n');
-                    if (lines.length === 0) return null;
-
-                    let title = `Chapter ${idx + 1}`;
-                    let content = chunk.trim();
-
-                    // Try to find a title line starting with ###
-                    const titleLineIndex = lines.findIndex(l => l.trim().startsWith('###'));
-                    if (titleLineIndex !== -1) {
-                        title = lines[titleLineIndex].replace(/^###\s*/, '').trim();
-                        // Remove title line from content
-                        const contentLines = [...lines];
-                        contentLines.splice(titleLineIndex, 1);
-                        content = contentLines.join('\n').trim();
-                    }
-
-                    if (!content && !title) return null;
-                    if (content === '' && title.startsWith('Chapter')) return null; // skip empty chunks
-
-                    return {
-                        id: `chap-${Date.now()}-${idx}`,
-                        title,
-                        content
-                    };
-                }).filter(c => c !== null) as { id: string; title: string; content: string }[];
-            };
-
             const courseData = {
                 ...formData,
                 tags: tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
@@ -150,12 +184,11 @@ const CourseManager: React.FC = () => {
                 videos: parseContentItems(videosInput),
                 gallery: galleryInput.split('\n').map(url => url.trim()).filter(url => url !== ''),
                 audioFiles: parseContentItems(audioInput),
-                studyMaterials: parseContentItems(studyInput),
-                chapters: parseChapters(chaptersInput)
+                studyMaterials: parseContentItems(studyInput)
             } as CourseData;
 
             if (editingCourse && editingCourse.id) {
-                await updateCourse(editingCourse.id, courseData);
+                await updateCourse(String(editingCourse.id), courseData);
             } else {
                 await addCourse(courseData);
             }
@@ -262,149 +295,257 @@ const CourseManager: React.FC = () => {
                                 <button onClick={() => setIsModalOpen(false)}><X /></button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Title</label>
-                                    <input
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        value={formData.title}
-                                        onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Description</label>
-                                    <textarea
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        rows={3}
-                                        value={formData.description}
-                                        onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Instructor</label>
-                                    <input
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        value={formData.instructor}
-                                        onChange={e => setFormData({ ...formData, instructor: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Price</label>
-                                    <input
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        value={formData.price}
-                                        onChange={e => setFormData({ ...formData, price: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Duration</label>
-                                    <input
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        value={formData.duration}
-                                        onChange={e => setFormData({ ...formData, duration: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Level</label>
-                                    <select
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        value={formData.level}
-                                        onChange={e => setFormData({ ...formData, level: e.target.value as any })}
-                                    >
-                                        <option value="Beginner">Beginner</option>
-                                        <option value="Intermediate">Intermediate</option>
-                                        <option value="Advanced">Advanced</option>
-                                    </select>
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Image URL</label>
-                                    <input
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        value={formData.image}
-                                        onChange={e => setFormData({ ...formData, image: e.target.value })}
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Tags (comma separated)</label>
-                                    <input
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        value={tagsInput}
-                                        onChange={e => setTagsInput(e.target.value)}
-                                        placeholder="React, Frontend, Web"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">What You'll Learn (One per line)</label>
-                                    <textarea
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        rows={4}
-                                        value={whatYouLearnInput}
-                                        onChange={e => setWhatYouLearnInput(e.target.value)}
-                                        placeholder="Build a full-stack app&#10;Master React Hooks&#10;Deploy to production"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">What You Get (One per line)</label>
-                                    <textarea
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        rows={4}
-                                        value={whatYouGetInput}
-                                        onChange={e => setWhatYouGetInput(e.target.value)}
-                                        placeholder="Certificate of completion&#10;Downloadable resources&#10;Lifetime access"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Chapters (Text Content)</label>
-                                    <p className="text-xs text-mono-500 mb-2">Use ### Title to start a chapter. Separate chapters with ---</p>
-                                    <textarea
-                                        className="w-full p-2 rounded border bg-transparent font-mono text-sm"
-                                        rows={8}
-                                        value={chaptersInput}
-                                        onChange={e => setChaptersInput(e.target.value)}
-                                        placeholder="### Introduction&#10;Welcome to the course...&#10;&#10;---&#10;&#10;### Chapter 1&#10;Let's get started..."
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Videos (Title | URL per line)</label>
-                                    <textarea
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        rows={3}
-                                        value={videosInput}
-                                        onChange={e => setVideosInput(e.target.value)}
-                                        placeholder="Intro | https://youtube.com/..."
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Image Gallery (URL per line)</label>
-                                    <textarea
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        rows={3}
-                                        value={galleryInput}
-                                        onChange={e => setGalleryInput(e.target.value)}
-                                        placeholder="https://example.com/image1.jpg"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Audio Files (Title | URL per line)</label>
-                                    <textarea
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        rows={3}
-                                        value={audioInput}
-                                        onChange={e => setAudioInput(e.target.value)}
-                                        placeholder="Podcast Ep 1 | https://example.com/audio.mp3"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Study Materials (Title | URL per line)</label>
-                                    <textarea
-                                        className="w-full p-2 rounded border bg-transparent"
-                                        rows={3}
-                                        value={studyInput}
-                                        onChange={e => setStudyInput(e.target.value)}
-                                        placeholder="Cheat Sheet | https://example.com/sheet.pdf"
-                                    />
-                                </div>
+                            <div className="flex gap-4 mb-6 border-b border-gray-200 dark:border-gray-700">
+                                <button
+                                    className={`pb-2 px-4 transition-colors ${activeTab === 'details' ? 'border-b-2 border-blue-500 text-blue-600 font-bold' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}
+                                    onClick={() => setActiveTab('details')}
+                                >
+                                    Details
+                                </button>
+                                <button
+                                    className={`pb-2 px-4 transition-colors ${activeTab === 'content' ? 'border-b-2 border-blue-500 text-blue-600 font-bold' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}
+                                    onClick={() => setActiveTab('content')}
+                                >
+                                    Media & Files
+                                </button>
+                                <button
+                                    className={`pb-2 px-4 transition-colors ${activeTab === 'chapters' ? 'border-b-2 border-blue-500 text-blue-600 font-bold' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}
+                                    onClick={() => setActiveTab('chapters')}
+                                >
+                                    Chapters
+                                </button>
                             </div>
+
+                            {activeTab === 'details' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">Title</label>
+                                        <input
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            value={formData.title}
+                                            onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">Description</label>
+                                        <textarea
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            rows={3}
+                                            value={formData.description}
+                                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">Instructor</label>
+                                        <input
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            value={formData.instructor}
+                                            onChange={e => setFormData({ ...formData, instructor: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">Price</label>
+                                        <input
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            value={formData.price}
+                                            onChange={e => setFormData({ ...formData, price: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">Duration</label>
+                                        <input
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            value={formData.duration}
+                                            onChange={e => setFormData({ ...formData, duration: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">Level</label>
+                                        <select
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            value={formData.level}
+                                            onChange={e => setFormData({ ...formData, level: e.target.value as any })}
+                                        >
+                                            <option value="Beginner">Beginner</option>
+                                            <option value="Intermediate">Intermediate</option>
+                                            <option value="Advanced">Advanced</option>
+                                        </select>
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">Image URL</label>
+                                        <input
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            value={formData.image}
+                                            onChange={e => setFormData({ ...formData, image: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">Tags (comma separated)</label>
+                                        <input
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            value={tagsInput}
+                                            onChange={e => setTagsInput(e.target.value)}
+                                            placeholder="React, Frontend, Web"
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">What You'll Learn (One per line)</label>
+                                        <textarea
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            rows={4}
+                                            value={whatYouLearnInput}
+                                            onChange={e => setWhatYouLearnInput(e.target.value)}
+                                            placeholder="Build a full-stack app&#10;Master React Hooks&#10;Deploy to production"
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">What You Get (One per line)</label>
+                                        <textarea
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            rows={4}
+                                            value={whatYouGetInput}
+                                            onChange={e => setWhatYouGetInput(e.target.value)}
+                                            placeholder="Certificate of completion&#10;Downloadable resources&#10;Lifetime access"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'content' && (
+                                <div className="space-y-4">
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">Videos (Title | URL per line)</label>
+                                        <textarea
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            rows={3}
+                                            value={videosInput}
+                                            onChange={e => setVideosInput(e.target.value)}
+                                            placeholder="Intro | https://youtube.com/..."
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">Image Gallery (URL per line)</label>
+                                        <textarea
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            rows={3}
+                                            value={galleryInput}
+                                            onChange={e => setGalleryInput(e.target.value)}
+                                            placeholder="https://example.com/image1.jpg"
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">Audio Files (Title | URL per line)</label>
+                                        <textarea
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            rows={3}
+                                            value={audioInput}
+                                            onChange={e => setAudioInput(e.target.value)}
+                                            placeholder="Podcast Ep 1 | https://example.com/audio.mp3"
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium mb-1">Study Materials (Title | URL per line)</label>
+                                        <textarea
+                                            className="w-full p-2 rounded border bg-transparent"
+                                            rows={3}
+                                            value={studyInput}
+                                            onChange={e => setStudyInput(e.target.value)}
+                                            placeholder="Cheat Sheet | https://example.com/sheet.pdf"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'chapters' && (
+                                <div className="space-y-6">
+                                    {/* Add/Edit Chapter Form */}
+                                    <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+                                        <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-500">{editingChapterId ? 'Edit Chapter' : 'Add New Chapter'}</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                            <div className="col-span-2">
+                                                <input
+                                                    placeholder="Chapter Title"
+                                                    className="w-full p-2 rounded border bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                                                    value={chapterInput.title}
+                                                    onChange={e => setChapterInput({ ...chapterInput, title: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <textarea
+                                                    placeholder="Chapter Content (Markdown)"
+                                                    className="w-full p-2 rounded border bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 font-mono text-sm"
+                                                    rows={6}
+                                                    value={chapterInput.content}
+                                                    onChange={e => setChapterInput({ ...chapterInput, content: e.target.value })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <input
+                                                    placeholder="Duration (e.g. 10 mins)"
+                                                    className="w-full p-2 rounded border bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                                                    value={chapterInput.duration}
+                                                    onChange={e => setChapterInput({ ...chapterInput, duration: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    id="isFreePreview"
+                                                    checked={chapterInput.isFreePreview}
+                                                    onChange={e => setChapterInput({ ...chapterInput, isFreePreview: e.target.checked })}
+                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                />
+                                                <label htmlFor="isFreePreview" className="text-sm">Free Preview</label>
+                                            </div>
+                                            <div className="col-span-2 flex justify-end gap-2">
+                                                {editingChapterId && (
+                                                    <Button variant="ghost" size="sm" onClick={() => { setEditingChapterId(null); setChapterInput({ title: '', content: '', duration: '', isFreePreview: false }); }}>
+                                                        Cancel Edit
+                                                    </Button>
+                                                )}
+                                                <Button size="sm" onClick={handleAddChapter} disabled={!chapterInput.title}>
+                                                    {editingChapterId ? 'Update Chapter' : 'Add Chapter'}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Chapters List */}
+                                    <div className="space-y-2">
+                                        {formData.chapters?.map((chapter, index) => (
+                                            <div key={chapter.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 group">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex flex-col gap-1 text-gray-400">
+                                                        <button onClick={() => moveChapter(index, 'up')} disabled={index === 0} className="hover:text-gray-600 disabled:opacity-30"><GripVertical size={14} className="rotate-90" /></button>
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-medium flex items-center gap-2">
+                                                            {chapter.title}
+                                                            {chapter.isFreePreview ? (
+                                                                <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded flex items-center gap-1"><Eye size={10} /> Free</span>
+                                                            ) : (
+                                                                <span className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded flex items-center gap-1"><Lock size={10} /> Locked</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="text-xs text-gray-500 truncate max-w-xs">{chapter.duration}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button onClick={() => handleEditChapter(chapter)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-blue-600">
+                                                        <Edit2 size={16} />
+                                                    </button>
+                                                    <button onClick={() => handleDeleteChapter(chapter.id)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-red-600">
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {(formData.chapters || []).length === 0 && (
+                                            <div className="text-center py-8 text-gray-500 text-sm">No chapters added yet.</div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="flex justify-end gap-3 mt-8">
                                 <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancel</Button>

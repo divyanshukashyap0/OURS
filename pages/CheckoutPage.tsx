@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getProjectById } from '../lib/projects';
+import { getCourseById } from '../lib/courses';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../lib/config';
 import Button from '../components/ui/Button';
@@ -11,11 +12,13 @@ import { db } from '../lib/firebase';
 import { sendEmail } from '../lib/emailService';
 
 const CheckoutPage: React.FC = () => {
+    const [searchParams] = useSearchParams();
+    const type = searchParams.get('type') || 'project'; // 'project' or 'course'
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
-    const [project, setProject] = useState<any>(null);
+    const [item, setItem] = useState<any>(null);
 
     // Coupon State
     const [couponCode, setCouponCode] = useState('');
@@ -25,23 +28,38 @@ const CheckoutPage: React.FC = () => {
     const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     // Derived State
-    const originalPrice = project ? parseFloat(project.price.replace(/[^0-9.]/g, '') || '0') : 0;
-    const isStudentEligible = user?.studentStatus === 'verified' && project?.isStudentFree;
-    const finalPrice = isStudentEligible ? 0 : Math.max(0, originalPrice - discount);
+    const originalPrice = item ? parseFloat(item.price.replace(/[^0-9.]/g, '') || '0') : 0;
+
+    // Check if item is free 
+    // For courses, if price string is "Free" or parses to 0.
+    const isFreeItem = originalPrice === 0 || item?.price?.toLowerCase() === 'free';
+
+    // Students only get Projects for free, unless specified otherwise.
+    // Assuming isStudentFree applies to projects as per schema.
+    const isStudentEligible = type === 'project' && user?.studentStatus === 'verified' && item?.isStudentFree;
+
+    // Final price calculation
+    const finalPrice = (isFreeItem || isStudentEligible) ? 0 : Math.max(0, originalPrice - discount);
 
     useEffect(() => {
-        const fetchProject = async () => {
+        const fetchItem = async () => {
             if (id) {
-                const found = await getProjectById(id);
-                if (found) {
-                    setProject(found);
+                let found: any = null;
+                if (type === 'course') {
+                    found = await getCourseById(id);
                 } else {
-                    navigate('/projects');
+                    found = await getProjectById(id);
+                }
+
+                if (found) {
+                    setItem(found);
+                } else {
+                    navigate(type === 'course' ? '/courses' : '/projects');
                 }
             }
         };
-        fetchProject();
-    }, [id, navigate]);
+        fetchItem();
+    }, [id, navigate, type]);
 
     const loadRazorpay = () => {
         return new Promise((resolve) => {
@@ -55,58 +73,59 @@ const CheckoutPage: React.FC = () => {
 
     const handlePayment = async () => {
         if (!user) {
-            navigate('/login', { state: { from: `/checkout/${id}` } });
+            navigate('/login', { state: { from: `/checkout/${id}?type=${type}` } });
             return;
         }
 
         setLoading(true);
 
-        // 1. Load Razorpay SDK
-        const res = await loadRazorpay();
-        if (!res) {
-            alert('Razorpay SDK failed to load. Are you online?');
-            setLoading(false);
-            return;
-        }
-
-        // Student Free Bypass
-        if (finalPrice === 0 && isStudentEligible) {
+        // FREE enrollment (Student Project OR Free Course)
+        if (finalPrice === 0) {
             try {
                 // Create Order Record in Firestore directly
                 await addDoc(collection(db, 'orders'), {
                     userId: user.uid,
                     userEmail: user.email,
-                    projectId: String(project.id),
-                    projectTitle: project.title,
+                    [type === 'course' ? 'courseId' : 'projectId']: String(item.id),
+                    [type === 'course' ? 'courseTitle' : 'projectTitle']: item.title,
+                    itemType: type,
                     amount: 0,
                     currency: 'USD',
-                    status: 'paid', // Auto-paid
-                    paymentId: 'student_free_' + Date.now(),
+                    status: 'success', // 'success' aligns with CourseDetails checks
+                    paymentId: isStudentEligible ? 'student_free_' + Date.now() : 'free_enroll_' + Date.now(),
                     createdAt: serverTimestamp(),
-                    isStudentFreeRedemption: true
+                    isFreeRedemption: true
                 });
 
                 // Send Email
                 await sendEmail(user.email || '', 'order_confirmation', {
-                    name: user.displayName || 'Student',
+                    name: user.displayName || 'Learner',
                     amount: '0.00',
-                    projectTitle: project.title,
-                    orderId: 'STUDENT-FREE'
+                    projectTitle: item.title,
+                    orderId: isStudentEligible ? 'STUDENT-FREE' : 'FREE-ENROLL'
                 });
 
                 navigate('/order-success', {
                     state: {
-                        paymentId: 'STUDENT_FREE_ACCESS',
-                        projectTitle: project.title
+                        paymentId: isStudentEligible ? 'STUDENT_BENEFIT' : 'FREE_ENROLLMENT',
+                        projectTitle: item.title
                     }
                 });
                 return;
             } catch (err) {
-                console.error("Student redemption error:", err);
-                alert("Failed to redeem student offer.");
+                console.error("Free enrollment error:", err);
+                alert("Failed to enroll.");
                 setLoading(false);
                 return;
             }
+        }
+
+        // 1. Load Razorpay SDK (Only for paid)
+        const res = await loadRazorpay();
+        if (!res) {
+            alert('Razorpay SDK failed to load. Are you online?');
+            setLoading(false);
+            return;
         }
 
         // 2. Create Order via Backend
@@ -119,18 +138,14 @@ const CheckoutPage: React.FC = () => {
                 body: JSON.stringify({
                     amount: finalPrice,
                     currency: 'USD',
-                    // Shorten receipt ID to max 40 chars. 
-                    // rcpt_ + 8 chars of timestamp + _ + 4 chars random = ~18 chars
                     receipt: `rcpt_${Date.now().toString().slice(-8)}_${Math.floor(Math.random() * 10000)}`
                 })
             });
 
-            // Robustly handle response
             const contentType = response.headers.get("content-type");
             if (contentType && contentType.indexOf("application/json") !== -1) {
                 order = await response.json();
             } else {
-                // Not JSON (likely HTML error page from 500/502/404)
                 const text = await response.text();
                 console.error("Non-JSON Response:", text);
                 throw new Error(`Server returned status ${response.status} (Check console for details).`);
@@ -150,12 +165,24 @@ const CheckoutPage: React.FC = () => {
             amount: order.amount,
             currency: order.currency,
             name: "OURS Platform",
-            description: `Payment for ${project.title}`,
-            image: "/OURS.png", // Or project image
+            description: `Payment for ${item.title}`,
+            image: "/OURS.png",
             order_id: order.id,
             handler: async function (response: any) {
                 // 4. Verify Payment on Backend
                 try {
+                    const orderDataPayload: any = {
+                        userId: user.uid,
+                        userEmail: user.email,
+                        [type === 'course' ? 'courseId' : 'projectId']: String(item.id), // Dynamic ID key
+                        [type === 'course' ? 'courseTitle' : 'projectTitle']: item.title, // Dynamic Title key
+                        itemType: type, // New field for identifying type
+                        amount: finalPrice,
+                        currency: 'USD',
+                        discountApplied: discount,
+                        couponCode: appliedCoupon?.code || null
+                    };
+
                     const verifyRes = await fetch(`${API_BASE_URL}/api/verify-payment`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -163,16 +190,7 @@ const CheckoutPage: React.FC = () => {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,
-                            orderData: {
-                                userId: user.uid,
-                                userEmail: user.email,
-                                projectId: String(project.id),
-                                projectTitle: project.title,
-                                amount: finalPrice, // Save original USD amount
-                                currency: 'USD',
-                                discountApplied: discount,
-                                couponCode: appliedCoupon?.code || null
-                            }
+                            orderData: orderDataPayload
                         })
                     });
 
@@ -189,14 +207,14 @@ const CheckoutPage: React.FC = () => {
                         await sendEmail(user.email || '', 'order_confirmation', {
                             name: user.displayName || 'Customer',
                             amount: finalPrice.toFixed(2),
-                            projectTitle: project.title,
+                            projectTitle: item.title, // Use generic 'projectTitle' param name in email template for now
                             orderId: order.id
                         });
 
                         navigate('/order-success', {
                             state: {
                                 paymentId: response.razorpay_payment_id,
-                                projectTitle: project.title
+                                projectTitle: item.title
                             }
                         });
                     } else {
@@ -210,7 +228,7 @@ const CheckoutPage: React.FC = () => {
             prefill: {
                 name: user.displayName || "",
                 email: user.email || "",
-                contact: "" // Can be added to user profile
+                contact: ""
             },
             theme: {
                 color: "#2563eb"
@@ -254,7 +272,7 @@ const CheckoutPage: React.FC = () => {
                 }
 
                 // Calculate Discount
-                const originalPrice = parseFloat(project?.price.replace(/[^0-9.]/g, '') || '0');
+                const originalPrice = parseFloat(item?.price.replace(/[^0-9.]/g, '') || '0');
                 let discountAmount = 0;
 
                 if (couponData.discountType === 'percentage') {
@@ -278,7 +296,7 @@ const CheckoutPage: React.FC = () => {
         }
     };
 
-    if (!project) return null;
+    if (!item) return null;
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-20 px-4 md:px-8">
@@ -288,10 +306,10 @@ const CheckoutPage: React.FC = () => {
                 <div className="space-y-6">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Checkout</h1>
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
-                        <img src={project.image} alt={project.title} className="w-full h-48 object-cover" />
+                        <img src={item.image} alt={item.title} className="w-full h-48 object-cover" />
                         <div className="p-6">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{project.title}</h3>
-                            <p className="text-gray-500 text-sm line-clamp-2 mb-4">{project.description}</p>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
+                            <p className="text-gray-500 text-sm line-clamp-2 mb-4">{item.description}</p>
                             <div className="flex justify-between items-center py-4 border-t border-gray-100 dark:border-gray-800">
                                 <span className="text-gray-600 dark:text-gray-400">Total Amount</span>
                                 {discount > 0 ? (
@@ -299,56 +317,58 @@ const CheckoutPage: React.FC = () => {
                                         <span className="text-sm text-gray-400 line-through mr-2">${originalPrice.toFixed(2)}</span>
                                         <span className="text-2xl font-bold text-green-600">${finalPrice.toFixed(2)}</span>
                                     </div>
-                                ) : isStudentEligible ? (
+                                ) : (isStudentEligible || isFreeItem) ? (
                                     <div className="text-right">
                                         <span className="text-sm text-gray-400 line-through mr-2">${originalPrice.toFixed(2)}</span>
                                         <span className="text-2xl font-bold text-green-600">FREE</span>
-                                        <div className="text-xs text-blue-600 font-medium mt-1">Student Benefit Unlocked!</div>
+                                        {!isFreeItem && <div className="text-xs text-blue-600 font-medium mt-1">Student Benefit Unlocked!</div>}
                                     </div>
                                 ) : (
                                     <span className="text-2xl font-bold text-gray-900 dark:text-white">${originalPrice.toFixed(2)}</span>
                                 )}
                             </div>
 
-                            {/* Coupon Input */}
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Have a coupon?</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        value={couponCode}
-                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                        placeholder="Enter code"
-                                        disabled={!!appliedCoupon}
-                                        className="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono"
-                                    />
-                                    {appliedCoupon ? (
-                                        <Button variant="secondary" onClick={() => { setAppliedCoupon(null); setDiscount(0); setCouponCode(''); setCouponMessage(null); }}>
-                                            Remove
-                                        </Button>
-                                    ) : (
-                                        <Button variant="outline" onClick={handleVerifyCoupon} disabled={!couponCode || verifyingCoupon}>
-                                            {verifyingCoupon ? 'Checking...' : 'Apply'}
-                                        </Button>
-                                    )}
+                            {/* Coupon Input - Hide if Free */}
+                            {!isFreeItem && !isStudentEligible && (
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Have a coupon?</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={couponCode}
+                                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                            placeholder="Enter code"
+                                            disabled={!!appliedCoupon}
+                                            className="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono"
+                                        />
+                                        {appliedCoupon ? (
+                                            <Button variant="secondary" onClick={() => { setAppliedCoupon(null); setDiscount(0); setCouponCode(''); setCouponMessage(null); }}>
+                                                Remove
+                                            </Button>
+                                        ) : (
+                                            <Button variant="outline" onClick={handleVerifyCoupon} disabled={!couponCode || verifyingCoupon}>
+                                                {verifyingCoupon ? 'Checking...' : 'Apply'}
+                                            </Button>
+                                        )}
+                                    </div>
+                                    <AnimatePresence>
+                                        {couponMessage && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className={`text-sm mt-2 ${couponMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}
+                                            >
+                                                {couponMessage.text}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
-                                <AnimatePresence>
-                                    {couponMessage && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className={`text-sm mt-2 ${couponMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}
-                                        >
-                                            {couponMessage.text}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
+                            )}
 
                             <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg flex gap-3 text-sm text-blue-700 dark:text-blue-300">
                                 <Info size={18} className="shrink-0 mt-0.5" />
-                                <p>You will get lifetime access to the source code and documentation immediately after payment.</p>
+                                <p>You will get lifetime access to the content immediately after enrollment.</p>
                             </div>
                         </div>
                     </div>
@@ -357,19 +377,21 @@ const CheckoutPage: React.FC = () => {
                 {/* Right Side - Payment Action */}
                 <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 p-8 sticky top-24">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                        <Lock size={20} className="text-green-500" /> Secure Payment
+                        <Lock size={20} className="text-green-500" /> {(isFreeItem || isStudentEligible) ? 'Complete Enrollment' : 'Secure Payment'}
                     </h2>
 
                     <div className="space-y-6">
-                        <div className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50">
-                            <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                                <CreditCard size={20} />
+                        {!(isFreeItem || isStudentEligible) && (
+                            <div className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                                    <CreditCard size={20} />
+                                </div>
+                                <div>
+                                    <p className="font-medium text-gray-900 dark:text-white">Credit/Debit Card, UPI</p>
+                                    <p className="text-xs text-gray-500">Secured by Razorpay</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="font-medium text-gray-900 dark:text-white">Credit/Debit Card, UPI</p>
-                                <p className="text-xs text-gray-500">Secured by Razorpay</p>
-                            </div>
-                        </div>
+                        )}
 
                         <div className="text-sm text-gray-500 dark:text-gray-400 text-center">
                             By clicking below, you agree to our Terms of Service and Privacy Policy.
@@ -384,8 +406,8 @@ const CheckoutPage: React.FC = () => {
                                 <>
                                     <Loader2 className="animate-spin mr-2" /> Processing...
                                 </>
-                            ) : isStudentEligible ? (
-                                "Claim for Free"
+                            ) : (isStudentEligible || isFreeItem) ? (
+                                "Enroll for Free"
                             ) : (
                                 `Pay $${finalPrice.toFixed(2)}`
                             )}
@@ -393,7 +415,7 @@ const CheckoutPage: React.FC = () => {
 
                         <div className="flex items-center justify-center gap-2 text-xs text-green-600 dark:text-green-500 font-medium">
                             <ShieldCheck size={14} />
-                            100% Secure & Encrypted Transaction
+                            {(isFreeItem || isStudentEligible) ? 'Instant Access' : '100% Secure & Encrypted Transaction'}
                         </div>
                     </div>
                 </div>
@@ -401,5 +423,4 @@ const CheckoutPage: React.FC = () => {
         </div>
     );
 };
-
 export default CheckoutPage;

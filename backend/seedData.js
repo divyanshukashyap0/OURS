@@ -235,7 +235,7 @@ const COURSES = [
     {
         id: 6,
         title: 'Docker & Kubernetes Mastery',
-        instructor: 'David Wilson',
+        instructor: 'Divyanshu kashyap',
         description: 'Master containerization and orchestration. Build scalable and resilient infrastructure with Docker and Kubernetes.',
         duration: '10h 50m',
         level: 'Advanced',

@@ -62,14 +62,14 @@ const CoursesPage: React.FC = () => {
                         {/* Carousel Navigation Arrows */}
                         <button
                             onClick={() => scroll('left')}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white -ml-4 md:-ml-5 hover:scale-110 transition-all duration-200"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white -ml-4 hover:scale-110 transition-all duration-200 md:hidden"
                             aria-label="Scroll left"
                         >
                             <ChevronLeft size={24} />
                         </button>
                         <button
                             onClick={() => scroll('right')}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white -mr-4 md:-mr-5 hover:scale-110 transition-all duration-200"
+                            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-full shadow-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white -mr-4 hover:scale-110 transition-all duration-200 md:hidden"
                             aria-label="Scroll right"
                         >
                             <ChevronRight size={24} />
@@ -85,8 +85,11 @@ const CoursesPage: React.FC = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
-                                    onClick={() => navigate(`/courses/${course.id}`)}
-                                    className="min-w-[85vw] md:min-w-0 md:w-auto snap-center bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-200 group flex flex-col cursor-pointer"
+                                    onClick={() => {
+                                        console.log("Navigating to course:", course.id);
+                                        navigate(`/courses/${course.id}`);
+                                    }}
+                                    className="min-w-[85vw] md:min-w-0 md:w-auto snap-center bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-200 group flex flex-col cursor-pointer z-10 relative"
                                 >
                                     {/* Image Header */}
                                     <div className="relative h-48 overflow-hidden">

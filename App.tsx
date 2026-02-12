@@ -30,6 +30,9 @@ import AccountPage from './pages/AccountPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import CoursesPage from './pages/CoursesPage';
 import CourseDetailsPage from './pages/CourseDetailsPage';
+import CourseReaderPage from './pages/CourseReaderPage';
+import CertificatePage from './pages/CertificatePage';
+import CertificateVerificationPage from './pages/CertificateVerificationPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import TutorialsPage from './pages/TutorialsPage';
@@ -100,6 +103,10 @@ const App: React.FC = () => {
                 <Route path="source-code" element={<SourceCode />} />
                 <Route path="courses" element={<CoursesPage />} />
                 <Route path="courses/:id" element={<CourseDetailsPage />} />
+                <Route path="courses/:id/learn" element={<CourseReaderPage />} />
+                <Route path="courses/:id/certificate" element={<CertificatePage />} />
+                <Route path="verify" element={<CertificateVerificationPage />} />
+                <Route path="verify/:id" element={<CertificateVerificationPage />} />
                 <Route path="checkout/:id" element={<CheckoutPage />} />
                 <Route path="order-success" element={<OrderSuccessPage />} />
                 <Route path="tutorials" element={<TutorialsPage />} />

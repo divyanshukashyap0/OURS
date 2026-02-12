@@ -14,6 +14,7 @@ const Navbar: React.FC = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const { appName } = useSite();
+  // Theme is now forced to dark mode globally
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -29,53 +30,50 @@ const Navbar: React.FC = () => {
   return (
     <nav
       className={`
-        fixed w-full z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
-        ${scrolled ? 'py-4' : 'py-6'}
+        fixed w-full z-50 transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]
+        ${scrolled
+          ? 'bg-white/80 dark:bg-mono-950/80 backdrop-blur-xl border-b border-mono-100 dark:border-mono-800'
+          : 'bg-transparent py-2'
+        }
       `}
     >
-      <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        <div
-          className={`
-            relative mx-auto flex justify-between items-center h-16 px-6 rounded-full transition-all duration-500
-            ${scrolled
-              ? 'bg-mono-950/80 backdrop-blur-xl border border-white/10 shadow-lg shadow-neon-cyan/5 w-full md:w-[90%]'
-              : 'bg-transparent w-full'
-            }
-          `}
-        >
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+
           {/* Logo */}
           <Link
             to="/"
             onClick={scrollToTop}
             className="flex items-center gap-3 group"
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-neon-cyan/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <motion.img
-                src="/logo.png"
-                alt="Logo"
-                className="w-10 h-10 object-cover rounded-full relative z-10 border-2 border-transparent group-hover:border-neon-cyan/50 transition-colors"
-                initial={{ rotate: 0 }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              />
-            </div>
-            <span className="text-xl font-bold text-white tracking-tight group-hover:text-neon-cyan transition-colors duration-300">
-              {appName}<span className="text-neon-violet">.</span>
+            <motion.img
+              src="/logo.png"
+              alt="Logo"
+              className="w-9 h-9 object-cover rounded-full"
+              initial={{ rotate: 0 }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              whileHover={{
+                rotate: [0, 360],
+                transition: { duration: 0.7, ease: "easeInOut" }
+              }}
+            />
+            <span className="text-xl font-semibold text-mono-950 dark:text-white tracking-tight">
+              {appName}
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-md rounded-full px-2 py-1.5 border border-white/5">
+          <div className="hidden md:flex items-center gap-1">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.label}
                 to={item.href}
                 className={`
-                  relative px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
+                  px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
                   ${location.pathname === item.href
-                    ? 'text-mono-950 bg-neon-cyan shadow-[0_0_15px_rgba(0,243,255,0.4)]'
-                    : 'text-mono-400 hover:text-white hover:bg-white/10'
+                    ? 'text-mono-950 dark:text-white bg-mono-100 dark:bg-mono-800'
+                    : 'text-mono-500 hover:text-mono-950 dark:text-mono-400 dark:hover:text-white'
                   }
                 `}
               >
@@ -86,40 +84,45 @@ const Navbar: React.FC = () => {
 
           {/* Right Section */}
           <div className="hidden md:flex items-center gap-4">
+
             {user ? (
-              <div className="flex items-center gap-3 pl-4 border-l border-white/10">
+              <div className="flex items-center gap-3 pl-4 border-l border-mono-200 dark:border-mono-700">
                 <Link
                   to="/account"
-                  className="flex items-center gap-2 text-mono-300 hover:text-white transition-colors group"
+                  className="flex items-center gap-2 text-mono-700 dark:text-mono-300 hover:text-mono-950 dark:hover:text-white font-medium transition-colors"
                 >
                   {user.photoURL ? (
                     <img
                       src={user.photoURL}
                       onError={(e) => { e.currentTarget.src = "/default-avatar.png"; }}
                       alt="Profile"
-                      className="w-9 h-9 rounded-full object-cover border-2 border-white/10 group-hover:border-neon-cyan/50 transition-all"
+                      className="w-8 h-8 rounded-full object-cover border border-mono-200 dark:border-mono-700"
                     />
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-mono-800 to-mono-900 flex items-center justify-center text-white font-bold text-sm border border-white/10 group-hover:border-neon-cyan/50 transition-all">
+                    <div className="w-8 h-8 rounded-full bg-mono-950 dark:bg-white flex items-center justify-center text-white dark:text-mono-950 font-semibold text-sm">
                       {user.email?.[0].toUpperCase()}
                     </div>
                   )}
+                  <span className="hidden lg:block">Account</span>
                 </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={logout}
+                  className="text-mono-500 hover:text-mono-950 dark:hover:text-white"
+                >
+                  Sign Out
+                </Button>
               </div>
             ) : (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 pl-4 border-l border-mono-200 dark:border-mono-700">
                 <Link
                   to="/login"
-                  className="text-mono-400 font-medium hover:text-white transition-colors"
+                  className="text-mono-600 dark:text-mono-400 font-medium hover:text-mono-950 dark:hover:text-white transition-colors"
                 >
                   Log in
                 </Link>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => window.location.href = '/signup'}
-                  className="bg-white text-black hover:bg-neon-cyan hover:shadow-[0_0_20px_rgba(0,243,255,0.4)] border-none"
-                >
+                <Button variant="primary" size="sm" onClick={() => window.location.href = '/signup'}>
                   Sign Up
                 </Button>
               </div>
@@ -130,7 +133,7 @@ const Navbar: React.FC = () => {
           <div className="md:hidden flex items-center gap-3">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white p-2 hover:bg-white/10 rounded-full transition-colors"
+              className="text-mono-700 dark:text-mono-200 p-2 active:scale-95 transition-transform"
               aria-label="Toggle Menu"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -142,13 +145,13 @@ const Navbar: React.FC = () => {
       {/* Mobile Menu */}
       <div
         className={`
-          md:hidden fixed inset-x-4 top-24 bg-mono-950/95 backdrop-blur-2xl 
-          border border-white/10 rounded-3xl overflow-hidden
-          transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top z-40
-          ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4 pointer-events-none'}
+          md:hidden bg-white/95 dark:bg-mono-950/95 backdrop-blur-xl 
+          border-b border-mono-100 dark:border-mono-800 
+          absolute w-full transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top
+          ${isOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 h-0 overflow-hidden'}
         `}
       >
-        <div className="p-4 space-y-2">
+        <div className="px-6 py-6 space-y-2">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.label}
@@ -157,8 +160,8 @@ const Navbar: React.FC = () => {
               className={`
                 block px-4 py-3 rounded-xl text-base font-medium transition-colors
                 ${location.pathname === item.href
-                  ? 'bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20'
-                  : 'text-mono-400 hover:text-white hover:bg-white/5'
+                  ? 'bg-mono-100 dark:bg-mono-800 text-mono-950 dark:text-white'
+                  : 'text-mono-600 dark:text-mono-400 hover:bg-mono-50 dark:hover:bg-mono-900'
                 }
               `}
             >
@@ -166,19 +169,19 @@ const Navbar: React.FC = () => {
             </Link>
           ))}
 
-          <div className="pt-4 mt-4 border-t border-white/10 flex flex-col gap-3">
+          <div className="pt-4 border-t border-mono-100 dark:border-mono-800 flex flex-col gap-3 mt-4">
             {!user && (
               <>
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className="block w-full text-center py-3 text-mono-400 font-medium bg-white/5 rounded-xl hover:bg-white/10 hover:text-white transition-colors"
+                  className="block w-full text-center py-3 text-mono-600 dark:text-mono-300 font-medium bg-mono-50 dark:bg-mono-900 rounded-xl"
                 >
                   Log in
                 </Link>
                 <Button
                   variant="primary"
-                  className="w-full justify-center bg-neon-cyan text-black hover:bg-white border-none"
+                  className="w-full justify-center"
                   onClick={() => { window.location.href = '/signup'; setIsOpen(false); }}
                 >
                   Sign Up
@@ -186,28 +189,32 @@ const Navbar: React.FC = () => {
               </>
             )}
             {user && (
-              <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
-                <div className="flex items-center gap-3">
+              <>
+                <Link
+                  to="/account"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 bg-mono-50 dark:bg-mono-900 rounded-xl"
+                >
                   {user.photoURL ? (
-                    <img src={user.photoURL} alt="Profile" className="w-10 h-10 rounded-full border border-white/10" />
+                    <img src={user.photoURL} alt="Profile" className="w-10 h-10 rounded-full border border-mono-200 dark:border-mono-700" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-mono-800 flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 rounded-full bg-mono-950 dark:bg-white flex items-center justify-center text-white dark:text-mono-950 font-bold">
                       {user.email?.[0].toUpperCase()}
                     </div>
                   )}
                   <div className="flex flex-col">
-                    <span className="text-white font-medium">My Account</span>
-                    <span className="text-xs text-mono-500">{user.email}</span>
+                    <span className="text-mono-950 dark:text-white font-medium">My Account</span>
+                    <span className="text-xs text-mono-500 dark:text-mono-400">{user.email}</span>
                   </div>
-                </div>
+                </Link>
                 <Button
                   variant="ghost"
                   onClick={() => { logout(); setIsOpen(false); }}
-                  className="text-mono-400 hover:text-white"
+                  className="w-full justify-center text-mono-500"
                 >
-                  Logout
+                  Sign Out
                 </Button>
-              </div>
+              </>
             )}
           </div>
         </div>

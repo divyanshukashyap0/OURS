@@ -29,6 +29,24 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Course Progress: Authenticated User read/write their own
+    // ID format is usually uid_courseId, allowing us to validate ownership by ID 
+    // OR by checking the userId field in the document.
+    match /course_progress/{progressId} {
+        allow read, write: if request.auth != null && (
+            progressId.matches(request.auth.uid + '_.*') || 
+            resource.data.userId == request.auth.uid ||
+            request.resource.data.userId == request.auth.uid
+        );
+    }
+
+    // Certificates: Public read for verification, Authenticated User create
+    match /certificates/{certId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if false; // Immutable once created
+    }
+
     // Orders: Create by anyone (including guests), Read by Admin/Owner
     match /orders/{document=**} {
       allow create: if true;
