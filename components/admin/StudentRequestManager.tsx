@@ -33,14 +33,22 @@ const StudentRequestManager: React.FC = () => {
         if (!confirm(`Approve student status for ${request.email}?`)) return;
 
         try {
-            // 1. Update User Profile
-            const userRef = doc(db, 'users', request.userId);
-            await updateDoc(userRef, {
-                isStudent: true,
-                studentStatus: 'verified'
+            // 1. Update User Profile (Via Backend to bypass rules/claims issues)
+            const response = await fetch('http://localhost:5000/api/admin/update-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: request.userId,
+                    data: {
+                        isStudent: true,
+                        studentStatus: 'verified'
+                    }
+                })
             });
 
-            // 2. Update Request Status
+            if (!response.ok) throw new Error('Failed to update user profile via API');
+
+            // 2. Update Request Status (Direct Firestore - Admin Rules should allow this)
             const requestRef = doc(db, 'student_requests', request.id);
             await updateDoc(requestRef, {
                 status: 'approved'
@@ -49,7 +57,7 @@ const StudentRequestManager: React.FC = () => {
             alert(`Approved ${request.email}`);
         } catch (error) {
             console.error("Error approving:", error);
-            alert("Failed to approve.");
+            alert("Failed to approve. Check console.");
         }
     };
 
@@ -57,16 +65,25 @@ const StudentRequestManager: React.FC = () => {
         if (!confirm(`Reject request for ${request.email}?`)) return;
 
         try {
+            // 1. Update Request Status
             const requestRef = doc(db, 'student_requests', request.id);
             await updateDoc(requestRef, {
                 status: 'rejected'
             });
 
-            // Optional: Update user status to 'rejected' if needed, or just leave as is
-            const userRef = doc(db, 'users', request.userId);
-            await updateDoc(userRef, {
-                studentStatus: 'rejected'
+            // 2. Update User Profile (Optional, but good for sync)
+            const response = await fetch('http://localhost:5000/api/admin/update-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: request.userId,
+                    data: {
+                        studentStatus: 'rejected'
+                    }
+                })
             });
+
+            if (!response.ok) console.warn('Failed to update user status to rejected via API');
 
         } catch (error) {
             console.error("Error rejecting:", error);
@@ -125,8 +142,8 @@ const StudentRequestManager: React.FC = () => {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${request.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                                request.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                                    'bg-yellow-100 text-yellow-800'
+                                            request.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                                'bg-yellow-100 text-yellow-800'
                                             }`}>
                                             {request.status.toUpperCase()}
                                         </span>

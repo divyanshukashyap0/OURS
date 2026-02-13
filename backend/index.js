@@ -21,7 +21,10 @@ const razorpay = new Razorpay({
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://localhost:5000'],
+    credentials: true
+}));
 app.use(express.json());
 
 // Routes
@@ -171,6 +174,34 @@ app.post('/api/admin/add-user', async (req, res) => {
         res.status(201).json({ message: 'User created successfully', uid: userRecord.uid });
     } catch (error) {
         console.error("Error creating user:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// --- Admin: Update User (Role/Status) ---
+app.post('/api/admin/update-user', async (req, res) => {
+    const { uid, data } = req.body;
+
+    if (!uid || !data) {
+        return res.status(400).json({ error: 'Missing uid or data' });
+    }
+
+    try {
+        console.log(`[Admin Update] Updating user ${uid}`, data);
+
+        // 1. Update Firestore
+        await db.collection('users').doc(uid).update(data);
+        console.log(`[Admin Update] Firestore updated for ${uid}`);
+
+        // 2. Update Auth Claims if role is changing
+        if (data.role) {
+            await admin.auth().setCustomUserClaims(uid, { admin: data.role === 'admin' });
+            console.log(`[Admin Update] Claims updated for ${uid} (Admin: ${data.role === 'admin'})`);
+        }
+
+        res.json({ message: 'User updated successfully' });
+    } catch (error) {
+        console.error("[Admin Update Error]:", error);
         res.status(500).json({ error: error.message });
     }
 });

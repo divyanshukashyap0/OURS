@@ -27,7 +27,7 @@ const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ data, loading }) => {
                 className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
             >
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Revenue Analytics</h3>
-                <div className="h-80 w-full">
+                <div className="h-80 w-full min-h-[320px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                             <defs>
@@ -57,7 +57,7 @@ const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({ data, loading }) => {
                 className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm"
             >
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">New Users</h3>
-                <div className="h-80 w-full">
+                <div className="h-80 w-full min-h-[320px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" opacity={0.1} />

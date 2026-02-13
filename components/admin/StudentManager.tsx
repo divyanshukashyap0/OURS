@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, User, Filter, CheckCircle, XCircle, MoreVertical, Shield } from 'lucide-react';
+import { Search, User, Filter, CheckCircle, XCircle, MoreVertical, Shield, FileText, Check, X } from 'lucide-react';
 import { db } from '../../lib/firebase';
 import { collection, query, where, onSnapshot, updateDoc, doc, orderBy } from 'firebase/firestore';
 import FilterBar from './content/FilterBar';
@@ -54,28 +54,45 @@ const StudentManager: React.FC = () => {
 
     const handleVerification = async (studentId: string, status: 'verified' | 'rejected') => {
         try {
-            await updateDoc(doc(db, 'users', studentId), {
-                studentStatus: status,
-                isStudent: status === 'verified'
+            const response = await fetch('http://localhost:5000/api/admin/update-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: studentId,
+                    data: {
+                        studentStatus: status,
+                        isStudent: status === 'verified'
+                    }
+                })
             });
+
+            if (!response.ok) throw new Error('Failed to update status');
+
             if (selectedStudent?.id === studentId) {
                 setSelectedStudent(null);
             }
         } catch (error) {
             console.error("Error updating status:", error);
-            alert("Failed to update status.");
+            alert("Failed to update status. Check console.");
         }
     };
 
     const handleRoleChange = async (studentId: string, newRole: string) => {
         if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
         try {
-            await updateDoc(doc(db, 'users', studentId), {
-                role: newRole
+            const response = await fetch('http://localhost:5000/api/admin/update-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: studentId,
+                    data: { role: newRole }
+                })
             });
+
+            if (!response.ok) throw new Error('Failed to change role');
         } catch (error) {
             console.error("Error changing role:", error);
-            alert("Failed to change role.");
+            alert("Failed to change role. Check console.");
         }
     };
 
@@ -134,28 +151,61 @@ const StudentManager: React.FC = () => {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${student.role === 'admin'
-                                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
-                                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+                                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
                                             }`}>
                                             {student.role}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        {student.studentStatus === 'verified' && (
-                                            <span className="text-green-600 flex items-center gap-1 text-xs font-medium"><CheckCircle size={12} /> Verified</span>
-                                        )}
-                                        {student.studentStatus === 'pending' && (
-                                            <button
-                                                onClick={() => setSelectedStudent(student)}
-                                                className="text-amber-600 hover:text-amber-700 underline text-xs font-medium"
-                                            >
-                                                Review Request
-                                            </button>
-                                        )}
-                                        {student.studentStatus === 'rejected' && (
-                                            <span className="text-red-500 flex items-center gap-1 text-xs font-medium"><XCircle size={12} /> Rejected</span>
-                                        )}
-                                        {!student.studentStatus && <span className="text-gray-400 text-xs">-</span>}
+                                        <div className="flex flex-col gap-2">
+                                            {/* Status Badge */}
+                                            {student.studentStatus === 'verified' && (
+                                                <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full w-fit">
+                                                    <CheckCircle size={12} /> Verified
+                                                </span>
+                                            )}
+                                            {student.studentStatus === 'rejected' && (
+                                                <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full w-fit">
+                                                    <XCircle size={12} /> Rejected
+                                                </span>
+                                            )}
+                                            {student.studentStatus === 'pending' && (
+                                                <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-full w-fit">
+                                                    Pending
+                                                </span>
+                                            )}
+                                            {!student.studentStatus && <span className="text-gray-400 text-xs">-</span>}
+
+                                            {/* Actions Row */}
+                                            <div className="flex items-center gap-2">
+                                                {student.idCardUrl && (
+                                                    <button
+                                                        onClick={() => setSelectedStudent(student)}
+                                                        className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                                        title="View ID Card"
+                                                    >
+                                                        <FileText size={18} />
+                                                    </button>
+                                                )}
+
+                                                <button
+                                                    onClick={() => handleVerification(student.id, 'verified')}
+                                                    className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+                                                    title="Approve"
+                                                >
+                                                    <Check size={18} />
+                                                </button>
+
+                                                <button
+                                                    onClick={() => handleVerification(student.id, 'rejected')}
+                                                    className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                                    title="Reject"
+                                                >
+                                                    <X size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 text-gray-500">
                                         {student.createdAt?.toDate ? student.createdAt.toDate().toLocaleDateString() : 'N/A'}
@@ -213,25 +263,31 @@ const StudentManager: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex justify-between gap-3">
+                            <div className="flex justify-between gap-3 border-t border-gray-100 dark:border-gray-700 pt-4">
                                 <button
                                     onClick={() => setSelectedStudent(null)}
-                                    className="px-4 py-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                    className="px-4 py-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                                 >
-                                    Cancel
+                                    Close
                                 </button>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => handleVerification(selectedStudent.id, 'rejected')}
-                                        className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium"
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedStudent.studentStatus === 'rejected'
+                                            ? 'bg-red-100 text-red-800 cursor-default ring-2 ring-offset-1 ring-red-500'
+                                            : 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/10 dark:text-red-400 dark:hover:bg-red-900/20'
+                                            }`}
                                     >
-                                        Reject
+                                        {selectedStudent.studentStatus === 'rejected' ? 'Rejected' : 'Reject'}
                                     </button>
                                     <button
                                         onClick={() => handleVerification(selectedStudent.id, 'verified')}
-                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${selectedStudent.studentStatus === 'verified'
+                                            ? 'bg-green-100 text-green-800 cursor-default ring-2 ring-offset-1 ring-green-500'
+                                            : 'bg-green-600 text-white hover:bg-green-700 shadow-md shadow-green-600/20'
+                                            }`}
                                     >
-                                        Approve
+                                        {selectedStudent.studentStatus === 'verified' ? 'Verified' : 'Approve'}
                                     </button>
                                 </div>
                             </div>
