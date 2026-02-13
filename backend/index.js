@@ -136,12 +136,177 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
-// Example Admin Route: List all users (requires admin privilege logic usually)
-app.get('/api/users', async (req, res) => {
+// --- Admin: Add User (Create Auth + Firestore) ---
+app.post('/api/admin/add-user', async (req, res) => {
+    const { email, password, displayName, role = 'user' } = req.body;
+
+    if (!email || !password || !displayName) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
     try {
-        const listUsersResult = await admin.auth().listUsers(10);
-        res.json(listUsersResult.users);
+        // 1. Create User in Firebase Auth
+        const userRecord = await admin.auth().createUser({
+            email,
+            password,
+            displayName,
+            emailVerified: true // Auto-verify since admin created it
+        });
+
+        // 2. Set Custom Claims (if role is admin)
+        if (role === 'admin') {
+            await admin.auth().setCustomUserClaims(userRecord.uid, { admin: true });
+        }
+
+        // 3. Create User Document in Firestore
+        await db.collection('users').doc(userRecord.uid).set({
+            uid: userRecord.uid,
+            email,
+            displayName,
+            role,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            hasSecurityQuestions: false // New user created by admin needs to set these up
+        });
+
+        res.status(201).json({ message: 'User created successfully', uid: userRecord.uid });
     } catch (error) {
+        console.error("Error creating user:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// --- Admin: Export Users (CSV Data) ---
+app.get('/api/admin/export-users', async (req, res) => {
+    try {
+        const usersSnapshot = await db.collection('users').get();
+        const users = [];
+
+        usersSnapshot.forEach(doc => {
+            const data = doc.data();
+            users.push({
+                uid: doc.id,
+                email: data.email || '',
+                displayName: data.displayName || '',
+                role: data.role || 'user',
+                createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : ''
+            });
+        });
+
+        res.json(users);
+    } catch (error) {
+        console.error("Error exporting users:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Security Questions: Save (Hashed)
+app.post('/api/save-security-questions', async (req, res) => {
+    const { uid, questionsAndAnswers } = req.body; // Expects array of { question, answer }
+
+    if (!uid || !questionsAndAnswers || !Array.isArray(questionsAndAnswers)) {
+        return res.status(400).json({ error: 'Invalid data format' });
+    }
+
+    try {
+        const crypto = require('crypto');
+        const hashedQuestions = questionsAndAnswers.map(qa => {
+            const hash = crypto.createHash('sha256');
+            hash.update(qa.answer.toLowerCase().trim()); // Normalize answer
+            return {
+                question: qa.question,
+                answerHash: hash.digest('hex')
+            };
+        });
+
+        await db.collection('users').doc(uid).set({
+            securityQuestions: hashedQuestions,
+            hasSecurityQuestions: true
+        }, { merge: true });
+
+        res.json({ message: 'Security questions saved successfully' });
+    } catch (error) {
+        console.error("Error saving security questions:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Security Questions: Get Questions (No Answers)
+app.post('/api/get-security-questions', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const userRecord = await admin.auth().getUserByEmail(email);
+        const userDoc = await db.collection('users').doc(userRecord.uid).get();
+
+        if (!userDoc.exists || !userDoc.data().hasSecurityQuestions) {
+            return res.status(404).json({ error: 'User has not set up security questions.' });
+        }
+
+        const questions = userDoc.data().securityQuestions.map(q => ({
+            question: q.question
+        }));
+
+        res.json({ uid: userRecord.uid, questions });
+    } catch (error) {
+        // Don't reveal if user exists or not for security, but for now we need to valid flow
+        console.error("Error fetching security questions:", error);
+        res.status(404).json({ error: 'User not found or no security questions set.' });
+    }
+});
+
+// Security Questions: Verify & Reset Password
+app.post('/api/verify-security-questions', async (req, res) => {
+    const { uid, answers, newPassword } = req.body; // answers: { question: string, answer: string }[]
+
+    try {
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (!userDoc.exists) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const storedQuestions = userDoc.data().securityQuestions;
+        const crypto = require('crypto');
+
+        let allCorrect = true;
+
+        if (answers.length !== storedQuestions.length) {
+            return res.status(400).json({ error: 'Incorrect number of answers provided.' });
+        }
+
+        for (let i = 0; i < storedQuestions.length; i++) {
+            const storedQ = storedQuestions[i];
+            const providedA = answers.find(a => a.question === storedQ.question);
+
+            if (!providedA) {
+                allCorrect = false;
+                break;
+            }
+
+            const hash = crypto.createHash('sha256');
+            hash.update(providedA.answer.toLowerCase().trim());
+            const providedHash = hash.digest('hex');
+
+            if (providedHash !== storedQ.answerHash) {
+                allCorrect = false;
+                break;
+            }
+        }
+
+        if (allCorrect) {
+            if (newPassword) {
+                await admin.auth().updateUser(uid, {
+                    password: newPassword
+                });
+                res.json({ message: 'Password reset successfully!' });
+            } else {
+                res.json({ message: 'Answers correct' });
+            }
+        } else {
+            res.status(400).json({ error: 'Incorrect answers.' });
+        }
+
+    } catch (error) {
+        console.error("Error verifying security questions:", error);
         res.status(500).json({ error: error.message });
     }
 });

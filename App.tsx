@@ -46,6 +46,9 @@ import InstallPWA from './components/InstallPWA';
 import ScrollToTop from './components/ScrollToTop';
 import { SiteProvider } from './context/SiteContext';
 import { ThemeProvider } from './context/ThemeContext';
+import SecurityQuestionsPage from './pages/SecurityQuestionsPage';
+import ResetPasswordSecurityPage from './pages/ResetPasswordSecurityPage';
+
 
 const App: React.FC = () => {
   return (
@@ -59,6 +62,13 @@ const App: React.FC = () => {
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/reset-password-security" element={<ResetPasswordSecurityPage />} />
+
+              <Route path="/security-questions" element={
+                <ProtectedRoute requireSecurityQuestions={false}>
+                  <SecurityQuestionsPage />
+                </ProtectedRoute>
+              } />
 
               {/* Admin Routes */}
               <Route path="/admin" element={

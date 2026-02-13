@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import BottomNav from './BottomNav';
+import { useAuth } from '../context/AuthContext';
 
 interface LayoutProps {
     children?: React.ReactNode;
@@ -12,6 +13,8 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user, hasSecurityQuestions, loading: authLoading } = useAuth();
 
     // Reset loading state on route change
     useEffect(() => {
@@ -22,6 +25,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         return () => clearTimeout(timer);
     }, [location.pathname]);
+
+    useEffect(() => {
+        if (!authLoading && user && hasSecurityQuestions === false) {
+            navigate('/security-questions');
+        }
+    }, [authLoading, user, hasSecurityQuestions, navigate]);
 
     return (
         <>

@@ -4,6 +4,7 @@ import { Users, DollarSign, ShoppingBag, Activity } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { db } from '../../lib/firebase';
 import { collection, getCountFromServer, getDocs, query, orderBy, limit, Timestamp } from 'firebase/firestore';
+import AddUserModal from './AddUserModal';
 
 const AdminDashboard: React.FC = () => {
     const [stats, setStats] = useState([
@@ -14,6 +15,7 @@ const AdminDashboard: React.FC = () => {
     ]);
     const [revenueData, setRevenueData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -21,7 +23,6 @@ const AdminDashboard: React.FC = () => {
                 // 1. Fetch Counts
                 const usersSnap = await getCountFromServer(collection(db, 'users'));
                 const projectsSnap = await getCountFromServer(collection(db, 'projects'));
-                // const productsSnap = await getCountFromServer(collection(db, 'products')); // Optional if you have products
 
                 // 2. Fetch Orders for Revenue Calculation
                 const ordersSnap = await getDocs(collection(db, 'orders'));
@@ -47,7 +48,7 @@ const AdminDashboard: React.FC = () => {
                 const chartData = Object.keys(monthlyRevenue).map(month => ({
                     name: month,
                     revenue: monthlyRevenue[month],
-                    users: Math.floor(Math.random() * 100) // Placeholder for users per month as we don't track that yet
+                    users: Math.floor(Math.random() * 100)
                 }));
 
                 // Update Stats State
@@ -70,6 +71,41 @@ const AdminDashboard: React.FC = () => {
         fetchData();
     }, []);
 
+    const handleExport = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/admin/export-users');
+            if (!response.ok) throw new Error('Failed to fetch data');
+            const data = await response.json();
+
+            // Convert to CSV
+            const headers = ['UID', 'Email', 'DisplayName', 'Role', 'CreatedAt'];
+            const csvContent = [
+                headers.join(','),
+                ...data.map((row: any) => [
+                    row.uid,
+                    row.email,
+                    row.displayName,
+                    row.role,
+                    row.createdAt
+                ].join(','))
+            ].join('\n');
+
+            // Download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `users_export_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Export failed:", error);
+            alert("Failed to export users.");
+        }
+    };
+
     if (loading) {
         return <div className="p-8 text-center text-gray-500">Loading Dashboard...</div>;
     }
@@ -82,10 +118,16 @@ const AdminDashboard: React.FC = () => {
                     <p className="text-gray-500 dark:text-gray-400">Welcome back, Admin.</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium">
-                        Export Report
+                    <button
+                        onClick={handleExport}
+                        className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium"
+                    >
+                        Export Users
                     </button>
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                    <button
+                        onClick={() => setIsAddUserModalOpen(true)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
                         Add User
                     </button>
                 </div>
@@ -171,6 +213,14 @@ const AdminDashboard: React.FC = () => {
                     </div>
                 </motion.div>
             </div>
+
+            <AddUserModal
+                isOpen={isAddUserModalOpen}
+                onClose={() => setIsAddUserModalOpen(false)}
+                onSuccess={() => {
+                    // Optional: refresh user count or show stats
+                }}
+            />
         </div>
     );
 };

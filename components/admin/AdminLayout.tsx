@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Package, Settings, LogOut, Menu, X, BookOpen, FileText, Tag, Mail, MessageSquare, Home, School, Video, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
@@ -7,8 +7,15 @@ import { useAuth } from '../../context/AuthContext';
 const AdminLayout: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const location = useLocation();
+    const navigate = useNavigate();
 
-    const { user } = useAuth();
+    const { user, hasSecurityQuestions, loading } = useAuth();
+
+    useEffect(() => {
+        if (!loading && user && hasSecurityQuestions === false) {
+            navigate('/security-questions');
+        }
+    }, [loading, user, hasSecurityQuestions, navigate]);
 
     const navItems = [
         { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
