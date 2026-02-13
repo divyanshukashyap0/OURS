@@ -53,7 +53,7 @@ const Hero: React.FC = () => {
             v2.0 System Online
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold text-mono-950 dark:text-white leading-tight mb-6">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-mono-950 dark:text-white leading-tight mb-6">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-mono-950 to-mono-600 dark:from-white dark:to-mono-400">
               {text}
             </span>

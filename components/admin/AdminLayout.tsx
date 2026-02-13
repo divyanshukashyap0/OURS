@@ -26,6 +26,19 @@ const AdminLayout: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 flex transition-colors duration-300 font-sans">
+            {/* Mobile Sidebar Backdrop */}
+            <AnimatePresence>
+                {isSidebarOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+                    />
+                )}
+            </AnimatePresence>
+
             {/* Sidebar */}
             <motion.aside
                 className={`fixed md:sticky top-0 h-screen z-50 w-64 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-800/50 flex flex-col transition-all duration-300 shadow-2xl shadow-gray-200/50 dark:shadow-black/50 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0 md:w-20'

@@ -40,6 +40,9 @@
     padding-bottom: env(safe-area-inset-bottom);
     transition: background-color var(--transition-slow), color var(--transition-slow);
     overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior-y: none;
+    /* Prevent pull-to-refresh reload on PWA */
   }
 
   /* Dark Mode */
