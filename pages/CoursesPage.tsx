@@ -56,7 +56,7 @@ const CoursesPage: React.FC = () => {
                 {/* Courses Grid */}
                 {loading ? (
                     <div className="flex justify-center py-20"><LogoLoader size={48} /></div>
-                ) : (
+                ) : courses.length > 0 ? (
                     <div className="relative group/carousel">
                         {/* Mobile Navigation Arrows */}
                         {/* Carousel Navigation Arrows */}
@@ -147,6 +147,19 @@ const CoursesPage: React.FC = () => {
                                 </motion.div>
                             ))}
                         </div>
+                    </div>
+                ) : (
+                    <div className="text-center py-24 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800">
+                        <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-400">
+                            <BookOpen size={40} />
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">New Courses Coming Soon</h3>
+                        <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
+                            We are working hard to bring you the best content. Join our newsletter to get notified when they launch.
+                        </p>
+                        <Button variant="outline" onClick={() => navigate('/contact')}>
+                            Join Waitlist
+                        </Button>
                     </div>
                 )}
 

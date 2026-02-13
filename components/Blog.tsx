@@ -11,7 +11,40 @@ const Blog: React.FC = () => {
     const fetchPosts = async () => {
       try {
         const data = await getBlogPosts();
-        setPosts(data);
+        if (data.length > 0) {
+          setPosts(data);
+        } else {
+          // Fallback content so the page isn't empty
+          setPosts([
+            {
+              id: '1',
+              title: 'The Future of Web Development: 2026 Trends',
+              excerpt: 'Explore the latest technologies shaping the web, from AI-driven UIs to WebAssembly adoption.',
+              date: 'Feb 12, 2026',
+              category: 'Tech Trends',
+              image: 'https://images.unsplash.com/photo-1504639725590-dbdd7d9d2d4d?auto=format&fit=crop&q=80&w=800',
+              content: ''
+            },
+            {
+              id: '2',
+              title: 'Mastering React Server Components',
+              excerpt: 'A deep dive into RSCs, how they work, and why they are changing the way we build React apps.',
+              date: 'Jan 28, 2026',
+              category: 'Development',
+              image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800',
+              content: ''
+            },
+            {
+              id: '3',
+              title: 'Building Scalable Systems with Node.js',
+              excerpt: 'Best practices for architecting high-performance backend systems using Node.js and Microservices.',
+              date: 'Jan 15, 2026',
+              category: 'Backend',
+              image: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=800',
+              content: ''
+            }
+          ]);
+        }
       } catch (error) {
         console.error("Error fetching blog posts:", error);
       }

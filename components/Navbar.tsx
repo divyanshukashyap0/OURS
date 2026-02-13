@@ -83,39 +83,46 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Right Section */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-6">
 
             {user ? (
-              <div className="flex items-center gap-3 pl-4 border-l border-mono-200 dark:border-mono-700">
+              <div className="flex items-center gap-4 pl-6 border-l border-mono-200 dark:border-mono-800">
                 <Link
                   to="/account"
-                  className="flex items-center gap-2 text-mono-700 dark:text-mono-300 hover:text-mono-950 dark:hover:text-white font-medium transition-colors"
+                  className="group flex items-center gap-3"
                 >
-                  {user.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      onError={(e) => { e.currentTarget.src = "/default-avatar.png"; }}
-                      alt="Profile"
-                      className="w-8 h-8 rounded-full object-cover border border-mono-200 dark:border-mono-700"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-mono-950 dark:bg-white flex items-center justify-center text-white dark:text-mono-950 font-semibold text-sm">
-                      {user.email?.[0].toUpperCase()}
-                    </div>
-                  )}
-                  <span className="hidden lg:block">Account</span>
+                  <div className="relative">
+                    {user.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        onError={(e) => { e.currentTarget.src = "/default-avatar.png"; }}
+                        alt="Profile"
+                        className="w-9 h-9 rounded-full object-cover border-2 border-transparent group-hover:border-mono-200 dark:group-hover:border-mono-700 transition-all"
+                      />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-mono-950 dark:bg-white flex items-center justify-center text-white dark:text-mono-950 font-semibold text-sm shadow-md">
+                        {user.email?.[0].toUpperCase()}
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-mono-950"></div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-mono-700 dark:text-mono-200 group-hover:text-mono-950 dark:group-hover:text-white transition-colors">
+                      My Account
+                    </span>
+                  </div>
                 </Link>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={logout}
-                  className="text-mono-500 hover:text-mono-950 dark:hover:text-white"
+                  className="text-mono-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                 >
                   Sign Out
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center gap-3 pl-4 border-l border-mono-200 dark:border-mono-700">
+              <div className="flex items-center gap-4 pl-6 border-l border-mono-200 dark:border-mono-800">
                 <Link
                   to="/login"
                   className="text-mono-600 dark:text-mono-400 font-medium hover:text-mono-950 dark:hover:text-white transition-colors"
@@ -123,7 +130,7 @@ const Navbar: React.FC = () => {
                   Log in
                 </Link>
                 <Button variant="primary" size="sm" onClick={() => window.location.href = '/signup'}>
-                  Sign Up
+                  Get Started
                 </Button>
               </div>
             )}

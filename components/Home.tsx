@@ -4,6 +4,8 @@ import { ArrowRight, Code2, Newspaper } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getProjects } from '../lib/projects';
 import Hero from './Hero';
+import TrustSignals from './TrustSignals';
+
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -41,6 +43,12 @@ const Home: React.FC = () => {
     <div className="bg-white dark:bg-mono-950 transition-colors">
       {/* Hero Section */}
       <Hero />
+
+      {/* Trust Signals */}
+      <TrustSignals />
+
+      {/* Trust Signals */}
+      <TrustSignals />
 
       {/* Bento Grid Section */}
       <section className="py-16 md:py-24 px-6 lg:px-8 bg-mono-50 dark:bg-mono-900">

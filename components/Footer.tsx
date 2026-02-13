@@ -11,7 +11,6 @@ const Footer: React.FC = () => {
       { label: 'Courses', href: '/courses' },
       { label: 'Projects', href: '/projects' },
       { label: 'Tutorials', href: '/tutorials' },
-      { label: 'Tutorials', href: '/tutorials' },
       { label: 'Pricing', href: '/pricing' },
       { label: 'Verify Certificate', href: '/verify' },
     ],

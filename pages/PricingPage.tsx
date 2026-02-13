@@ -9,7 +9,7 @@ const PricingPage: React.FC = () => {
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
     return (
-        <div className="min-h-screen pt-24 pb-16 px-4">
+        <div className="min-h-screen pt-24 pb-16 px-4 overflow-x-hidden">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">

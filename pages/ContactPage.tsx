@@ -86,15 +86,34 @@ const ContactPage: React.FC = () => {
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">User Identity</label>
-                                    <input type="text" required className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-tech-primary outline-none transition-all" placeholder="John Doe" />
+                                    <input
+                                        type="text"
+                                        required
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-tech-primary outline-none transition-all"
+                                        placeholder="Your Name"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Comms Channel</label>
-                                    <input type="email" required className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-tech-primary outline-none transition-all" placeholder="john@example.com" />
+                                    <input
+                                        type="email"
+                                        required
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-tech-primary outline-none transition-all"
+                                        placeholder="your.email@example.com"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payload</label>
-                                    <textarea required rows={4} className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-tech-primary outline-none transition-all resize-none" placeholder="Describe your inquiry..."></textarea>
+                                    <textarea
+                                        required
+                                        rows={4}
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-tech-primary outline-none transition-all resize-none"
+                                        placeholder="Describe your inquiry..."
+                                    ></textarea>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <input type="checkbox" required id="human_check" className="rounded border-gray-300 text-tech-primary focus:ring-tech-primary" />
+                                    <label htmlFor="human_check" className="text-sm text-gray-600 dark:text-gray-400">I am not a robot (Protocols verified)</label>
                                 </div>
                                 <Button type="submit" disabled={status === 'sending'} className="w-full bg-tech-primary hover:bg-sky-600 text-white py-3">
                                     {status === 'sending' ? 'Transmitting...' : 'Send Transmission'}

@@ -24,8 +24,8 @@ const Hero: React.FC = () => {
   }, [index, fullText]);
 
   const buttons = [
-    { label: 'Start Learning', icon: <Terminal size={18} />, path: '/courses', primary: true },
-    { label: 'View Projects', icon: <Code2 size={18} />, path: '/projects', primary: false },
+    { label: 'Browse Courses', icon: <Terminal size={18} />, path: '/courses', primary: true },
+    { label: 'Explore Projects', icon: <Code2 size={18} />, path: '/projects', primary: false },
   ];
 
   return (

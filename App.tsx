@@ -18,6 +18,7 @@ import CouponManager from './components/admin/CouponManager';
 import EmailManager from './components/admin/EmailManager';
 import ProjectRequestManager from './components/admin/ProjectRequestManager';
 import StudentRequestManager from './components/admin/StudentRequestManager';
+import StudentManager from './components/admin/StudentManager';
 import TutorialManager from './components/admin/TutorialManager';
 import CertificateManager from './components/admin/CertificateManager';
 import AdminSettings from './components/admin/AdminSettings';
@@ -83,7 +84,7 @@ const App: React.FC = () => {
                 <Route path="coupons" element={<CouponManager />} />
                 <Route path="emails" element={<EmailManager />} />
                 <Route path="requests" element={<ProjectRequestManager />} />
-                <Route path="students" element={<StudentRequestManager />} />
+                <Route path="students" element={<StudentManager />} />
                 <Route path="tutorials" element={<TutorialManager />} />
                 <Route path="certificates" element={<CertificateManager />} />
                 <Route path="settings" element={<AdminSettings />} />

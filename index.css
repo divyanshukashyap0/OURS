@@ -47,7 +47,9 @@
 
   /* Dark Mode */
   .dark body {
-    @apply bg-mono-950 text-mono-100;
+    @apply bg-mono-950 text-mono-100 font-normal;
+    font-weight: 450;
+    /* Slightly thicker than normal (400) for dark mode */
   }
 
   /* Premium Typography - Strong Hierarchy */

@@ -109,7 +109,10 @@ const Projects: React.FC = () => {
                   ))}
                 </div>
 
-                <Button variant="outline" className="w-full justify-center md:hidden">
+                <Button
+                  variant="outline"
+                  className="w-full justify-center mt-2 group-hover:bg-mono-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-mono-950 transition-colors"
+                >
                   View Project
                 </Button>
               </div>
