@@ -3,7 +3,6 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Package, Settings, LogOut, Menu, X, BookOpen, FileText, Tag, Mail, MessageSquare, Home, School, Video, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
-import CertificateManager from './CertificateManager';
 
 const AdminLayout: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
