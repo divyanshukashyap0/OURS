@@ -19,6 +19,7 @@ import EmailManager from './components/admin/EmailManager';
 import ProjectRequestManager from './components/admin/ProjectRequestManager';
 import StudentRequestManager from './components/admin/StudentRequestManager';
 import TutorialManager from './components/admin/TutorialManager';
+import CertificateManager from './components/admin/CertificateManager';
 import AdminSettings from './components/admin/AdminSettings';
 import SourceCode from './components/SourceCode';
 import Layout from './components/Layout';
