@@ -27,26 +27,14 @@ console.log("Firebase Config Loaded:", {
 
 
 // Initialize Services
+// Initialize Services
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+    })
+});
 export const googleProvider = new GoogleAuthProvider();
-
-// Enable offline persistence
-try {
-    enableMultiTabIndexedDbPersistence(db).catch((err) => {
-        if (err.code == 'failed-precondition') {
-            // Multiple tabs open, persistence can only be enabled
-            // in one tab at a a time.
-            console.warn('Firestore persistence failed-precondition: Multiple tabs open');
-        } else if (err.code == 'unimplemented') {
-            // The current browser does not support all of the
-            // features required to enable persistence
-            console.warn('Firestore persistence unimplemented');
-        }
-    });
-} catch (error) {
-    console.log("Persistence setup error or already initialized", error);
-}
 
 
 // Analytics
