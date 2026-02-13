@@ -103,7 +103,7 @@ export const fetchPendingActions = async () => {
     try {
         // Example: Fetch users with 'verificationStatus' === 'pending'
         // You might need to adjust based on your actual schema
-        const pendingUsersQuery = query(collection(db, 'users'), where('idCardStatus', '==', 'pending')); // Assuming 'idCardStatus'
+        const pendingUsersQuery = query(collection(db, 'users'), where('studentStatus', '==', 'pending'));
         const pendingUsersSnap = await getCountFromServer(pendingUsersQuery);
 
         // Example: Fetch project requests
