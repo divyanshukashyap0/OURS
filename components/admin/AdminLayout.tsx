@@ -28,6 +28,7 @@ const AdminLayout: React.FC = () => {
         { path: '/admin/requests', icon: MessageSquare, label: 'Requests' },
         { path: '/admin/students', icon: School, label: 'Students' },
         { path: '/admin/tutorials', icon: Video, label: 'Tutorials' },
+        { path: '/admin/testimonials', icon: MessageSquare, label: 'Testimonials' },
         { path: '/admin/settings', icon: Settings, label: 'Settings' },
     ];
 

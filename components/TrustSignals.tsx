@@ -1,27 +1,27 @@
-import React from 'react';
-import { Star, MessageCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
+import { getTestimonials, Testimonial } from '../lib/testimonials';
 
 const TrustSignals: React.FC = () => {
-    const testimonials = [
-        {
-            name: "Alex Doe",
-            role: "Frontend Dev",
-            text: "OURS helped me land my first job. The projects are real-world relevant.",
-            rating: 5
-        },
-        {
-            name: "Sarah Smith",
-            role: "UX Designer",
-            text: "The best platform to learn by doing. Highly recommended!",
-            rating: 5
-        },
-        {
-            name: "James Lee",
-            role: "Full Stack",
-            text: "Finally, a place that teaches how to build, not just syntax.",
-            rating: 5
-        }
-    ];
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadTestimonials = async () => {
+            try {
+                const data = await getTestimonials();
+                setTestimonials(data);
+            } catch (error) {
+                console.error("Error loading testimonials:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadTestimonials();
+    }, []);
+
+    if (loading) return null; // Or a skeleton loader
+    if (testimonials.length === 0) return null;
 
     return (
         <section className="bg-mono-50 dark:bg-mono-900 py-16 border-y border-mono-100 dark:border-mono-800">
@@ -33,7 +33,7 @@ const TrustSignals: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {testimonials.map((t, i) => (
-                        <div key={i} className="bg-white dark:bg-mono-950 p-6 rounded-2xl shadow-sm border border-mono-100 dark:border-mono-800">
+                        <div key={t.id || i} className="bg-white dark:bg-mono-950 p-6 rounded-2xl shadow-sm border border-mono-100 dark:border-mono-800">
                             <div className="flex gap-1 mb-4 text-yellow-500">
                                 {[...Array(t.rating)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
                             </div>

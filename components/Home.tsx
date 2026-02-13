@@ -44,11 +44,7 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <Hero />
 
-      {/* Trust Signals */}
-      <TrustSignals />
 
-      {/* Trust Signals */}
-      <TrustSignals />
 
       {/* Bento Grid Section */}
       <section className="py-16 md:py-24 px-6 lg:px-8 bg-mono-50 dark:bg-mono-900">
@@ -228,6 +224,9 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Trust Signals */}
+      <TrustSignals />
     </div>
   );
 };

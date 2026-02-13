@@ -21,6 +21,7 @@ import StudentRequestManager from './components/admin/StudentRequestManager';
 import StudentManager from './components/admin/StudentManager';
 import TutorialManager from './components/admin/TutorialManager';
 import CertificateManager from './components/admin/CertificateManager';
+import TestimonialManager from './components/admin/TestimonialManager';
 import AdminSettings from './components/admin/AdminSettings';
 import SourceCode from './components/SourceCode';
 import Layout from './components/Layout';
@@ -87,6 +88,7 @@ const App: React.FC = () => {
                 <Route path="students" element={<StudentManager />} />
                 <Route path="tutorials" element={<TutorialManager />} />
                 <Route path="certificates" element={<CertificateManager />} />
+                <Route path="testimonials" element={<TestimonialManager />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
 
