@@ -74,6 +74,7 @@ const App: React.FC = () => {
                 <Route path="requests" element={<ProjectRequestManager />} />
                 <Route path="students" element={<StudentRequestManager />} />
                 <Route path="tutorials" element={<TutorialManager />} />
+                <Route path="certificates" element={<CertificateManager />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
 
