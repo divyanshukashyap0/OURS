@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, Settings, LogOut, Menu, X, BookOpen, FileText, Tag, Mail, MessageSquare, Home, School, Video } from 'lucide-react';
+import { LayoutDashboard, Package, Settings, LogOut, Menu, X, BookOpen, FileText, Tag, Mail, MessageSquare, Home, School, Video, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import CertificateManager from './CertificateManager';
 
 const AdminLayout: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -16,6 +17,7 @@ const AdminLayout: React.FC = () => {
         { path: '/admin/courses', icon: BookOpen, label: 'Courses' },
         { path: '/admin/blogs', icon: FileText, label: 'Blogs' },
         { path: '/admin/coupons', icon: Tag, label: 'Coupons' },
+        { path: '/admin/certificates', icon: Award, label: 'Certificates' },
         { path: '/admin/emails', icon: Mail, label: 'Emails' },
         { path: '/admin/requests', icon: MessageSquare, label: 'Requests' },
         { path: '/admin/students', icon: School, label: 'Students' },
